@@ -1,0 +1,299 @@
+import { lazy, Suspense, useCallback, useState } from "react";
+import { colorFor } from "../data/map";
+import type { MapCanvasProps } from "../data/map";
+const MapTilerCanvas = lazy(() => import("./MapTilerCanvas"));
+import { Plus, Minus, LocateFixed } from "lucide-react";
+import { cells, featureById, valueFor } from "../data/demo";
+function project(lat: number, lon: number): [number, number] {
+  return [((lon + 126.15) / 4.9) * 1400, ((50.35 - lat) / 4.3) * 1000];
+}
+function points(coords: number[][]) {
+  return coords.map(([lat, lon]) => project(lat, lon).join(",")).join(" ");
+}
+const land: number[][][] = [
+  [
+    [50.5, -126.3],
+    [50.5, -124.75],
+    [50.05, -124.75],
+    [49.7, -124.15],
+    [49.15, -123.85],
+    [48.72, -123.28],
+    [48.47, -123.31],
+    [48.32, -123.66],
+    [48.43, -124.22],
+    [48.86, -124.74],
+    [49.25, -125.18],
+    [49.58, -125.55],
+    [50, -126.05],
+  ],
+  [
+    [50.5, -124.2],
+    [50.5, -121],
+    [46, -121],
+    [46, -124.15],
+    [46.8, -124.09],
+    [47.4, -124.35],
+    [48.16, -124.64],
+    [48.14, -123.63],
+    [47.98, -122.84],
+    [47.69, -122.57],
+    [47.35, -122.7],
+    [47.22, -122.36],
+    [47.69, -122.27],
+    [48.01, -122.27],
+    [48.38, -122.62],
+    [48.57, -122.39],
+    [48.84, -122.76],
+    [49.06, -123.12],
+    [49.27, -123.23],
+    [49.43, -123.51],
+    [49.8, -123.99],
+  ],
+  [
+    [48.69, -123.21],
+    [48.54, -123.16],
+    [48.45, -122.99],
+    [48.55, -122.89],
+    [48.7, -122.93],
+  ],
+  [
+    [48.63, -122.86],
+    [48.52, -122.8],
+    [48.48, -122.66],
+    [48.65, -122.68],
+  ],
+];
+function LocalMapCanvas({
+  feature,
+  month,
+  region = "all",
+  selected,
+  onSelect,
+  showGrid = true,
+  opacity = 0.8,
+  markers = [],
+}: MapCanvasProps) {
+  const [zoom, setZoom] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [drag, setDrag] = useState<{ x: number; y: number } | null>(null);
+  return (
+    <div className="map-canvas">
+      <svg
+        aria-label="Illustrative Pacific Northwest map with synthetic H3 values"
+        viewBox="0 0 1400 1000"
+        preserveAspectRatio="xMidYMid slice"
+        onPointerDown={(e) => {
+          if (!(e.target as Element).closest(".hex-cell")) {
+            setDrag({ x: e.clientX, y: e.clientY });
+            e.currentTarget.setPointerCapture(e.pointerId);
+          }
+        }}
+        onPointerMove={(e) => {
+          if (drag) {
+            setOffset((o) => ({
+              x: o.x + (e.clientX - drag.x) / zoom,
+              y: o.y + (e.clientY - drag.y) / zoom,
+            }));
+            setDrag({ x: e.clientX, y: e.clientY });
+          }
+        }}
+        onPointerUp={() => setDrag(null)}
+      >
+        <defs>
+          <pattern
+            id="water-grid"
+            width="90"
+            height="90"
+            patternUnits="userSpaceOnUse"
+          >
+            <path
+              d="M 90 0 L 0 0 0 90"
+              fill="none"
+              stroke="#7bacae"
+              strokeWidth="0.55"
+              opacity=".16"
+            />
+          </pattern>
+          <pattern
+            id="terrain"
+            width="60"
+            height="60"
+            patternUnits="userSpaceOnUse"
+          >
+            <path
+              d="M-10 60 Q20 5 60 15 M-10 75 Q20 20 60 30"
+              fill="none"
+              stroke="#a5b8a4"
+              strokeWidth=".7"
+              opacity=".35"
+            />
+          </pattern>
+        </defs>
+        <rect width="1400" height="1000" fill="#e5eff0" />
+        <rect width="1400" height="1000" fill="url(#water-grid)" />
+        <g
+          transform={`translate(700 500) scale(${zoom}) translate(-700 -500) translate(${offset.x} ${offset.y})`}
+        >
+          {land.map((p, i) => (
+            <g key={i}>
+              <polygon
+                points={points(p)}
+                fill="#e7ebdf"
+                stroke="#aebfaf"
+                strokeWidth="1.3"
+              />
+              <polygon points={points(p)} fill="url(#terrain)" />
+            </g>
+          ))}
+          <path
+            d="M830 314 L1060 314"
+            stroke="#b5c1b9"
+            strokeDasharray="7 6"
+            fill="none"
+          />
+          {showGrid &&
+            cells
+              .filter((c) => region === "all" || c.zone === region)
+              .map((c) => (
+                <polygon
+                  key={c.id}
+                  points={points(c.boundary)}
+                  fill={colorFor(valueFor(c, feature, month), feature)}
+                  fillOpacity={opacity}
+                  stroke={selected === c.id ? "#183f44" : "#ffffff"}
+                  strokeWidth={selected === c.id ? 3 : 0.8}
+                  className="hex-cell"
+                  tabIndex={onSelect ? 0 : undefined}
+                  role={onSelect ? "button" : undefined}
+                  aria-label={onSelect ? `Inspect cell ${c.id}` : undefined}
+                  onClick={() => onSelect?.(c)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      onSelect?.(c);
+                    }
+                  }}
+                >
+                  <title>
+                    {c.id} ·{" "}
+                    {valueFor(c, feature, month)?.toFixed(1) ?? "Unavailable"}{" "}
+                    {featureById(feature).unit}
+                  </title>
+                </polygon>
+              ))}
+          {markers.map((s) => {
+            const [x, y] = project(s.cell.lat, s.cell.lon);
+            return (
+              <circle
+                key={s.id}
+                cx={x}
+                cy={y}
+                r="4.5"
+                fill="#c7784f"
+                stroke="white"
+                strokeWidth="1.5"
+              >
+                <title>
+                  {s.id} · synthetic {s.species}
+                </title>
+              </circle>
+            );
+          })}
+          <g className="map-labels">
+            <text
+              x="220"
+              y="485"
+              transform="rotate(-37 220 485)"
+              className="land-label"
+            >
+              VANCOUVER ISLAND
+            </text>
+            <text x="420" y="720" className="water-label">
+              STRAIT OF JUAN DE FUCA
+            </text>
+            <text x="880" y="170" className="land-label">
+              BRITISH COLUMBIA
+            </text>
+            <text x="1030" y="650" className="land-label">
+              WASHINGTON
+            </text>
+            <text x="580" y="300" className="water-label">
+              SALISH SEA
+            </text>
+            {[
+              [49.28, -123.12, "Vancouver"],
+              [48.43, -123.37, "Victoria"],
+              [48.75, -122.48, "Bellingham"],
+              [47.6, -122.33, "Seattle"],
+            ].map(([lat, lon, name]) => {
+              const [x, y] = project(Number(lat), Number(lon));
+              return (
+                <g key={name}>
+                  <circle cx={x} cy={y} r="3" fill="#5b6c64" />
+                  <text x={x + 9} y={y + 4}>
+                    {name}
+                  </text>
+                </g>
+              );
+            })}
+          </g>
+        </g>
+      </svg>
+      <div className="map-tools">
+        <button
+          aria-label="Zoom in"
+          onClick={() => setZoom((z) => Math.min(3, z + 0.25))}
+        >
+          <Plus size={17} />
+        </button>
+        <button
+          aria-label="Zoom out"
+          onClick={() => setZoom((z) => Math.max(0.75, z - 0.25))}
+        >
+          <Minus size={17} />
+        </button>
+        <button
+          aria-label="Reset map view"
+          onClick={() => {
+            setZoom(1);
+            setOffset({ x: 0, y: 0 });
+          }}
+        >
+          <LocateFixed size={17} />
+        </button>
+      </div>
+      <span className="map-attribution">
+        Illustrative coastline · H3 r5 · Synthetic values
+      </span>
+    </div>
+  );
+}
+
+export default function MapCanvas(props: MapCanvasProps) {
+  const [failed, setFailed] = useState(false);
+  const onUnavailable = useCallback(() => setFailed(true), []);
+  const apiKey = import.meta.env.VITE_MAPTILER_KEY?.trim();
+  const online = props.basemap === "maptiler" && Boolean(apiKey) && !failed;
+  if (online)
+    return (
+      <Suspense fallback={<LocalMapCanvas {...props} />}>
+        <MapTilerCanvas
+          {...props}
+          apiKey={apiKey!}
+          onUnavailable={onUnavailable}
+        />
+      </Suspense>
+    );
+  return (
+    <div className="map-provider">
+      <LocalMapCanvas {...props} />
+      {props.basemap === "maptiler" && (
+        <span className="basemap-notice" role="status">
+          {failed
+            ? "Basemap unavailable · local fallback"
+            : "Local basemap · MapTiler key not configured"}
+        </span>
+      )}
+    </div>
+  );
+}
