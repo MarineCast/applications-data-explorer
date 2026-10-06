@@ -1,6 +1,6 @@
 # MarineCast Data Explorer
 
-Frontend-only React + TypeScript demo. All values, sightings, quality summaries, and release metadata are deterministic synthetic fixtures. No filesystem data root, data API, backend, or production product is connected. The Map page optionally uses MapTiler for basemap cartography only. The coastline is an illustrative SVG; H3 cells are generated locally with h3-js.
+Frontend-only React + TypeScript demo. All values, sightings, quality summaries, and release metadata are deterministic synthetic fixtures. No filesystem data root, data API, backend, or production product is connected. The Map page optionally uses MapTiler for basemap cartography only. The Map fallback coastline is an illustrative SVG; H3 cells are generated locally with h3-js.
 
 ## Local development
 
@@ -21,6 +21,8 @@ npm run build
 ```
 
 ## Pages
+
+- **Home:** the selected coastal artwork blends into a hex-map illustration, with working Map, Data catalog, Analyze, Sightings and Data Health navigation. The catalog selects one of the four synthetic map features. Artwork is decorative, not a scientific layer. Home and explorer routes support hash links and browser history; the explorer brand returns home.
 
 - **Map:** feature and region selection, H3 cell inspector, layer visibility/opacity, zoom/reset, month controls, and side-by-side feature/date comparison. Static viewability hides the time slider. Coastline geometry is illustrative, not navigation-grade.
 - **Relationships:** filtered Pearson correlations, scatterplots, histograms, a clickable correlation matrix, and a simple redundancy indicator. Advanced lags and scale analysis are future work.
@@ -48,3 +50,9 @@ MapLibre renders the MapTiler cartography with built-in attribution plus local s
 The Map page uses the supplied visual reference for a full-screen basemap, floating navigation, right-side metric controls, blue H3 colors, and a bottom cell-detail sheet. Time series, nearby-cell selection, environmental context, cell navigation, grid visibility, opacity, region filters, comparison, and monthly playback are interactive. The detail sheet and timeline follow the selected comparison map's feature and date. Leaving comparison clears the selection.
 
 The example's species activity index, bathymetry, wind/current products, saved collections and sharing are not available in this frontend demo. The existing four synthetic fixture features retain their units and missingness; monthly data and resolution-5 H3 cells are labeled accurately. MapTiler supplies cartography only.
+
+## Home reference update
+
+The default route opens the reference-based home page; `/#map`, `/#relationships`, `/#sightings`, and `/#health` open existing explorer pages directly. The home background and wave mark are generated raster assets derived from the user-selected reference. The wordmark, tagline, mission and navigation are editable HTML. Desktop and mobile layouts use the same artwork with responsive cropping and spacing. No data integration was added.
+
+Asset provenance and exact generation prompts: [ARTWORK.md](public/assets/home/ARTWORK.md). Current home QA: [design-qa.md](design-qa.md). Previous Map QA: [map-reference.md](docs/qa/map-reference.md).

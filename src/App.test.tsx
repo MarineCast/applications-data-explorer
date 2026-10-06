@@ -1,10 +1,17 @@
-import { describe, it, expect } from "vitest";
+import { beforeEach, describe, it, expect } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "./App";
 import { cells, valueFor, formatValue } from "./data/demo";
+beforeEach(() => window.history.replaceState(null, "", "/"));
+function renderAtMap() {
+  window.history.replaceState(null, "", "/#map");
+  return render(<App />);
+}
 async function navigate(name: string) {
   const user = userEvent.setup();
+  if (screen.queryByRole("navigation", { name: "Home navigation" }))
+    await user.click(screen.getByRole("link", { name: "Map" }));
   await user.click(screen.getByRole("button", { name: "Open navigation" }));
   await user.click(
     within(screen.getByRole("navigation")).getByRole("button", {
@@ -16,7 +23,7 @@ async function navigate(name: string) {
 describe("frontend interactions", () => {
   it("shows a disconnected demo and opens a real H3 inspector", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    renderAtMap();
     expect(screen.getByText(/No data connected/)).toBeInTheDocument();
     await user.click(
       screen.getAllByRole("button", { name: /Inspect cell/ })[0],
@@ -33,7 +40,7 @@ describe("frontend interactions", () => {
   });
   it("changes months, toggles comparison, and hides time for static features", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    renderAtMap();
     await user.click(screen.getByRole("button", { name: "Show Oct 2026" }));
     expect(
       screen.getByRole("region", { name: "Map timeline" }),
@@ -51,7 +58,7 @@ describe("frontend interactions", () => {
   });
   it("keeps inspection feature and date tied to the selected comparison map", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    renderAtMap();
     await user.click(screen.getByRole("button", { name: "Compare layers" }));
     const pick = async (side: number) =>
       user.click(

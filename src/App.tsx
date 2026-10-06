@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
+  House,
   Menu,
   X,
   Waves,
@@ -9,12 +10,27 @@ import {
   ShieldCheck,
   ArrowUpRight,
 } from "lucide-react";
+import HomePage from "./pages/HomePage";
+import type { ExplorerPage } from "./pages/HomePage";
+import type { FeatureId } from "./data/demo";
 import MapPage from "./pages/MapPage";
 import RelationshipsPage from "./pages/RelationshipsPage";
 import SightingsPage from "./pages/SightingsPage";
 import HealthPage from "./pages/HealthPage";
-type Page = "map" | "relationships" | "sightings" | "health";
+type Page = "home" | ExplorerPage;
+function pageFromHash(): Page {
+  const hash = window.location.hash.slice(1);
+  return ["home", "map", "relationships", "sightings", "health"].includes(hash)
+    ? (hash as Page)
+    : "home";
+}
 const pages = [
+  {
+    id: "home" as const,
+    name: "Home",
+    description: "Ocean data for a wilder tomorrow",
+    icon: House,
+  },
   {
     id: "map" as const,
     name: "Map",
@@ -41,8 +57,29 @@ const pages = [
   },
 ];
 export default function App() {
-  const [page, setPage] = useState<Page>("map"),
-    [open, setOpen] = useState(false);
+  const [page, setPage] = useState<Page>(pageFromHash);
+  const [open, setOpen] = useState(false);
+  const [mapFeature, setMapFeature] = useState<FeatureId>("temperature");
+  useEffect(() => {
+    const update = () => {
+      setPage(pageFromHash());
+      setOpen(false);
+    };
+    window.addEventListener("hashchange", update);
+    window.addEventListener("popstate", update);
+    return () => {
+      window.removeEventListener("hashchange", update);
+      window.removeEventListener("popstate", update);
+    };
+  }, []);
+  const navigate = (next: Page, feature?: FeatureId) => {
+    if (next === "map") setMapFeature(feature ?? "temperature");
+    if (window.location.hash !== `#${next}`)
+      window.history.pushState(null, "", `#${next}`);
+    setPage(next);
+    setOpen(false);
+  };
+  if (page === "home") return <HomePage onNavigate={navigate} />;
   return (
     <div className={`app ${page === "map" ? "map-mode" : ""}`}>
       <header className="app-header">
@@ -57,11 +94,11 @@ export default function App() {
         </button>
         <a
           className="brand"
-          href="#map"
+          href="#home"
+          aria-label="MarineCast home"
           onClick={(e) => {
             e.preventDefault();
-            setPage("map");
-            setOpen(false);
+            navigate("home");
           }}
         >
           <Waves size={27} />
@@ -95,8 +132,7 @@ export default function App() {
                 key={p.id}
                 aria-current={page === p.id ? "page" : undefined}
                 onClick={() => {
-                  setPage(p.id);
-                  setOpen(false);
+                  navigate(p.id);
                 }}
               >
                 <p.icon size={21} />
@@ -112,7 +148,7 @@ export default function App() {
         </>
       )}
       {page === "map" ? (
-        <MapPage />
+        <MapPage initialFeature={mapFeature} />
       ) : page === "relationships" ? (
         <RelationshipsPage />
       ) : page === "sightings" ? (

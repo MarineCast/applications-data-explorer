@@ -36,8 +36,12 @@ const icons = {
 };
 type Side = "left" | "right";
 type DetailTab = "series" | "nearby" | "context";
-export default function MapPage() {
-  const [feature, setFeature] = useState<FeatureId>("temperature");
+export default function MapPage({
+  initialFeature = "temperature",
+}: {
+  initialFeature?: FeatureId;
+}) {
+  const [feature, setFeature] = useState<FeatureId>(initialFeature);
   const [month, setMonth] = useState(6);
   const [region, setRegion] = useState<Region>("all");
   const [selection, setSelection] = useState<{ cell: Cell; side: Side }>();
