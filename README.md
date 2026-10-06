@@ -56,3 +56,11 @@ The example's species activity index, bathymetry, wind/current products, saved c
 The default route opens the reference-based home page; `/#map`, `/#relationships`, `/#sightings`, and `/#health` open existing explorer pages directly. The home background and wave mark are generated raster assets derived from the user-selected reference. The wordmark, tagline, mission and navigation are editable HTML. Desktop and mobile layouts use the same artwork with responsive cropping and spacing. No data integration was added.
 
 Asset provenance and exact generation prompts: [ARTWORK.md](public/assets/home/ARTWORK.md). Current home QA: [design-qa.md](design-qa.md). Previous Map QA: [map-reference.md](docs/qa/map-reference.md).
+
+## Home grid motion
+
+The home artwork has a slow 14-second breathing glow, sparse asynchronous twinkles, and a mouse-proximity shimmer with a gentle fade. A source-derived mask restricts light to the existing coarse blue grid band; terrain, forest, navigation and the original artwork remain intact. The effect is illustrative, not data.
+
+Reduced-motion preferences disable the effect. Touch keeps ambient motion but ignores cursor shimmer. Hidden tabs and the open Data catalog pause animation. Rendering is capped at 30 frames/second and 1.5 display density, with cleanup when leaving Home. Exact independently animated cell boundaries would require an authored grid layer; current glow centers approximate the artwork spacing and are clipped to its blue paint.
+
+Motion QA: [design-qa.md](design-qa.md). Prior home QA: [home-reference.md](docs/qa/home-reference.md).

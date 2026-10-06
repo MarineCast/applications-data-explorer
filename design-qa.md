@@ -1,50 +1,47 @@
-# Home reference QA
+# Home grid motion QA
 
 final result: passed
 
-## Target and evidence
+## Source, state and comparison evidence
 
-Source visual truth: /Users/tylerstevenson/Documents/Codex/2026-10-05/task-5/home-design/reference/home-reference.png. Exact user-selected Library reference: libfile_6b7470f253a4819181a1936d9c4db169. The original is unchanged.
+Approved source: /Users/tylerstevenson/Documents/Codex/2026-10-05/task-5/home-design/reference/home-reference.png; local approved home baseline commit c996012. Source and implementation both 1536 × 1024 pixels, CSS viewport 1536 × 1024, density 1, light home route, catalog closed. Pointer shimmer is an intentional addition requested by the user.
 
-Implementation: http://127.0.0.1:5173/ (home route), Codex in-app browser. Source and rendered desktop screenshots are both 1536 × 1024 pixels at a 1536 × 1024 CSS viewport, density 1. No scaling or browser chrome in the comparison. State: default home, catalog closed, no hovered navigation item, light appearance.
+Implementation: http://127.0.0.1:5173/#home. Desktop evidence: /Users/tylerstevenson/Documents/Codex/2026-10-05/task-5/home-motion/qa/home-motion-desktop.png. Full combined input: /Users/tylerstevenson/Documents/Codex/2026-10-05/task-5/home-motion/qa/full-comparison.png (source left, motion frame right). Focused combined input: /Users/tylerstevenson/Documents/Codex/2026-10-05/task-5/home-motion/qa/navigation-comparison.png (same 450 × 530 branding/navigation crops). Both combined inputs were opened and inspected. Responsive evidence: /Users/tylerstevenson/Documents/Codex/2026-10-05/task-5/home-motion/qa/home-motion-mobile.png (390 × 844). Native desktop browser at a narrow viewport; touch behavior is verified by simulated pointer events in the focused tests, not by a physical phone.
 
-Full comparison: /Users/tylerstevenson/Documents/Codex/2026-10-05/task-5/home-design/qa/full-comparison.png (3072 × 1024; source left, implementation right). Focused branding/navigation comparison: /Users/tylerstevenson/Documents/Codex/2026-10-05/task-5/home-design/qa/navigation-comparison.png (900 × 530; equal 450 × 530 source crops). Both combined inputs were opened and visually reviewed. Final implementation screenshot: /Users/tylerstevenson/Documents/Codex/2026-10-05/task-5/home-design/qa/home-desktop.png, also saved to Library as libfile_99c5f9f541f88191b8f2e095d9e44bf3, attachment file_00000000d500820e935b36c6d8e4d6ba.
+Brief grid detail capture: /Users/tylerstevenson/Documents/Codex/2026-10-05/task-5/home-motion/qa/grid-motion.gif (600 × 600; two sampled pointer locations, 24 frames). This edited sample shows localized shimmer; the live preview is the source of truth for the 14-second breathing cycle. Library: libfile_1d329ff7f26c81919592944c3cef5023; attachment file_000000003c1c81f5bbf8911e5bb1893d.
 
-Responsive evidence: /Users/tylerstevenson/Documents/Codex/2026-10-05/task-5/home-design/qa/home-mobile.png (390 × 844); home-mobile-320.png (320 × 700); home-laptop.png (1280 × 720); catalog-mobile.png (390 × 844). These are adaptations: the source provides no mobile design. Native browser screenshots were inspected, including stable viewport dimensions. No horizontal overflow at 320px.
+## Findings / fidelity surfaces
 
-## Findings and required fidelity surfaces
+No remaining actionable P0/P1/P2 findings.
 
-No remaining actionable P0/P1/P2 findings within the supplied reference adaptation.
+- Fonts/typography: approved home branding, navigation and mission typography remain unchanged. Focus outlines remain visible, and the overlay cannot intercept clicks.
+- Spacing/layout: no layout changes. Canvas uses the exact cover scale and the same left/10%-mobile horizontal and centered vertical crop as the artwork. Mobile retains the approved composition and has no horizontal overflow.
+- Colors/tokens: a restrained pale-blue light is added only to the original blue coarse grid band. Ambient opacity rises and falls smoothly on a 14-second cycle. A fifth of candidate cells can twinkle, with independent 16–28 second periods and rounded roughly 4-second swells. Mouse proximity eases to a soft 135-source-pixel neighborhood and fades on leaving. No stars, particles, sharp flashes or full-page effects.
+- Image quality: the approved raster is unchanged. A one-time source-derived color mask clips glow off terrain, forest, sea illustration and UI. Coarse-grid candidates use measured artwork spacing; coastal/hand-rendered hex geometry remains baked into the image. Broad soft glows avoid presenting approximate candidate coordinates as exact cell boundaries. No new generated artwork or scientific data.
+- Copy/content: all approved copy and synthetic provenance remain unchanged. Existing explorer pages and data fixtures were not edited.
 
-- **Fonts / typography:** self-hosted Barlow Condensed 600 approximates the tracked condensed wordmark. Editable HTML preserves the source capitalization and tagline; Georgia matches the serif navigation. Small letterspaced mission text retains the reference hierarchy. The condensed family is a close substitute, not an identified exact original font. All navigation labels remain legible and untruncated at checked widths.
-- **Spacing / layout rhythm:** full-bleed 3:2 artwork; branding near x46/y45; navigation icons near x64 and labels near x106; 50px desktop rows; separated dark Map indicator and pale lower rail; divider and two-line mission near the reference positions. Short laptop and mobile layouts compact vertical gaps to keep mission copy off the forest. Mobile retains the coastline and a visible blue map edge.
-- **Colors / visual tokens:** warm ivory paper, charcoal/navy text, subdued blue/teal map cells and forest palette follow the source. Hover backgrounds and keyboard focus outlines are visible. The small synthetic-artwork note is an intentional provenance addition.
-- **Image quality / asset fidelity:** generated raster background preserves the coastal forest, mountains, islands, sea, topographic map and softly blended hex overlay. Geographic labels remain embedded in the illustration. The wave is a generated extraction of the supplied mark with verified alpha; UI icons use the existing library. No CSS/SVG approximations of the illustrated scene. JPEG compression is visually clean at target size. Geographic detail and extracted wave strokes have minor generative differences, classified P3.
-- **Copy / content:** MARINECAST, tagline, five navigation labels, geographic labels and two-line mission match the source intent. The home states “Illustrative artwork · Synthetic demo · No data connected.” The catalog shows only the four existing synthetic features with their units and temporal support. No unavailable scientific products were invented.
+## Interaction, accessibility and performance verification
 
-## Comparison history
+Browser inspected ambient motion and moved the pointer between upper/lower grid regions, then inspected detail captures. Data catalog remains functional and pauses motion while open; native Escape returns to home. Navigation to Analyze removes the motion canvas; returning home recreates it. Mobile layout inspected at 390 × 844. Browser console error count: 0.
 
-1. Initial desktop review found wordmark alignment and size drift. Moved the sidebar from 5.05% to 4.4% top, increased the condensed wordmark to 32px, and offset the navigation margin to retain row alignment. The combined focused post-fix capture confirms the corrected hierarchy.
-2. Navigation rail initially ran continuously past the final row. Replaced it with the separate first-row indicator and a shorter lower rail matching the source. Post-fix evidence: navigation-comparison.png and full-comparison.png.
-3. P2 responsive readability: at 320 × 700 and 1280 × 720, mission text touched the mountain/forest. Reduced short-screen vertical spacing while preserving 44px mobile row targets. Post-fix captures home-mobile-320.png and home-laptop.png show mission text in the lighter area above the artwork.
-4. Viewport capture normalization: rapid browser viewport changes initially produced intermediate resize captures. Replaced these with fresh stable captures, verifying the 1536 × 1024 home bounds and 320px document width before judging the final views.
+Reduced-motion media handling was tested with live preference changes: no scheduled animation frames while reduced, canvas cleared, and animation restarts when the preference is removed. CSS also hides the decorative canvas under prefers-reduced-motion. Browser does not expose media emulation through the available control API, so no OS preference was changed; this branch is covered by focused automated tests rather than a claimed browser-emulated screenshot.
 
-## Interaction and engineering verification
+Focused tests also cover touch input ignoring pointer shimmer, mouse proximity fade, hidden-tab pause/resume with no time jump, at-most-30 rendered frames/second, catalog pause, matching cover transforms, bounded candidates, and observer/listener/RAF cleanup on unmount. Canvas display density is capped at 1.5; source mask is computed once per effect lifecycle; animation uses canvas without React state updates per frame. Ambient motion remains on touch devices; cursor shimmer requires a fine hover pointer and mouse events.
 
-Browser verified Map, Analyze, Sightings and Data Health navigation, brand return to home, browser Back from Analyze, Data catalog open/close, native Escape dismissal and focus restoration, and selecting Physical viewability from the catalog. Selection opens the map showing “Physical viewability · Static demo” and “Static feature · no temporal axis.” No new browser console errors (count 0 in the verified tab). Native dialog behavior is verified in-browser; jsdom receives a test-only dialog shim.
+All 21 tests across 6 files, ESLint, TypeScript and production build pass. Existing lazy MapLibre chunk size advisory remains. No dependency installation, backend, real data connection, credential access or remote push.
 
-All 16 tests passed across 5 files, including existing comparison-map context regressions and new home routing/catalog tests. TypeScript, ESLint and production build pass. The existing lazy MapLibre chunk retains its Vite size advisory. No dependencies installed, backend added, real product data read, or credentials exposed. The user-provided MapTiler configuration and explorer features remain in place.
+## Iteration history / follow-up
 
-## Open questions and follow-up polish
+Initial inspection confirmed crop/masking alignment but too many candidate cells could swell together. Restricted ambient twinkles to one fifth of retained candidates; pointer proximity still covers nearby grid paint. Post-fix desktop/full and focused captures retain legible reference composition. No P0/P1/P2 visual mismatch required a further layout iteration.
 
-P3: the source font and exact wave geometry are not available as authored brand assets. Supplied official assets could improve exact branding later. Mobile artwork crops the far-right map and some Pacific Ocean lettering; this is expected for the wide source image. No new data integration, deployment or Git push is included.
+P3: the image contains artistically varied hexes, so light centers follow an approximate measured lattice, clipped to actual blue paint. Exact independently animated hex polygons would require a separately authored grid layer. The GIF is a short edited sample, not a complete breathing cycle.
 
-## Implementation checklist
+## Checklist
 
-- [x] Inspect the exact selected source and generate real artwork assets.
-- [x] Implement editable branding, navigation and responsive layout in the existing app.
-- [x] Keep existing explorer behavior and synthetic provenance.
-- [x] Compare source and rendered implementation in full and focused combined inputs.
-- [x] Fix short-screen readability and inspect post-fix evidence.
-- [x] Verify core navigation, modal, history, tests, lint and production build.
-- [x] Save final screenshot to Library and preserve original reference.
+- [x] Preserve artwork and explorer pages.
+- [x] Add breathing, sparse twinkles and mouse shimmer confined to grid paint.
+- [x] Disable reduced-motion animation; ignore touch pointer shimmer.
+- [x] Pause hidden tabs/catalog; cap rendering; clean up listeners/RAF.
+- [x] Inspect source/implementation together and desktop/mobile/detail frames.
+- [x] Verify tests, lint, build, console and navigation.
+- [x] Save Library motion sample; keep local preview running.

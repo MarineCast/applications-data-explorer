@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { features } from "../data/demo";
 import type { FeatureId } from "../data/demo";
+import HomeGridGlow from "../components/HomeGridGlow";
 import "./HomePage.css";
 export type ExplorerPage = "map" | "relationships" | "sightings" | "health";
 const featureIcons = {
@@ -56,6 +57,7 @@ export default function HomePage({
         alt="Illustrated Pacific Northwest coastline, evergreen forest and mountains blending into a blue hexagonal map of the Salish Sea. Decorative artwork, not a data layer."
         fetchPriority="high"
       />
+      <HomeGridGlow paused={catalogOpen} />
       <div className="home-sidebar">
         <header className="home-brand">
           <div className="home-wordmark">

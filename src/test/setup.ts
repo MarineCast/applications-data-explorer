@@ -14,3 +14,6 @@ HTMLDialogElement.prototype.close = function () {
   this.removeAttribute("open");
   this.dispatchEvent(new Event("close"));
 };
+
+// Browser QA covers real canvas drawing; jsdom has no canvas renderer.
+HTMLCanvasElement.prototype.getContext = vi.fn(() => null);
