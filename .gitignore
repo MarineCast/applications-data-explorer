@@ -5,3 +5,7 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Local source-backed browser cache; prepare with scripts/prepare_seascape.py
+/public/local-data/
+__pycache__/

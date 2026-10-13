@@ -7,6 +7,7 @@ import {
   Empty,
 } from "../components/Controls";
 import { Scatter, Histogram } from "../components/Charts";
+import PageLegend from "../components/PageLegend";
 import MapCanvas from "../components/MapCanvas";
 import {
   sightings,
@@ -123,16 +124,6 @@ export default function SightingsPage() {
               {background && <Scatter rows={bg} x={x} y={y} />}
               <Scatter rows={observations} x={x} y={y} highlight />
             </div>
-            <div className="chart-legend">
-              <span>
-                <i className="orange-dot" /> Encounters
-              </span>
-              {background && (
-                <span>
-                  <i /> Background
-                </span>
-              )}
-            </div>
           </section>
           <section className="panel chart-panel">
             <h2>Encounter feature distribution</h2>
@@ -196,6 +187,11 @@ export default function SightingsPage() {
           synthetic encounters.
         </p>
       </section>
+      <PageLegend name="Sightings" entries={[
+        { color: "#c77d54", label: "Synthetic encounters" },
+        ...(background ? [{ color: "#4d9289", label: "Background feature pairs" }] : []),
+        { color: "#c88561", label: "Encounter feature distribution" },
+      ]} note="All positions and encounters are synthetic. Background points use the selected feature, region and season filters." />
     </main>
   );
 }

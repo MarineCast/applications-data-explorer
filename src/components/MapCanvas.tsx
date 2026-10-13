@@ -1,8 +1,16 @@
-import { lazy, Suspense, useCallback, useState } from "react";
-import { colorFor } from "../data/map";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import {
+  colorFor,
+  colorFromRange,
+  boundaryFor,
+  visibleLayerCells,
+} from "../data/map";
+import { createPortal } from "react-dom";
+import type { MapCamera, MapCameraPeer } from "../data/mapCamera";
 import type { MapCanvasProps } from "../data/map";
+import { colorForScale } from "../data/colorScale";
 const MapTilerCanvas = lazy(() => import("./MapTilerCanvas"));
-import { Plus, Minus, LocateFixed } from "lucide-react";
+import { Plus, Minus } from "lucide-react";
 import { cells, featureById, valueFor } from "../data/demo";
 function project(lat: number, lon: number): [number, number] {
   return [((lon + 126.15) / 4.9) * 1400, ((50.35 - lat) / 4.3) * 1000];
@@ -63,7 +71,18 @@ const land: number[][][] = [
     [48.65, -122.68],
   ],
 ];
+function localView(camera?: MapCamera) {
+  if (!camera) return { zoom: 1, offset: { x: 0, y: 0 } };
+  const [x, y] = project(camera.center[1], camera.center[0]);
+  return { zoom: 2 ** (camera.zoom - 6.7), offset: { x: 700 - x, y: 500 - y } };
+}
 function LocalMapCanvas({
+  cameraLink,
+  overlayHost,
+  showControls = true,
+  layer,
+  colorScale,
+  popup,
   feature,
   month,
   region = "all",
@@ -73,13 +92,66 @@ function LocalMapCanvas({
   opacity = 0.8,
   markers = [],
 }: MapCanvasProps) {
-  const [zoom, setZoom] = useState(1);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(() => localView(cameraLink?.getCamera()).zoom);
+  const [offset, setOffset] = useState(() => localView(cameraLink?.getCamera()).offset);
+  const cameraPeer = useRef<MapCameraPeer | null>(null);
+  useEffect(() => {
+    if (!cameraLink) return;
+    const peer: MapCameraPeer = {
+      setCamera(camera) {
+        const next = localView(camera);
+        setZoom(next.zoom);
+        setOffset(next.offset);
+      },
+      finishMove() {},
+    };
+    cameraPeer.current = peer;
+    const disconnect = cameraLink.connect(peer);
+    return () => { disconnect(); cameraPeer.current = null; };
+  }, [cameraLink]);
+  const moveView = (nextZoom: number, nextOffset: { x: number; y: number }, moving = false) => {
+    setZoom(nextZoom);
+    setOffset(nextOffset);
+    if (cameraLink && cameraPeer.current) cameraLink.publish(cameraPeer.current, {
+      center: [-126.15 + ((700 - nextOffset.x) / 1400) * 4.9, 50.35 - ((500 - nextOffset.y) / 1000) * 4.3],
+      zoom: 6.7 + Math.log2(nextZoom), bearing: 0, pitch: 0,
+    }, moving);
+  };
   const [drag, setDrag] = useState<{ x: number; y: number } | null>(null);
+  const displayBounds: [number, number, number, number] = [
+    -126.15 + ((700 - 700 / zoom - offset.x) / 1400) * 4.9,
+    50.35 - ((500 + 500 / zoom - offset.y) / 1000) * 4.3,
+    -126.15 + ((700 + 700 / zoom - offset.x) / 1400) * 4.9,
+    50.35 - ((500 - 500 / zoom - offset.y) / 1000) * 4.3,
+  ];
+  const displayCells = layer
+    ? visibleLayerCells(layer, displayBounds)
+    : cells;
+  const overlays = (<>
+      {popup && <div className="atlas-map-popup local-popup">{popup}</div>}
+      {showControls && <div className="map-tools">
+        <button
+          aria-label="Zoom in"
+          onClick={() => moveView(Math.min(3, zoom + 0.25), offset)}
+        >
+          <Plus size={17} />
+        </button>
+        <button
+          aria-label="Zoom out"
+          onClick={() => moveView(Math.max(0.75, zoom - 0.25), offset)}
+        >
+          <Minus size={17} />
+        </button>
+      </div>}
+  </>);
   return (
     <div className="map-canvas">
       <svg
-        aria-label="Illustrative Pacific Northwest map with synthetic H3 values"
+        aria-label={
+          layer
+            ? `Illustrative coastline with native H3 R${layer.resolution} values · ${layer.sourceLabel}`
+            : "Illustrative Pacific Northwest map with synthetic H3 values"
+        }
         viewBox="0 0 1400 1000"
         preserveAspectRatio="xMidYMid slice"
         onPointerDown={(e) => {
@@ -90,14 +162,14 @@ function LocalMapCanvas({
         }}
         onPointerMove={(e) => {
           if (drag) {
-            setOffset((o) => ({
-              x: o.x + (e.clientX - drag.x) / zoom,
-              y: o.y + (e.clientY - drag.y) / zoom,
-            }));
+            moveView(zoom, {
+              x: offset.x + (e.clientX - drag.x) / zoom,
+              y: offset.y + (e.clientY - drag.y) / zoom,
+            }, true);
             setDrag({ x: e.clientX, y: e.clientY });
           }
         }}
-        onPointerUp={() => setDrag(null)}
+        onPointerUp={() => { setDrag(null); if (drag) moveView(zoom, offset); }}
       >
         <defs>
           <pattern
@@ -152,13 +224,25 @@ function LocalMapCanvas({
             fill="none"
           />
           {showGrid &&
-            cells
+            displayCells
               .filter((c) => region === "all" || c.zone === region)
               .map((c) => (
                 <polygon
                   key={c.id}
-                  points={points(c.boundary)}
-                  fill={colorFor(valueFor(c, feature, month), feature)}
+                  points={points(boundaryFor(c))}
+                  fill={
+                    layer
+                      ? colorScale
+                        ? colorForScale(
+                            layer.values.get(c.id) ?? null,
+                            colorScale,
+                          )
+                        : colorFromRange(
+                            layer.values.get(c.id) ?? null,
+                            layer.range,
+                          )
+                      : colorFor(valueFor(c, feature, month), feature)
+                  }
                   fillOpacity={opacity}
                   stroke={selected === c.id ? "#183f44" : "#ffffff"}
                   strokeWidth={selected === c.id ? 3 : 0.8}
@@ -176,8 +260,13 @@ function LocalMapCanvas({
                 >
                   <title>
                     {c.id} ·{" "}
-                    {valueFor(c, feature, month)?.toFixed(1) ?? "Unavailable"}{" "}
-                    {featureById(feature).unit}
+                    {layer?.categories
+                      ? (layer.values.get(c.id) == null ? "Unavailable" : layer.categories[layer.values.get(c.id)!])
+                      : (layer
+                      ? layer.values.get(c.id)
+                      : valueFor(c, feature, month)
+                    )?.toPrecision(6) ?? "Unavailable"}{" "}
+                    {layer?.unit ?? featureById(feature).unit}
                   </title>
                 </polygon>
               ))}
@@ -239,32 +328,12 @@ function LocalMapCanvas({
           </g>
         </g>
       </svg>
-      <div className="map-tools">
-        <button
-          aria-label="Zoom in"
-          onClick={() => setZoom((z) => Math.min(3, z + 0.25))}
-        >
-          <Plus size={17} />
-        </button>
-        <button
-          aria-label="Zoom out"
-          onClick={() => setZoom((z) => Math.max(0.75, z - 0.25))}
-        >
-          <Minus size={17} />
-        </button>
-        <button
-          aria-label="Reset map view"
-          onClick={() => {
-            setZoom(1);
-            setOffset({ x: 0, y: 0 });
-          }}
-        >
-          <LocateFixed size={17} />
-        </button>
-      </div>
-      <span className="map-attribution">
-        Illustrative coastline · H3 r5 · Synthetic values
-      </span>
+      {overlayHost ? createPortal(overlays, overlayHost) : overlays}
+      {!layer && (
+        <span className="map-attribution">
+          Illustrative coastline · H3 r5 · Synthetic values
+        </span>
+      )}
     </div>
   );
 }
@@ -276,13 +345,31 @@ export default function MapCanvas(props: MapCanvasProps) {
   const online = props.basemap === "maptiler" && Boolean(apiKey) && !failed;
   if (online)
     return (
-      <Suspense fallback={<LocalMapCanvas {...props} />}>
+      <Suspense fallback={
+        <div className="map-canvas map-wait-state" role="status">
+          Loading map…
+        </div>
+      }>
         <MapTilerCanvas
           {...props}
           apiKey={apiKey!}
           onUnavailable={onUnavailable}
         />
       </Suspense>
+    );
+  if (props.basemap === "maptiler" && props.layer)
+    return (
+      <div className="map-canvas map-wait-state" role="alert">
+        <div>
+          <p>{failed ? "Basemap unavailable." : "Basemap key not configured."}</p>
+          <p>
+            {failed
+              ? "Retry to load the geographic map."
+              : "Configure the MapTiler key described in the app README to load the geographic map."}
+          </p>
+          {failed && <button className="button" onClick={() => setFailed(false)}>Retry basemap</button>}
+        </div>
+      </div>
     );
   return (
     <div className="map-provider">

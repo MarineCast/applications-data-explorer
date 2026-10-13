@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Check, AlertCircle, ArrowRight, RefreshCw } from "lucide-react";
+import PageLegend from "../components/PageLegend";
 import { Stat, Empty } from "../components/Controls";
 import { products, months } from "../data/demo";
 export default function HealthPage() {
@@ -20,7 +21,7 @@ export default function HealthPage() {
       <div className="page-heading">
         <div>
           <span className="eyebrow">PRODUCT INTEGRITY</span>
-          <h1>Data health</h1>
+          <h1>Health</h1>
           <p>Coverage, quality, and release context.</p>
         </div>
         <span className="tag">Fixture metadata</span>
@@ -113,12 +114,6 @@ export default function HealthPage() {
                     <strong>{coverage[i]}%</strong>
                   </div>
                 ))}
-              </div>
-              <div className="chart-legend">
-                <span>
-                  <i /> Available spatial support
-                </span>
-                <span>Missing ≠ observed zero</span>
               </div>
             </section>
             <section className="panel chart-panel">
@@ -221,6 +216,9 @@ export default function HealthPage() {
           )}
         </>
       )}
+      <PageLegend name="Health" entries={[
+        { color: "#5c997d", label: "Available spatial support" },
+      ]} note="Darker calendar cells indicate more available spatial support. Missing ≠ observed zero. Coverage and quality summaries are synthetic fixture metadata." />
     </main>
   );
 }

@@ -204,13 +204,6 @@ button:disabled {
 .navigation button > svg:last-child {
   margin-left: auto;
 }
-.nav-footer {
-  border-top: 1px solid #e5ebe4;
-  margin: 12px 12px 0;
-  padding-top: 16px;
-  font-size: 10px;
-  color: #8b988d;
-}
 .map-page {
   height: calc(100dvh - 78px);
   min-height: 650px;
@@ -787,25 +780,10 @@ input[type="range"] {
 .scatter-stack > .scatter + .scatter line {
   visibility: hidden;
 }
-.chart-legend {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 12px;
-  color: #859381;
-  font-size: 9px;
-  flex-wrap: wrap;
-}
 .chart-legend span {
   display: flex;
   align-items: center;
   gap: 6px;
-}
-.chart-legend i {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #70a08e;
 }
 .chart-legend i.orange-dot {
   background: #c77d54;
@@ -2240,4 +2218,57 @@ td code {
   background: #fff;
   z-index: 2;
   padding: 5px 0;
+}
+
+/* Source-backed map controls use the existing floating map layout. */
+.seascape-loading { padding: 160px 30px; background: #edf4f9; min-height: 100vh; }
+.map-load-state { display: grid; place-content: center; padding: 180px 30px; background: #edf4f9; }
+.source-column { display: block; overflow-wrap: anywhere; font-size: 10px; color: #4b6280; margin: 8px 0; }
+.source-note { font-size: 11px; line-height: 1.5; color: #65778d; }
+.seascape-map .layer-body { max-height: calc(100vh - 420px); overflow-y: auto; }
+.seascape-map .field input { width: 100%; border: 1px solid #dbe4ec; border-radius: 8px; padding: 9px; font: inherit; background: white; }
+.seascape-map .cell-metrics { grid-template-columns: 1.4fr 1fr; }
+.seascape-map .cell-title h2 { font-size: 14px; overflow-wrap: anywhere; }
+.source-quality { max-height: 155px; overflow-y: auto; font-size: 11px; overflow-wrap: anywhere; }
+.source-quality strong { display: block; font-size: 10px; }
+.source-quality code { font-size: 10px; }
+.native-histogram { width: 100%; height: 90px; }
+.native-zoom-notice { position: absolute; top: 200px; left: 28px; z-index: 4; background: rgba(255,255,255,.94); border-radius: 10px; padding: 9px 12px; font-size: 12px; color: #163e67; }
+.seascape-map .comparison-captions { top: 302px; }
+@media (max-width: 700px) {
+  .seascape-map { min-height: 0; }
+  .seascape-map .open-layers { top: 179px; }
+  .seascape-map .layer-panel { top: 179px; max-height: calc(100dvh - 535px); }
+  .seascape-map .layer-body { max-height: calc(100dvh - 595px); }
+  .seascape-map .explorer-sheet { max-height: 330px; overflow: auto; }
+  .seascape-map .sheet-content { min-height: 0; }
+  .seascape-map .sheet-static { font-size: 9px; padding: 8px 15px; }
+  .seascape-map .source-quality { max-height: 130px; }
+  .native-zoom-notice { top: 220px; left: 16px; max-width: 250px; }
+  .seascape-map .comparison-captions { top: 315px; }
+}
+
+/* Legends remain on the map when the layers panel is closed. */
+.map-legends { position: absolute; top: 150px; left: 28px; z-index: 4; width: 265px; display: grid; gap: 10px; pointer-events: none; }
+.map-legend { padding: 13px 15px; pointer-events: auto; color: #163e67; }
+.map-legend > strong { display: block; font-size: 12px; overflow-wrap: anywhere; }
+.map-legend-mode { font-size: 10px; color: #617491; margin: 5px 0 9px; }
+.map-legend-colors { display: flex; height: 14px; border-radius: 4px; overflow: hidden; }
+.map-legend-colors span { flex: 1; }
+.map-legend-colors.continuous span { background: transparent !important; }
+.map-legend-ticks, .map-legend-foot { display: flex; justify-content: space-between; font-size: 10px; margin-top: 5px; }
+.map-legend-foot { margin-top: 9px; color: #617491; }
+.map-legend-foot i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 3px; }
+.map-legend small { display: block; font-size: 10px; line-height: 1.4; margin-top: 5px; }
+@media (min-width: 701px) {
+  .two-legends { width: calc(100% - 56px); grid-template-columns: 1fr 1fr; }
+  .two-legends .map-legend { width: 265px; }
+}
+@media (max-width: 700px) {
+  .map-legends { top: 138px; left: 16px; width: min(320px, calc(100% - 32px)); }
+  .map-legend { padding: 10px 12px; }
+  .seascape-map .open-layers { top: 88px; }
+  .seascape-map .layer-panel { top: 138px; max-height: calc(100dvh - 200px); }
+  .seascape-map .layer-body { max-height: none; }
+  .two-legends .map-legend { padding: 8px 10px; }
 }

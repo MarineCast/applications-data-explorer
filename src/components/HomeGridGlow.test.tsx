@@ -74,7 +74,7 @@ beforeEach(() => {
     pixels[i + 2] = 185;
     pixels[i + 3] = 255;
   }
-  vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue({
+  const mockContext = {
     setTransform: vi.fn(),
     clearRect: clear,
     drawImage: draw,
@@ -82,7 +82,10 @@ beforeEach(() => {
     putImageData: vi.fn(),
     getImageData: () => ({ data: pixels }),
     createRadialGradient: () => ({ addColorStop: stops }),
-  } as unknown as CanvasRenderingContext2D);
+  } as unknown as CanvasRenderingContext2D;
+  vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockImplementation(((kind: string) =>
+    kind === "2d" ? mockContext : null
+  ) as typeof HTMLCanvasElement.prototype.getContext);
 });
 afterEach(() => {
   cleanup();

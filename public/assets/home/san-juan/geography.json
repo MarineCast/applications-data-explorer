@@ -1,0 +1,18 @@
+{
+  "boundsWgs84": [
+    -123.3,
+    48.405,
+    -122.48,
+    48.766517153043594
+  ],
+  "size": [
+    1536,
+    1024
+  ],
+  "projection": "Local equirectangular, longitude scaled at 48.60 degrees north; north up",
+  "source": "/Users/tylerstevenson/Documents/Code_Repos/MarineCast/Data/seascape/releases/seascape_native_bathymetry_20261006_v2/spatial_support/land-water.gpkg",
+  "sha256": "0ff0b2d9e7336b0269b5b38290be49b80be921ed1b8d96086763baca3006542f",
+  "layer": "land_area",
+  "polygonsInFrame": 604,
+  "qualification": "Retained mapped ENC/CanVec refined land geometry with Natural Earth baseline. Illustrative terrain, water colors, currents and heat overlay; not measured bathymetry or forecasts."
+}

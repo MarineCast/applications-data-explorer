@@ -1,0 +1,5 @@
+# Orcas Island prototype assets
+
+The fixed coastline is the Orcas connected component of `../san-juan/land-mask.png`; see `geometry.json` and the parent San Juan geography metadata for source, projection and transformation. No image-generated silhouette is used. `orcas-mask.png` supplies a static fallback. In `coast-field.png`, red is land coverage, green is decorative outside distance, and blue is decorative inside distance, each distance encoded over 100 atlas pixels. These are not bathymetric measurements.
+
+`terrain.webp` is a plain muted painted wash with no trees. `tree-1.webp` through `tree-6.webp` and `lookout.webp` are separately generated transparent artwork. Placement is an illustrative composition, not observed land cover or an actual lookout location. The scene uses an orthographic camera and preserves island proportions on desktop and phone. Tree roots stay fixed while segmented crown geometry bends. Water particles and the subtle cloud shadow animate separately. The viewing fan is explicitly illustrative and navigates to the existing Viewshed page.

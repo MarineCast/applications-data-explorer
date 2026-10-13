@@ -1,0 +1,33 @@
+import { act, render, waitFor } from "@testing-library/react";
+import { afterEach, expect, it, vi } from "vitest";
+import OceanScene from "./OceanScene";
+import type { OceanController } from "./createOceanScene";
+import { createOceanScene } from "./createOceanScene";
+vi.mock("./createOceanScene", () => ({ createOceanScene: vi.fn() }));
+afterEach(() => { vi.unstubAllGlobals(); vi.clearAllMocks(); });
+it("uses the latest pause state when the lazy renderer finishes and cleans it up", async () => {
+  vi.stubGlobal("WebGLRenderingContext", class {});
+  let resolve!: (value: OceanController) => void;
+  const pending = new Promise<OceanController>(done => { resolve = done; });
+  vi.mocked(createOceanScene).mockReturnValue(pending);
+  const view = render(<OceanScene paused={false} />);
+  await waitFor(() => expect(createOceanScene).toHaveBeenCalledTimes(1));
+  view.rerender(<OceanScene paused />);
+  const controller = { setPaused: vi.fn(), destroy: vi.fn() };
+  await act(async () => resolve(controller));
+  expect(controller.setPaused).toHaveBeenLastCalledWith(true);
+  view.unmount();
+  expect(controller.destroy).toHaveBeenCalledTimes(1);
+  expect(vi.mocked(createOceanScene).mock.calls[0][1].aborted).toBe(true);
+});
+it("destroys a renderer that finishes after navigation away", async () => {
+  vi.stubGlobal("WebGLRenderingContext", class {});
+  let resolve!: (value: OceanController) => void;
+  vi.mocked(createOceanScene).mockReturnValue(new Promise(done => { resolve = done; }));
+  const view = render(<OceanScene paused={false} />);
+  await waitFor(() => expect(createOceanScene).toHaveBeenCalledTimes(1));
+  view.unmount();
+  const controller = { setPaused: vi.fn(), destroy: vi.fn() };
+  await act(async () => resolve(controller));
+  expect(controller.destroy).toHaveBeenCalledTimes(1);
+});

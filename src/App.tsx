@@ -1,26 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   House,
   Menu,
-  X,
   Waves,
   Map,
   GitCompareArrows,
   Fish,
   ShieldCheck,
   ArrowUpRight,
+  Eye,
 } from "lucide-react";
 import HomePage from "./pages/HomePage";
 import type { ExplorerPage } from "./pages/HomePage";
-import type { FeatureId } from "./data/demo";
 import MapPage from "./pages/MapPage";
 import RelationshipsPage from "./pages/RelationshipsPage";
 import SightingsPage from "./pages/SightingsPage";
 import HealthPage from "./pages/HealthPage";
+import ViewshedPage from "./pages/ViewshedPage";
 type Page = "home" | ExplorerPage;
 function pageFromHash(): Page {
   const hash = window.location.hash.slice(1);
-  return ["home", "map", "relationships", "sightings", "health"].includes(hash)
+  return ["home", "map", "viewshed", "relationships", "sightings", "health"].includes(hash)
     ? (hash as Page)
     : "home";
 }
@@ -33,15 +33,9 @@ const pages = [
   },
   {
     id: "map" as const,
-    name: "Map",
+    name: "Features",
     description: "Explore features across the water",
     icon: Map,
-  },
-  {
-    id: "relationships" as const,
-    name: "Relationships",
-    description: "Compare features and distributions",
-    icon: GitCompareArrows,
   },
   {
     id: "sightings" as const,
@@ -50,8 +44,20 @@ const pages = [
     icon: Fish,
   },
   {
+    id: "relationships" as const,
+    name: "Relationships",
+    description: "Compare features and distributions",
+    icon: GitCompareArrows,
+  },
+  {
+    id: "viewshed" as const,
+    name: "Viewshed",
+    description: "See water target scores from land cells",
+    icon: Eye,
+  },
+  {
     id: "health" as const,
-    name: "Data health",
+    name: "Health",
     description: "Review coverage and provenance",
     icon: ShieldCheck,
   },
@@ -59,7 +65,35 @@ const pages = [
 export default function App() {
   const [page, setPage] = useState<Page>(pageFromHash);
   const [open, setOpen] = useState(false);
-  const [mapFeature, setMapFeature] = useState<FeatureId>("temperature");
+  const navigationRoot = useRef<HTMLDivElement>(null);
+  const navigationTrigger = useRef<HTMLButtonElement>(null);
+  const focusNavigation = useRef(false);
+  const hoverClose = useRef<number | undefined>(undefined);
+  useEffect(() => () => window.clearTimeout(hoverClose.current), []);
+  useEffect(() => {
+    if (!open) return;
+    if (focusNavigation.current) {
+      navigationRoot.current?.querySelector<HTMLButtonElement>("nav button")?.focus();
+      focusNavigation.current = false;
+    }
+    const outside = (event: PointerEvent) => {
+      if (event.target instanceof Node && !navigationRoot.current?.contains(event.target)) setOpen(false);
+    };
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        navigationTrigger.current?.focus();
+      }
+    };
+    document.addEventListener("pointerdown", outside);
+    document.addEventListener("keydown", escape);
+    return () => {
+      window.clearTimeout(hoverClose.current);
+      document.removeEventListener("pointerdown", outside);
+      document.removeEventListener("keydown", escape);
+    };
+  }, [open]);
+  const [viewshedContext, setViewshedContext] = useState("Average target viewability / Lower estimate");
   useEffect(() => {
     const update = () => {
       setPage(pageFromHash());
@@ -72,83 +106,107 @@ export default function App() {
       window.removeEventListener("popstate", update);
     };
   }, []);
-  const navigate = (next: Page, feature?: FeatureId) => {
-    if (next === "map") setMapFeature(feature ?? "temperature");
+  const navigate = (next: Page) => {
     if (window.location.hash !== `#${next}`)
       window.history.pushState(null, "", `#${next}`);
     setPage(next);
     setOpen(false);
   };
-  if (page === "home") return <HomePage onNavigate={navigate} />;
+  const atlasPage = page === "map" || page === "viewshed";
   return (
-    <div className={`app ${page === "map" ? "map-mode" : ""}`}>
+    <div className={`app unified-shell ${page === "home" ? "home-mode" : ""} ${atlasPage ? "map-mode" : ""} ${page === "viewshed" ? "viewshed-mode" : ""}`}>
       <header className="app-header">
-        <button
-          className="menu-button"
-          aria-label={open ? "Close navigation" : "Open navigation"}
-          aria-expanded={open}
-          aria-controls="main-navigation"
-          onClick={() => setOpen(!open)}
-        >
-          {open ? <X size={20} /> : <Menu size={20} />}
-        </button>
-        <a
-          className="brand"
-          href="#home"
-          aria-label="MarineCast home"
-          onClick={(e) => {
-            e.preventDefault();
-            navigate("home");
+        <div
+          className="brand-navigation"
+          ref={navigationRoot}
+          onMouseEnter={() => window.clearTimeout(hoverClose.current)}
+          onFocus={() => window.clearTimeout(hoverClose.current)}
+          onMouseLeave={(event) => {
+            if (event.relatedTarget instanceof Node && event.currentTarget.contains(event.relatedTarget)) return;
+            if (open && !navigationRoot.current?.querySelector("nav")?.contains(document.activeElement)) {
+              window.clearTimeout(hoverClose.current);
+              hoverClose.current = window.setTimeout(() => setOpen(false), 140);
+            }
+          }}
+          onBlur={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
           }}
         >
-          <Waves size={27} />
-          <span>
-            MarineCast <small>Explorer</small>
-          </span>
-        </a>
-        <span className="header-divider" />
-        <span className="current-page">
-          {pages.find((p) => p.id === page)?.name}
-        </span>
-        <span className="demo-status">
-          <i /> Synthetic demo <span>· No data connected</span>
-        </span>
-      </header>
-      {open && (
-        <>
           <button
-            className="nav-backdrop"
-            aria-label="Dismiss navigation"
-            onClick={() => setOpen(false)}
-          />
-          <nav
-            className="navigation panel"
-            id="main-navigation"
-            aria-label="Main navigation"
+            className="wave-navigation"
+            ref={navigationTrigger}
+            aria-label="Page navigation"
+            title="Explore MarineCast"
+            aria-expanded={open}
+            aria-controls="main-navigation"
+            onMouseEnter={() => setOpen(true)}
+            onClick={() => setOpen(true)}
+            onKeyDown={(event) => {
+              if (event.key === "ArrowDown") {
+                event.preventDefault();
+                const first = navigationRoot.current?.querySelector<HTMLButtonElement>("nav button");
+                if (first) first.focus();
+                else { focusNavigation.current = true; setOpen(true); }
+              }
+            }}
           >
-            <span className="eyebrow">EXPLORE</span>
-            {pages.map((p) => (
-              <button
-                key={p.id}
-                aria-current={page === p.id ? "page" : undefined}
-                onClick={() => {
-                  navigate(p.id);
-                }}
-              >
-                <p.icon size={21} />
-                <span>
-                  <strong>{p.name}</strong>
-                  <small>{p.description}</small>
-                </span>
-                {page === p.id && <ArrowUpRight size={16} />}
-              </button>
-            ))}
-            <div className="nav-footer">Local fixtures only · v0.1</div>
-          </nav>
-        </>
-      )}
-      {page === "map" ? (
-        <MapPage initialFeature={mapFeature} />
+            {page === "home" ? <><span>Menu</span><Menu size={18} /></> : <Waves size={33} />}
+          </button>
+          <a
+            className="brand"
+            href="#home"
+            aria-label="MarineCast home"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("home");
+            }}
+          >
+            <span>
+              MarineCast{" "}
+              <small>Data Atlas</small>
+            </span>
+          </a>
+          {open && (
+            <nav
+              className="navigation panel"
+              id="main-navigation"
+              aria-label="Main navigation"
+            >
+              <span className="eyebrow">EXPLORE</span>
+              {pages.map((p) => (
+                <button
+                  key={p.id}
+                  aria-current={page === p.id ? "page" : undefined}
+                  onClick={() => {
+                    navigate(p.id);
+                  }}
+                >
+                  <p.icon size={21} />
+                  <span>
+                    <strong>{p.name}</strong>
+                    <small>{p.description}</small>
+                  </span>
+                  {page === p.id && <ArrowUpRight size={16} />}
+                </button>
+              ))}
+            </nav>
+          )}
+        </div>
+        {page === "viewshed" && (
+          <div className="atlas-location viewshed-context">
+            <Map size={16} />
+            <span>
+              Viewshed / {viewshedContext} <small>Local viewshed pilot</small>
+            </span>
+          </div>
+        )}
+      </header>
+      {page === "home" ? (
+        <HomePage onNavigate={navigate} menuOpen={open} />
+      ) : page === "map" ? (
+        <MapPage />
+      ) : page === "viewshed" ? (
+        <ViewshedPage onContextChange={setViewshedContext} />
       ) : page === "relationships" ? (
         <RelationshipsPage />
       ) : page === "sightings" ? (

@@ -6,6 +6,7 @@ import {
   SeasonSelect,
   Stat,
 } from "../components/Controls";
+import PageLegend from "../components/PageLegend";
 import { Scatter, Histogram } from "../components/Charts";
 import { correlation, pairedValues, features } from "../data/demo";
 import type { FeatureId, Region } from "../data/demo";
@@ -129,6 +130,12 @@ export default function RelationshipsPage() {
         Demo correlations are descriptive fixture calculations. They provide no
         evidence of ecological relationships or causation.
       </p>
+      <PageLegend name="Relationships" entries={[
+        { color: "#4d9289", label: "Paired observations" },
+        { color: "#6b9d8a", label: "X distribution" },
+        { color: "#6e9eab", label: "Y distribution" },
+        { color: "#4f8b78", label: "Matrix shading: absolute correlation" },
+      ]} note="Synthetic cell-month pairs. Darker matrix cells indicate stronger absolute correlation; signed values remain in each cell." />
     </main>
   );
 }
