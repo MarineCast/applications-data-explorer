@@ -130,15 +130,13 @@ def prepare(seascape, governance, output):
         raise ValueError('Seascape release lacks a matching publication receipt')
     manifest = json.loads((seascape / 'manifest.json').read_text())
     verify_files(seascape, {f['path']: f for f in manifest['files']})
-    generation = json.loads((governance / 'generation.json').read_text())
-    verify_files(governance, generation['files'])
-    if json.loads((governance / 'validation.json').read_text())['status'] != 'passed':
-        raise ValueError('Governance generation lacks passed validation')
+    from governance_input import bindings as governance_bindings
+    governance_files = governance_bindings(governance)
     sidecars = json.loads((seascape / 'SIDECAR_BINDINGS.json').read_text())
     for binding in sidecars:
         if digest(Path(binding['absolute_path'])) != binding['sha256']:
             raise ValueError('Sidecar checksum mismatch')
-    source_bindings = {'seascape': manifest_hash, 'governance': digest(governance / 'generation.json'), 'sidecars': sidecars, 'exporter': digest(Path(__file__)), 'helpers': digest(Path(__file__).with_name('prepare_seascape.py'))}
+    source_bindings = {'seascape': manifest_hash, 'governance': governance_files, 'governance_reader': digest(Path(__file__).with_name('governance_input.py')), 'sidecars': sidecars, 'exporter': digest(Path(__file__)), 'helpers': digest(Path(__file__).with_name('prepare_seascape.py'))}
     snapshot_id = hashlib.sha256(json.dumps(source_bindings, sort_keys=True).encode()).hexdigest()
     output.mkdir(parents=True, exist_ok=True)
     snapshot = output / snapshot_id
@@ -149,7 +147,6 @@ def prepare(seascape, governance, output):
                    'receiptStatus': receipt['status'], 'publishedAt': receipt['published_at_utc'], 'sourceCompleteness': 'partial',
                    'resolutions': {}, 'products': {}, 'features': [], 'datasets': {
                        'seascape': {'name': 'Seascape', 'release': seascape.name, 'manifestSha256': manifest_hash, 'status': 'published partial source release', 'publishedAt': receipt['published_at_utc'], 'limitations': 'Partial source coverage; retained source observations may be historical or undated.'},
-                       'governance': {'name': 'Governance', 'release': governance.name, 'manifestSha256': source_bindings['governance'], 'status': 'validated local research inventory', 'publishedAt': generation['created_at_utc'], 'limitations': 'Research only; model-ineligible. Recorded geometry does not establish current law, effective dates or complete jurisdiction.'},
                        'kelp': {'name': 'Annual kelp', 'release': Path(sidecars[0]['absolute_path']).parents[1].name, 'status': 'source-qualified mapped evidence', 'limitations': 'Select one recorded survey year. Positive mapped evidence is not current presence; missing survey support is not absence.'},
                        'coastal-rays': {'name': 'Directional coastal bounds', 'release': Path(sidecars[1]['absolute_path']).parent.name, 'status': 'source-qualified geometric bounds', 'limitations': 'Select one of 16 bearings. Origin-defined mapped water bounds are not qualified physical fetch.'},
                    }, 'unavailableProducts': [{'name': 'Viewshed in Data/', 'reason': 'Readiness records only; no completed regional metric product in Data/viewshed. The separate Viewshed page uses its explicitly sourced research pilot.'}]}
@@ -168,16 +165,8 @@ def prepare(seascape, governance, output):
             catalog['products'][product_id] = product
             catalog['resolutions'][str(res)] = product
             catalog['features'].extend(features)
-            source_path = f'delivery/governance-inventory-r{res}.parquet'
-            gm = json.loads((governance / source_path).with_suffix('.manifest.json').read_text())
-            source = {'path': source_path, 'sha256': gm['artifact']['sha256'], 'release': governance.name}
-            entries = {n: {'source_column': n, 'family': n.split('__')[0].replace('_', ' ').title(), 'unit': {'1': 'fraction', 'count': 'count', 'm': 'm'}.get(e.get('units'), 'source units'),
-                           'definition': e['definition'] + ' ' + e.get('interpretation', ''), 'modeling_eligibility': 'false; research-only recorded inventory',
-                           'qualifiers': [e['missing_reason_field']] if e.get('missing_reason_field') else []} for n, e in gm['fields'].items()}
-            product_id = f'governance-r{res}'
-            product, features = exporter.table(pq.read_table(governance / source_path), res, 'h3_index', source, entries, 'governance', product_id, 'GOVERNANCE__')
-            catalog['products'][product_id] = product
-            catalog['features'].extend(features)
+        from governance_input import append_governance
+        append_governance(exporter, catalog, governance)
         for binding in sidecars:
             path = Path(binding['absolute_path'])
             annual = 'OBSERVATION_YEAR' in binding['grain']
@@ -207,7 +196,6 @@ def prepare(seascape, governance, output):
                 catalog['products'][product_id] = {'axis': 'Survey year' if annual else 'Bearing', 'defaultSlice': str(axes[-1] if annual else axes[0]), 'slices': slices}
                 catalog['features'].extend(combined_features.values())
         # Keep all metadata and native companions explicit; no crosswalk record-to-cell summation.
-        catalog['datasets']['governance']['companions'] = ['Native geometries and source attributes', 'Fishing-area identity crosswalk (feature × cell; not an additive cell metric)']
         (staging / 'consumption-guide.txt').write_bytes((seascape / 'CONSUMPTION_GUIDE.txt').read_bytes())
         (staging / 'validation.json').write_text(json.dumps({'source_bindings': source_bindings, 'tables': exporter.report, 'status': 'every_exported_value_read_back_exactly'}, indent=2))
         (staging / 'catalog.json').write_text(json.dumps(catalog, allow_nan=False, separators=(',', ':')))

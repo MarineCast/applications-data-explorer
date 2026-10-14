@@ -837,7 +837,7 @@ export default function SeascapeMapPage() {
                   <code>{current?.field.sourceSha256}</code>
                 </p>
                 <p>
-                  <strong>Data product release</strong> {currentDataset?.release ?? catalog.release}
+                  <strong>Data updated</strong> {currentDataset?.publishedAt ?? catalog.publishedAt}
                 </p>
                 <p>
                   <strong>Source status</strong> {currentDataset?.status ?? catalog.receiptStatus} · {currentDataset ? currentDataset.publishedAt ?? "source observation dates retained below" : catalog.publishedAt}
@@ -855,7 +855,7 @@ export default function SeascapeMapPage() {
                   <strong>Scope</strong>{" "}
                   {currentDataset?.limitations}
                   {current?.slice && <span> {current.slice.axis}: {current.slice.label}. </span>}
-                  {current?.field.dataset === "governance" ? <span> Source attributes and fishing-area identities remain in native companion products.</span> : <a
+                  {current?.field.dataset === "governance" ? <span> Original dataset shapes and attributes are retained under Governance/OriginalData.</span> : <a
                     href={`/local-data/seascape/${catalog.manifestSha256}/consumption-guide.txt`}
                     target="_blank"
                     rel="noreferrer"

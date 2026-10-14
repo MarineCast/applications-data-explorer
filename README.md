@@ -64,20 +64,20 @@ The preparation CLI accepts an explicit release path. This repository contains n
 From this checkout, use a Python environment with `pyarrow` and `h3`:
 
 ```sh
-python scripts/prepare_map.py --seascape ../../Data/seascape/releases/seascape_consolidated_static_native_r6_r8_20261008_v5 --governance ../../Data/governance/releases/governance-shared-study-20261010-v2
+python scripts/prepare_map.py --seascape ../../Data/seascape/releases/seascape_consolidated_static_native_r6_r8_20261008_v5 --governance ../../Data/Governance
 python -m unittest discover -s scripts -p 'test_prepare_map.py' -v
 ```
 
 Paths are explicit source inputs, not sibling runtime imports. Preparation verifies the seascape
-publication receipt and manifest members, the governance generation members/validation and
+publication receipt and manifest members, the governance flat catalog, metric checksums and embedded grain/fields and
 both sidecar checksums. It exports source values/nulls without rounding, independently reads
 each encoded column back, and activates the ignored browser catalog only after every table
 passes. Immutable assets use content hashes; identical repeats verify/reuse the same snapshot.
 No acquisitions, scientific recomputations, source rewrites or producer promotions occur.
 Existing caches are retained. The earlier `prepare_seascape.py` remains supported for v1 caches.
 
-The installed catalog uses seascape v5 and governance v2: 2,621 native R6 cells and 88,243
-native R8 cells. It includes all 86 governance measurements plus their status fields, the
+The governance flat catalog retains: 2,621 native R6 cells and 88,243
+native R8 cells. It includes all 94 governance measurements plus their status fields, the
 modeled R6 substrate/seagrass products and categorical R8 terrain form. All-null fields stay
 selectable and render gray. Provenance/identity strings and serialized inventories stay in
 the source inspector rather than becoming numerical metrics. Seascape inspection preserves
@@ -90,9 +90,8 @@ bounds are native R8 with 16 bearings. Only the selected native slice is loaded;
 interpolation, forward filling or cross-resolution aggregation occurs. Geometry remains full
 native H3 support. Kelp represents mapped positive evidence; directional bounds are not
 qualified physical fetch. Governance is a research inventory, model-ineligible by default,
-and does not establish current law or exhaustive jurisdiction. Native geometries and the
-feature-by-cell fishing-area identity crosswalk remain companion products, not summed cell
-metrics. `Data/viewshed` is readiness-only; the separate Viewshed page retains its existing,
+and does not establish current law or exhaustive jurisdiction. Original dataset shapes and attributes are retained once per source under
+`Data/Governance/OriginalData`. Governance has no release directories or public crosswalks. `Data/viewshed` is readiness-only; the separate Viewshed page retains its existing,
 explicitly sourced research pilot.
 
 The local cache is included by `npm run build` when present and must not be published without
