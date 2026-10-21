@@ -1,0 +1,8 @@
+.human-location-controls{display:grid;gap:12px}.human-location-controls fieldset{border:1px solid var(--line,#b9c4be);border-radius:7px;padding:9px;display:grid;gap:7px;max-height:245px;overflow:auto}.human-location-controls label{display:flex;align-items:start;gap:7px;font-size:12px}.human-location-controls label.field{display:grid}.human-location-controls label span{margin-left:auto;font-variant-numeric:tabular-nums}.human-filter-actions{display:flex;gap:8px;margin-bottom:5px}.human-filter-actions button{font-size:11px;text-decoration:underline}.human-legend-entries{display:grid;gap:6px;max-height:230px;overflow:auto;font-size:12px}.human-legend-entries span{display:flex;gap:8px;align-items:center}.human-legend-entries i{display:inline-block;width:10px;height:10px;flex:none;border-radius:50%}.human-source-inspector .insights-cell-details dd{overflow-wrap:anywhere}.atlas-map-popup .popup-close{float:right}
+
+.human-display-toggle[aria-pressed="false"]{opacity:.45}
+.human-display-toggle{margin:8px 8px 12px 0}
+
+.human-port-attributes { max-height: 220px; overflow: auto; overscroll-behavior: contain; }
+.human-port-attributes dl > div { display: grid; grid-template-columns: minmax(90px, 1fr) minmax(100px, 2fr); gap: 8px; padding: 3px 0; }
+.human-port-attributes dd { margin: 0; overflow-wrap: anywhere; }

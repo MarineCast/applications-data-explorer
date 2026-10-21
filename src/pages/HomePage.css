@@ -1,51 +1,191 @@
-.app.unified-shell.home-mode { padding-top: 0; }
-.app.unified-shell .field-atlas-home { position: relative; height: 100dvh; min-height: 650px; overflow: hidden; isolation: isolate; background: #618c91; color: #243c3b; }
-.field-atlas-scene, .atlas-webgl, .atlas-static { position: absolute; inset: 0; }
-.atlas-webgl { pointer-events: none; }
-.atlas-static { overflow: hidden; pointer-events: none; }
-.atlas-static.is-ready { visibility: hidden; }
-.atlas-static-world { width: 1200px; height: 800px; position: absolute; transform-origin: 0 0; }
-.atlas-static-island { width: 100%; height: 100%; background: #a8b08a url('/assets/home/field-atlas/terrain.webp') center/100% 100%; mask: url('/assets/home/field-atlas/orcas-mask.png') center/100% 100%; mask-mode: luminance; }
-.atlas-static-tree { position: absolute; width: auto; transform: translate(-50%,-100%); }
-.atlas-title { position: absolute; top: 30px; left: 34px; display: flex; align-items: center; gap: 20px; padding: 18px 26px 19px 22px; background: #f4f0e4; border: 1px solid #dbdacb; }
-.atlas-title svg { color: #42635f; }
-.atlas-title h1 { font: 400 33px/1.05 Georgia, 'Times New Roman', serif; letter-spacing: -.85px; margin: 0; }
-.atlas-title p { margin: 8px 0 0; font-size: 10px; letter-spacing: 2.7px; text-transform: uppercase; color: #576761; }
-.app.unified-shell.home-mode .app-header { position: absolute; left: auto; top: 36px; right: 35px; height: 36px; width: auto; padding: 0; background: transparent; border: 0; }
-.home-mode .app-header .brand-navigation { padding: 0; margin: 0; gap: 0; }
-.home-mode .app-header .brand-navigation > .brand { display: none; }
-.home-mode .wave-navigation { width: auto; height: 36px; display: flex; gap: 12px; padding: 8px 0 8px 13px; color: #edf0df; font-size: 12px; letter-spacing: .5px; border-radius: 0; }
-.home-mode .wave-navigation svg { width: 18px; height: 18px; stroke-width: 1.4; }
-.home-mode .wave-navigation:hover, .home-mode .wave-navigation[aria-expanded='true'] { background: transparent; color: white; }
-.home-mode .app-header .brand-navigation .navigation { left: auto; right: 0; top: 46px; }
-.atlas-pause { position: absolute; top: 36px; right: 136px; display: flex; align-items: center; gap: 7px; padding: 10px 15px; border-right: 1px solid #d3e0d55c; color: #edf0df; font-size: 11px; letter-spacing: .35px; }
-.atlas-pause:hover { color: #fff; }
-.atlas-pause:focus-visible, .home-mode .wave-navigation:focus-visible { outline: 2px solid #f3e4b2; outline-offset: 5px; }
-.atlas-caption { position: absolute; left: 38px; bottom: 35px; color: #f0efdf; pointer-events: none; }
-.atlas-caption > span { font-size: 9px; letter-spacing: 2.6px; }
-.atlas-caption h2 { margin: 12px 0 8px; font: 400 31px/1.05 Georgia,serif; letter-spacing: -.4px; }
-.atlas-caption p { margin: 0; color: #d6e2d7; font: italic 13px Georgia,serif; }
-.atlas-scene-note { position: absolute; bottom: 38px; right: 36px; color: #dce5d9; font-size: 9px; letter-spacing: .5px; }
-.atlas-lookout-target { position: absolute; transform: translateX(-50%); }
-.atlas-lookout { position: relative; display: flex; align-items: flex-end; justify-content: center; padding: 0; border: none; background: transparent; border-radius: 5px; color: #233d38; }
-.atlas-lookout > span { display: flex; align-items: center; gap: 7px; white-space: nowrap; background: #f4f0e4ed; border: 1px solid #d8d9c3; padding: 8px 12px; font-size: 11px; letter-spacing: .6px; }
-.atlas-lookout:hover > span, .atlas-lookout:focus-visible > span { background: #fff9e7; border-color: #717f61; }
-.atlas-lookout:focus-visible { outline: 2px solid #e8dab0; outline-offset: 6px; }
-.atlas-lookout-note { position: absolute; left: calc(100% + 22px); top: 25%; width: 211px; padding: 17px 18px; background: #f4f0e4f5; border: 1px solid #d6d7c4; color: #263e38; pointer-events: none; }
-.atlas-lookout-note strong { font: 400 17px/1.25 Georgia,serif; }
-.atlas-lookout-note p { font-size: 11px; line-height: 1.6; margin: 8px 0 12px; color: #53675e; }
-.atlas-lookout-note small { font-size: 9px; letter-spacing: .5px; color: #727e6b; }
-@media(max-width:700px){
- .app.unified-shell .field-atlas-home { min-height: 650px; }
- .atlas-title { top: 22px; left: 20px; gap: 12px; padding: 15px 18px; }
- .atlas-title h1 { font-size: 25px; }
- .atlas-title p { font-size: 8px; letter-spacing: 2px; }
- .atlas-title svg { width: 30px; height: 30px; }
- .app.unified-shell.home-mode .app-header { top: 117px; right: 22px; }
- .atlas-pause { top: 117px; right: 118px; }
- .atlas-caption { bottom: 55px; left: 24px; }
- .atlas-caption h2 { font-size: 26px; }
- .atlas-scene-note { right: auto; left: 24px; bottom: 23px; font-size: 8px; }
- .atlas-lookout > span { padding: 7px 9px; font-size: 10px; }
- .atlas-lookout-note { left: auto; right: -15px; top: calc(100% + 15px); width: 196px; }
+.app.unified-shell.home-mode { padding-top:0; }
+.app.unified-shell .coastal-home {
+  --rail:264px;
+  --coastal-navy:#123345;
+  --coastal-tan:#f1ede2;
+  --content-start:var(--rail);
+  --portal-surface:linear-gradient(135deg,#faf7eea8,#e5eee79e);
+  --portal-hover:linear-gradient(135deg,#fffdf5c7,#edf5ecbd);
+  --portal-border:#f8fff5b8;
+  --portal-ink:#173c4c;
+  --portal-muted:#29424b;
+  --portal-accent:#1f433e;
+  --portal-detail:#426c692b;
+  --portal-icon:#4b837818;
+  --portal-shadow:0 14px 36px #102e4630,inset 0 1px #ffffffa6;
+  --portal-glow:#538e7720;
+  --control-surface:#f1ede2ed;
+  --control-border:#ffffff50;
+  --control-ink:#435d65;
+  --control-hover:#e3e7df;
+  --control-shadow:0 3px 18px #12334520;
+  position:relative;
+  height:100dvh;
+  min-height:0;
+  overflow:hidden;
+  background:#16394a;
+  color:#123345;
+  font-family:Georgia,'Times New Roman',serif;
+}
+.coastal-backdrop { position:absolute; inset:0 0 0 var(--content-start); overflow:hidden; transition:left 180ms ease; }
+.coastal-background { display:block; width:100%; height:100%; object-fit:cover; object-position:58% center; }
+.coastal-backdrop::after { content:''; position:absolute; inset:0; background:linear-gradient(180deg,#12334524,transparent 30%,transparent 55%,#102d46b3); pointer-events:none; }
+.coastal-sidebar { position:absolute; inset:0 auto 0 0; width:var(--rail); max-width:calc(100vw - 40px); overflow:hidden; transition:width 180ms ease; background:#f1ede2; box-shadow:3px 0 24px #072b3926; display:flex; flex-direction:column; z-index:3; }
+.coastal-sidebar::before { content:''; position:absolute; inset:0 auto 0 0; width:68px; background:var(--coastal-navy); z-index:-1; }
+.coastal-brand { height:62px; flex-shrink:0; display:flex; align-items:center; gap:20px; padding:0 12px; }
+.coastal-brand-toggle { display:grid; place-items:center; flex:none; width:50px; height:50px; padding:0; border-radius:8px; color:#73a8a0; }
+.coastal-brand-toggle svg { stroke-width:1.5; }
+.coastal-brand h1 { font:400 24px/1.05 Georgia,serif; margin:0; letter-spacing:-1px; }
+.coastal-brand p { font:10px/1.4 system-ui,sans-serif; letter-spacing:2px; text-transform:uppercase; margin:3px 0 0; color:#667773; }
+.coastal-sidebar nav { display:grid; gap:6px; padding:12px 12px 0; min-height:0; overflow-y:auto; }
+.coastal-sidebar nav button,.coastal-current { width:100%; text-decoration:none; }
+.coastal-sidebar-scrim { display:none; }
+.coastal-sidebar nav button,.coastal-current { display:flex; align-items:center; gap:38px; padding:13px 11px; min-height:48px; white-space:nowrap; border-radius:5px; color:#536865; font:13px/1.4 system-ui,sans-serif; letter-spacing:.15px; text-align:left; }
+.coastal-sidebar nav svg { color:#9baead; flex:none; stroke-width:1.4; width:21px; height:21px; }
+.coastal-current { background:#73a8a020; color:#123345; font-weight:600; box-shadow:inset 2px 0 #73a8a0; }
+.coastal-current svg { color:#73a8a0; }
+.coastal-sidebar nav button:hover { background:#73a8a033; }
+.coastal-sidebar-bottom { flex-shrink:0; margin-top:auto; padding:24px 25px 34px; }
+.coastal-sidebar-bottom p { margin:20px 0 0 57px; padding-top:19px; border-top:1px solid #c6cbc0; font:8px/2.1 system-ui,sans-serif; letter-spacing:2.3px; color:#77878a; }
+.coastal-home button:focus-visible,.coastal-home a:focus-visible { outline:2px solid #cd6044; outline-offset:3px; }
+.app.unified-shell .coastal-home.rail-collapsed { --rail:68px; }
+.rail-collapsed .coastal-sidebar::before { background:var(--coastal-tan); }
+.rail-collapsed .coastal-brand-toggle,.rail-collapsed .coastal-sidebar nav svg { color:#536f70; }
+.rail-collapsed .coastal-brand>div,.rail-collapsed .coastal-sidebar nav span { display:none; }
+/* Keep rail icons stationary while hover reveals their labels. */
+.rail-collapsed .coastal-sidebar-bottom p { visibility:hidden; }
+.rail-collapsed .coastal-sidebar nav { padding:12px 12px 0; }
+.rail-collapsed .coastal-sidebar-bottom { padding:24px 12px 34px; }
+.rail-collapsed .coastal-sidebar nav button,.rail-collapsed .coastal-current { justify-content:center; padding:12px 0; }
+@media(max-height:600px) {
+  .coastal-sidebar-bottom { padding-top:12px; padding-bottom:16px; }
+  .coastal-sidebar-bottom p { display:none; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .coastal-backdrop,.coastal-sidebar { transition:none; }
+}
+@media(max-width:700px) {
+  .coastal-brand { padding-inline:6px; gap:10px; }
+  .coastal-brand-toggle { width:44px; height:44px; }
+  .coastal-brand-toggle svg { width:30px; height:30px; }
+  .coastal-brand h1 { font-size:21px; }
+  .app.unified-shell .coastal-home { --content-start:68px; }
+  .coastal-background { object-position:68% center; }
+  .coastal-sidebar { box-shadow:4px 0 24px #072b3940; }
+  .coastal-sidebar-scrim { display:block; position:absolute; inset:0 0 0 68px; z-index:2; background:#102d4659; cursor:default; }
+  .coastal-sidebar-bottom p { display:none; }
+}
+
+.coastal-motion { position:absolute; inset:0; width:100%; height:100%; opacity:0; pointer-events:none; }
+.coastal-motion.is-ready { opacity:1; }
+.coastal-motion-toggle { position:absolute; right:22px; bottom:22px; z-index:1; display:grid; place-items:center; width:40px; height:40px; padding:0; border:1px solid var(--control-border); border-radius:22px; background:var(--control-surface); color:var(--control-ink); box-shadow:var(--control-shadow); }
+.coastal-motion-toggle:hover { background:var(--control-hover); }
+
+.coastal-home[data-sidebar-theme="light"] .coastal-sidebar { background:linear-gradient(135deg,#f7f3e9,#f1eee3 55%,#eaece1); }
+.coastal-home[data-sidebar-theme="light"] .coastal-sidebar::before { background:linear-gradient(180deg,#e5e9df,#dfe5dc); box-shadow:inset -1px 0 #b7c4b333; }
+.coastal-home[data-sidebar-theme="light"] .coastal-brand-toggle,
+.coastal-home[data-sidebar-theme="light"] .coastal-sidebar nav svg { color:#536f70; }
+.coastal-home[data-sidebar-theme="dark"] .coastal-sidebar { background:#203e50; color:#e1e9ec; }
+.coastal-home[data-sidebar-theme="dark"] .coastal-sidebar::before { background:#102c3c; }
+.coastal-home[data-sidebar-theme="dark"] .coastal-brand-toggle,
+.coastal-home[data-sidebar-theme="dark"] .coastal-sidebar nav svg { color:#9dc4c8; }
+.coastal-home[data-sidebar-theme="dark"] .coastal-sidebar nav button { color:#c6d8df; }
+.coastal-home[data-sidebar-theme="dark"] .coastal-brand p,
+.coastal-home[data-sidebar-theme="dark"] .coastal-sidebar-bottom p { color:#9fb9c4; }
+.coastal-home[data-sidebar-theme="dark"] .coastal-sidebar-bottom p { border-color:#46616f; }
+.coastal-home[data-sidebar-theme="dark"] .coastal-current { background:#6da7ac26; color:#edf5f4; box-shadow:inset 2px 0 #83b8b6; }
+.coastal-home[data-sidebar-theme="dark"] .coastal-sidebar nav button:hover { background:#8bb5c021; color:#f0f5f6; }
+.app.unified-shell .coastal-home[data-theme="dark"] { --control-surface:#123345ed; --control-border:#a8c9d33d; --control-ink:#c5dbe2; --control-hover:#284b5d; }
+
+/* Both incoming themes travel from the right (east), ending at the sidebar. */
+.coastal-night-layer { position:absolute; inset:0; mask-image:linear-gradient(90deg,#000 33.333%,transparent 66.667%); mask-size:300% 100%; mask-position:100% 0; }
+.coastal-night-layer.is-night { mask-image:linear-gradient(90deg,transparent 33.333%,#000 66.667%); }
+.coastal-night-layer.is-sweeping { animation:coastal-light-from-east 2.8s ease-in-out both; }
+.coastal-night-layer.is-sweeping.is-night { animation-name:coastal-dark-from-east; }
+@keyframes coastal-light-from-east { from { mask-position:0% 0; } to { mask-position:100% 0; } }
+@keyframes coastal-dark-from-east { from { mask-position:0% 0; } to { mask-position:100% 0; } }
+.coastal-sidebar { transition:width 180ms ease,background-color 600ms ease,color 600ms ease; }
+.coastal-sidebar::before { transition:background-color 600ms ease; }
+.coastal-sidebar nav svg,.coastal-sidebar nav button,.coastal-brand-toggle,.coastal-brand p,.coastal-sidebar-bottom p { transition:color 600ms ease,background-color 600ms ease,border-color 600ms ease; }
+@media(prefers-reduced-motion:reduce) {
+  .coastal-night-layer.is-sweeping { animation-duration:1ms; }
+  .coastal-sidebar,.coastal-sidebar::before,.coastal-sidebar nav svg,.coastal-sidebar nav button,.coastal-brand-toggle,.coastal-brand p,.coastal-sidebar-bottom p { transition:none; }
+}
+
+
+/* Reserve the current sidebar width so expanded navigation cannot cover cards. */
+.coastal-destination-cards { position:absolute; z-index:1; inset:68px clamp(28px,7vw,112px) 68px calc(var(--rail) + clamp(28px,7vw,112px)); display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:28px; max-width:1040px; margin-inline:auto; align-content:safe center; overflow-y:auto; padding:10px; transition:left 180ms ease; }
+.coastal-destination-card { position:relative; display:flex; flex-direction:column; justify-content:center; min-height:240px; padding:24px; border:1px solid var(--portal-border); border-radius:18px; background:var(--portal-surface); backdrop-filter:blur(10px); color:var(--portal-ink); text-decoration:none; box-shadow:var(--portal-shadow); transition:transform 180ms ease,background-color 600ms ease,border-color 600ms ease,color 600ms ease,box-shadow 180ms ease; }
+.coastal-card-top { display:flex; align-items:center; gap:10px; min-height:36px; margin-bottom:16px; color:var(--portal-accent); }
+.coastal-card-icon { display:grid; place-items:center; width:36px; height:36px; border:1px solid var(--portal-detail); border-radius:11px; background:var(--portal-icon); flex-shrink:0; }
+.coastal-card-icon svg { width:22px; height:22px; stroke-width:1.4; }
+.coastal-card-top .coastal-card-arrow { width:20px; height:20px; margin-left:auto; flex-shrink:0; }
+.coastal-destination-card h2 { margin:0 0 10px; font:400 clamp(26px,2.4vw,34px)/1.15 Georgia,serif; letter-spacing:-.6px; }
+.coastal-destination-card p { margin:0; min-height:3.1em; max-width:38ch; font:14px/1.55 system-ui,sans-serif; color:var(--portal-muted); }
+.coastal-card-status { padding:4px 8px; border:1px solid var(--portal-detail); border-radius:20px; background:var(--portal-icon); font:9px/1.4 system-ui,sans-serif; letter-spacing:.7px; text-transform:uppercase; color:var(--portal-muted); white-space:nowrap; }
+.coastal-destination-card:hover,.coastal-destination-card:focus-visible { transform:translateY(-3px); background:var(--portal-hover); border-color:var(--portal-accent); box-shadow:var(--portal-shadow),0 0 24px var(--portal-glow); }
+.app.unified-shell .coastal-home[data-theme="dark"] {
+  --portal-surface:linear-gradient(135deg,#17394c96,#0e283ca3);
+  --portal-hover:linear-gradient(135deg,#214b5cbd,#15364ac7);
+  --portal-border:#91bfc84d;
+  --portal-ink:#eff6f3;
+  --portal-muted:#cfdee4;
+  --portal-accent:#a4ded0;
+  --portal-detail:#9dc7cc30;
+  --portal-icon:#9dcfc413;
+  --portal-shadow:0 16px 40px #03131f59,inset 0 1px #caecea13;
+  --portal-glow:#8ee6cf18;
+}
+@media(max-width:1000px) { .coastal-destination-cards { grid-template-columns:1fr; } }
+@media(max-width:700px) { .coastal-destination-cards { left:80px; right:12px; top:68px; bottom:65px; grid-template-columns:1fr; gap:20px; padding:8px; } .coastal-destination-card { min-height:244px; padding:20px; } .coastal-destination-card h2 { font-size:28px; overflow-wrap:anywhere; } }
+@media(max-height:600px) and (min-width:701px) { .coastal-destination-cards { bottom:60px; } .coastal-destination-card { min-height:240px; } }
+@media(prefers-reduced-motion:reduce) { .coastal-destination-cards,.coastal-destination-card { transition:none; } .coastal-destination-card:hover { transform:none; } }
+
+.coastal-theme-toggle { position:absolute; right:72px; bottom:22px; z-index:1; display:grid; place-items:center; width:40px; height:40px; padding:0; border:1px solid var(--control-border); border-radius:22px; background:var(--control-surface); color:var(--control-ink); box-shadow:var(--control-shadow); }
+.coastal-theme-toggle:hover { background:var(--control-hover); }
+.coastal-help-toggle { position:absolute; left:14px; bottom:26px; display:grid; place-items:center; width:40px; height:40px; padding:0; color:#536f70; border-radius:50%; }
+.coastal-help-toggle:hover { background:#73a8a028; }
+.coastal-home[data-sidebar-theme="dark"] .coastal-help-toggle { color:#9dc4c8; }
+.coastal-help-dialog { width:min(440px,calc(100vw - 40px)); max-height:calc(100dvh - 48px); padding:0; border:1px solid #8ba9ad66; border-radius:14px; color:#193d4c; background:#f1ede2; box-shadow:0 20px 80px #061c4266; font:14px/1.65 system-ui,sans-serif; }
+.coastal-help-dialog::backdrop { background:#071c35a6; backdrop-filter:blur(5px); }
+.coastal-help-content { padding:30px; }
+.coastal-help-content form { float:right; margin:-12px -12px 4px 12px; }
+.coastal-help-content form button { display:grid; place-items:center; width:40px; height:40px; border-radius:50%; color:inherit; }
+.coastal-help-content h2 { margin:0 0 15px; font:28px/1.2 Georgia,serif; }
+.coastal-help-content ul { padding-left:20px; }
+.coastal-help-content li { margin:8px 0; }
+.coastal-home[data-theme="dark"] .coastal-help-dialog { background:#203e50; color:#dce9ed; }
+@media(max-width:700px) { .coastal-theme-toggle { right:66px; bottom:16px; } .coastal-motion-toggle { right:16px; bottom:16px; } }
+
+/* Illustrative portals add character without presenting invented results. */
+.coastal-destination-card { overflow:hidden; isolation:isolate; }
+.coastal-destination-card::before { content:''; position:absolute; inset:0; z-index:-1; background:radial-gradient(240px circle at var(--pointer-x,50%) var(--pointer-y,50%),var(--portal-glow),transparent 75%); opacity:0; transition:opacity 220ms ease; pointer-events:none; }
+.coastal-destination-card:hover::before,.coastal-destination-card:focus-visible::before { opacity:1; }
+.coastal-card-visual { position:absolute; z-index:-2; width:70%; height:100%; right:-10%; top:0; opacity:.42; pointer-events:none; mask-image:linear-gradient(90deg,transparent,#000 45%); transition:opacity 350ms ease; }
+.coastal-card-visual canvas { width:100%; height:100%; object-fit:contain; }
+.coastal-destination-card:hover .coastal-card-visual,.coastal-destination-card:focus-visible .coastal-card-visual { opacity:.8; }
+.coastal-destination-card:hover .coastal-card-visual canvas,.coastal-destination-card:focus-visible .coastal-card-visual canvas { animation:portal-drift 7s ease-in-out infinite alternate; }
+.coastal-destination-card:hover .visual-relationships canvas { animation:portal-breathe 3s ease-in-out infinite alternate; }
+.coastal-destination-card:hover .visual-models canvas { animation:portal-breathe 4s ease-in-out infinite alternate; }
+.coastal-card-top,.coastal-destination-card h2,.coastal-destination-card p,.coastal-card-action { position:relative; }
+.coastal-destination-card p { max-width:31ch;  }
+.coastal-card-action { display:flex; align-items:center; gap:8px; margin-top:16px; padding-top:12px; border-top:1px solid var(--portal-detail); font:11px/1.5 system-ui,sans-serif; letter-spacing:.25px; color:var(--portal-accent); opacity:1; transition:opacity 180ms ease; }
+.coastal-destination-card:hover .coastal-card-action,.coastal-destination-card:focus-visible .coastal-card-action { opacity:1; }
+.coastal-destination-card.portal-map { border-color:var(--portal-accent); view-transition-name:features-portal; }
+.app.map-mode { view-transition-name:features-portal; }
+.has-entrance .coastal-destination-card { animation:portal-enter 650ms ease backwards; }
+.has-entrance .coastal-destination-card:nth-child(1) { animation-delay:120ms; }
+.has-entrance .coastal-destination-card:nth-child(2) { animation-delay:200ms; }
+.has-entrance .coastal-destination-card:nth-child(3) { animation-delay:280ms; }
+.has-entrance .coastal-destination-card:nth-child(4) { animation-delay:360ms; }
+@keyframes portal-enter { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+@keyframes portal-drift { from { transform:translateX(0); } to { transform:translateX(-8px); } }
+@keyframes portal-breathe { from { opacity:.65; } to { opacity:1; } }
+::view-transition-group(features-portal) { animation-duration:480ms; animation-timing-function:cubic-bezier(.22,.68,.2,1); }
+::view-transition-old(features-portal),::view-transition-new(features-portal) { height:100%; object-fit:cover; }
+@media(hover:none) { .coastal-card-action { opacity:1; } }
+@media(prefers-reduced-motion:reduce) {
+  .has-entrance .coastal-destination-card,.coastal-destination-card:hover .coastal-card-visual canvas,.coastal-destination-card:focus-visible .coastal-card-visual canvas { animation:none; }
+  .coastal-card-visual,.coastal-card-action,.coastal-destination-card::before { transition:none; }
+  ::view-transition-group(features-portal) { animation-duration:0s; }
 }

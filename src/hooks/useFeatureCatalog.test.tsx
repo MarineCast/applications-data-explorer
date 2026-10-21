@@ -1,0 +1,51 @@
+import { act, renderHook, waitFor } from "@testing-library/react";
+import { beforeEach, expect, it, vi } from "vitest";
+import { loadSeascapeCatalog } from "../data/seascape";
+import { loadMeteorologyCatalog } from "../data/meteorology";
+import { loadOrcaData } from "../data/orca";
+import { loadHydrologyData } from "../data/hydrology";
+import type { SeascapeCatalog } from "../data/seascape";
+import useFeatureCatalog from "./useFeatureCatalog";
+vi.mock("../data/seascape", () => ({ loadSeascapeCatalog: vi.fn() }));
+vi.mock("../data/meteorology", () => ({ loadMeteorologyCatalog: vi.fn(), withMeteorology: (value: unknown) => value }));
+vi.mock("../data/orca", () => ({ loadOrcaData: vi.fn(), withOrca: (value: unknown) => value }));
+vi.mock("../data/hydrology", () => ({ loadHydrologyData: vi.fn(), withHydrology: (value: unknown) => value }));
+beforeEach(() => { vi.resetAllMocks(); });
+it("shows the base map while optional requests are pending and exposes retryable failures", async () => {
+  const base = { features: [] } as unknown as SeascapeCatalog;
+  vi.mocked(loadSeascapeCatalog).mockResolvedValue(base);
+  vi.mocked(loadMeteorologyCatalog).mockRejectedValue(new Error("Weather offline"));
+  vi.mocked(loadOrcaData).mockReturnValue(new Promise(() => {}));
+  vi.mocked(loadHydrologyData).mockReturnValue(new Promise(() => {}));
+  const {result, rerender} = renderHook(({attempt}) => useFeatureCatalog(attempt), {initialProps:{attempt:0}});
+  await waitFor(() => expect(result.current.catalog).toBe(base));
+  expect(result.current.errors.meteorology).toBe("Weather offline");
+  vi.mocked(loadMeteorologyCatalog).mockResolvedValue({} as Awaited<ReturnType<typeof loadMeteorologyCatalog>>);
+  await act(async () => rerender({attempt:1}));
+  await waitFor(() => expect(result.current.errors.meteorology).toBeUndefined());
+  expect(result.current.catalog).toBe(base);
+});
+it("ignores late results from an obsolete request generation", async () => {
+  let resolve!: (value: SeascapeCatalog) => void;
+  vi.mocked(loadSeascapeCatalog).mockReturnValueOnce(new Promise(r => {resolve=r;})).mockResolvedValue({features:[]} as unknown as SeascapeCatalog);
+  vi.mocked(loadMeteorologyCatalog).mockReturnValue(new Promise(() => {}));
+  vi.mocked(loadOrcaData).mockReturnValue(new Promise(() => {}));
+  vi.mocked(loadHydrologyData).mockReturnValue(new Promise(() => {}));
+  const {result,rerender} = renderHook(({attempt}) => useFeatureCatalog(attempt), {initialProps:{attempt:0}});
+  await act(async () => rerender({attempt:1}));
+  const current=result.current.catalog;
+  await act(async () => resolve({features:[]} as unknown as SeascapeCatalog));
+  expect(result.current.catalog).toBe(current);
+});
+
+it("removes a failed replacement instead of silently retaining its old catalog", async () => {
+  vi.mocked(loadSeascapeCatalog).mockResolvedValueOnce({features:[]} as unknown as SeascapeCatalog).mockRejectedValue(new Error("Replacement is invalid"));
+  vi.mocked(loadMeteorologyCatalog).mockReturnValue(new Promise(() => {}));
+  vi.mocked(loadOrcaData).mockReturnValue(new Promise(() => {}));
+  vi.mocked(loadHydrologyData).mockReturnValue(new Promise(() => {}));
+  const {result, rerender} = renderHook(({attempt}) => useFeatureCatalog(attempt), {initialProps:{attempt:0}});
+  await waitFor(() => expect(result.current.catalog).toBeDefined());
+  await act(async () => rerender({attempt:1}));
+  await waitFor(() => expect(result.current.catalog).toBeUndefined());
+  expect(result.current.errors.base).toBe("Replacement is invalid");
+});

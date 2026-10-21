@@ -1,0 +1,21 @@
+.live-sky { position:absolute; top:80px; right:22px; z-index:1; width:min(560px,calc(100% - var(--content-start) - 44px)); color:#d6e5f2; background:#0a2137eb; border:1px solid #a2c2da30; border-radius:12px; box-shadow:0 12px 40px #05152645; font:12px/1.5 system-ui,sans-serif; }
+.live-sky-toggle { display:flex; align-items:center; gap:9px; width:100%; padding:13px 16px; color:inherit; text-align:left; font:500 12px/1.5 system-ui,sans-serif; }
+.live-sky-toggle svg:last-child { margin-left:auto; }
+#live-sky-chart { padding:0 16px 14px; max-height:calc(100dvh - 160px); overflow:auto; }
+.live-sky-meta { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px; color:#a2b9cb; font-size:10px; }
+.live-sky svg[role=group] { display:block; width:100%; overflow:visible; }
+.live-sky svg text { fill:#9eb7cd; font:10px system-ui,sans-serif; }
+.sky-grid { stroke:#8eacc31f; stroke-width:1; }
+.sky-connection { stroke:#8ab3d459; stroke-width:1; }
+.sky-star { cursor:pointer; outline:none; }
+.sky-star-core { fill:#e5f1ff; }
+.sky-star-glow { fill:#a9d4ff; opacity:0; }
+.sky-star:hover .sky-star-glow,.sky-star:focus .sky-star-glow { animation:sky-hover-twinkle 1.2s ease-in-out infinite alternate; }
+.sky-star:hover .sky-star-core,.sky-star:focus .sky-star-core { fill:white; filter:drop-shadow(0 0 3px #c4e1ff); }
+.live-sky svg .sky-star-label { fill:#e5eff9; font-size:11px; paint-order:stroke; stroke:#0a2137; stroke-width:3px; }
+.live-sky p { margin:5px 0; font-size:11px; color:#a8bdcf; }
+.live-sky .live-sky-selection { color:#dbe8f4; }
+.live-sky .live-sky-note { margin-top:9px; font-size:10px; color:#8fa9bd; }
+@keyframes sky-hover-twinkle { from { opacity:.08; } to { opacity:.4; } }
+@media(prefers-reduced-motion:reduce) { .sky-star:hover .sky-star-glow,.sky-star:focus .sky-star-glow { animation:none; opacity:.22; } }
+@media(max-width:700px) { .live-sky { right:12px; top:72px; width:calc(100% - 92px); } }

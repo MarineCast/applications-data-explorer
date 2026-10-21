@@ -61,11 +61,12 @@ export const palettes = {
   },
 } as const;
 export type PaletteId = keyof typeof palettes;
-export type ScaleMode = "equal" | "quantile" | "minmax";
+export type ScaleMode = "equal" | "quantile" | "minmax" | "depth";
 export const scaleModes: Record<ScaleMode, string> = {
   equal: "Equal bins",
   quantile: "Quantiles",
   minmax: "Min/max",
+  depth: "Depth bands · m",
 };
 export const missingColor = "#d4d8d4";
 export interface ColorScale {
@@ -99,6 +100,11 @@ export function createColorScale(
     .sort((a, b) => a - b);
   const min = sorted[0] ?? 0,
     max = sorted.at(-1) ?? 0;
+  if (mode === "depth") return {
+    palette, mode, count: sorted.length, repeatedQuantiles: false,
+    edges: [0, 50, 100, 200, 500, 1000, Infinity],
+    colors: [1, 3, 5, 6, 8, 9].map(i => palettes[palette].colors[i]),
+  };
   const edges = Array.from({ length: 11 }, (_, i) => {
     if (mode !== "quantile") return min + ((max - min) * i) / 10;
     const position = ((sorted.length - 1) * i) / 10;
@@ -123,6 +129,10 @@ export function colorForScale(value: number | null, scale: ColorScale) {
   if (value === null || !Number.isFinite(value) || !scale.count)
     return missingColor;
   if (scale.categories) return scale.colors[value] ?? missingColor;
+  if (scale.mode === "depth") {
+    const index = scale.edges.slice(1).findIndex(edge => value < edge);
+    return scale.colors[index < 0 ? scale.colors.length - 1 : index];
+  }
   const min = scale.edges[0],
     max = scale.edges[10];
   if (min === max) return scale.colors[5];

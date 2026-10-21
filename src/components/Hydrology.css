@@ -1,0 +1,75 @@
+.hydrology-insights { color:#294b62; font-size:12px; line-height:1.55; }
+.hydrology-insights p { margin:10px 0; }
+.hydrology-insights .field { display:grid; gap:5px; margin:12px 0; }
+.hydrology-insights select,.hydrology-insights input { width:100%; min-height:38px; border:1px solid #cbd7de; border-radius:7px; padding:7px; background:#fffefb; font:inherit; color:inherit; }
+.hydrology-current { display:grid; gap:5px; padding:12px; margin:12px 0; border:1px solid #dbe4e6; border-radius:9px; background:#f4f8f8; }
+.hydrology-current output { font-size:20px; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.hydrology-current span,.hydrology-proxy-note { color:#587084; }
+.hydrology-threshold-note { border-left:3px solid #bd8b5b; padding:8px 10px; background:#faf5ed; }
+.hydrology-chart { width:100%; overflow:visible; }
+.hydrology-chart text { font:9px Arial,sans-serif; fill:#587084; }
+.hydrology-insights details { margin:12px 0; }
+.hydrology-insights summary { cursor:pointer; min-height:36px; padding:7px 0; }
+.hydrology-insights dl>div { display:grid; grid-template-columns:95px minmax(0,1fr); gap:9px; margin:9px 0; }
+.hydrology-insights dd { margin:0; overflow-wrap:anywhere; }
+.hydrology-insights code { overflow-wrap:anywhere; }
+.hydrology-insights table { width:100%; border-collapse:collapse; font-size:10px; }
+.hydrology-insights th,.hydrology-insights td { text-align:left; padding:6px 2px; border-bottom:1px solid #e2e8eb; }
+.hydrology-insights nav { display:flex; gap:10px; align-items:center; justify-content:space-between; margin:8px 0; }
+.hydrology-insights nav button { padding:8px; border:1px solid #cbd7de; border-radius:6px; }
+.hydrology-empty { color:#90574f; padding:10px; border:1px solid #e7cec8; border-radius:6px; }
+.hydrology-legend { pointer-events:auto; }
+@media(max-width:700px) {
+ #features-explorer.has-hydrology-timeline .dataset-insights .insights-panel.panel { bottom:10px; }
+}
+
+.hydrology-overview { color:#294b62; font-size:12px; line-height:1.5; }
+.hydrology-overview>button { display:grid; width:100%; grid-template-columns:1fr auto; gap:5px; text-align:left; border-bottom:1px solid #dce5e8; padding:12px 0; }
+.hydrology-overview small { grid-column:1/-1; color:#587084; }
+
+.hydrology-legend { position:relative; width:100%; min-width:0; color:#294b62; }
+#features-explorer .hydrology-legend .colorbar-trigger { height:auto; min-height:0; padding:14px 16px; }
+.hydrology-legend-heading { display:grid; gap:5px; padding-right:26px; }
+.hydrology-legend-heading>strong { font-size:14px; }
+.hydrology-legend-heading>small { color:#617d8b; font-size:11px; line-height:1.4; }
+.hydrology-river-key { display:grid; grid-template-columns:1fr 1fr; gap:4px 8px; margin:10px 0 8px; }
+.hydrology-river-key>span { display:flex; align-items:center; gap:8px; min-height:34px; padding:4px; text-align:left; font:12px Arial,sans-serif; color:inherit; }
+.hydrology-river-key i { flex:none; width:12px; height:12px; border:2px solid currentColor; border-radius:50%; }
+.hydrology-river-key small { display:block; margin-top:3px; font-size:10px; font-variant-numeric:tabular-nums; color:#617d8b; }
+.hydrology-legend-foot { display:block; font-size:10px; color:#617d8b; }
+#features-explorer .map-bottom-controls .hydrology-history { grid-area:timeline; align-self:end; justify-self:center; width:100%; min-width:0; max-width:760px; pointer-events:auto; padding:10px 12px 6px; color:#294b62; background:#fffefbf5; border:1px solid #d7e0e4; border-radius:12px; }
+.hydrology-history>header { display:flex; gap:8px; align-items:center; justify-content:space-between; }
+.hydrology-history-toggle { display:flex; align-items:center; gap:7px; min-height:34px; text-align:left; color:inherit; font:11px Arial,sans-serif; }
+.hydrology-history-toggle strong { display:block; margin-top:3px; font-size:12px; }
+.hydrology-history>header output { text-align:right; white-space:nowrap; font:11px Arial,sans-serif; font-variant-numeric:tabular-nums; }
+.hydrology-history-toolbar { display:flex; justify-content:space-between; align-items:center; margin:5px 0 0; color:#617d8b; font:10px Arial,sans-serif; }
+.hydrology-history-toolbar select { min-height:30px; border:1px solid #cbd7de; border-radius:6px; background:transparent; color:inherit; padding:4px; font:11px Arial,sans-serif; }
+.hydrology-history-plot { position:relative; }
+.hydrology-history-plot svg { display:block; width:100%; height:auto; max-height:170px; cursor:crosshair; touch-action:pan-y; }
+.hydrology-history-plot text { font:10px Arial,sans-serif; fill:#617d8b; }
+.hydrology-history-grid { stroke:#b7c8d160; stroke-width:1; }
+.hydrology-history-cursor { stroke:#617d8b; stroke-dasharray:3 3; }
+.hydrology-history p { margin:0 0 2px; color:#617d8b; font:10px/1.5 Arial,sans-serif; }
+.hydrology-history-tooltip { position:absolute; z-index:3; bottom:28px; pointer-events:none; min-width:146px; padding:9px; border-radius:7px; border:1px solid #b7c8d1; background:var(--hydrology-surface,#fffefb); font:10px/1.5 Arial,sans-serif; box-shadow:0 4px 16px #173f6025; }
+.hydrology-history-tooltip>strong { display:block; margin-bottom:5px; }
+.hydrology-history-tooltip span { display:flex; gap:5px; align-items:center; }
+.hydrology-history-tooltip i { width:6px; height:6px; border-radius:50%; }
+.hydrology-history-tooltip b { margin-left:auto; padding-left:8px; }
+html[data-app-theme="dark"] :is(.hydrology-history,.hydrology-legend .colorbar-trigger) { --hydrology-surface:#193442; background:#193442 !important; color:#dce8ee !important; border-color:#3b5665 !important; }
+html[data-app-theme="dark"] :is(.hydrology-legend-heading>small,.hydrology-legend-foot,.hydrology-river-key small,.hydrology-history-toolbar,.hydrology-history p) { color:#a4bdc9; }
+html[data-app-theme="dark"] .hydrology-history-plot text { fill:#a4bdc9; }
+@media(max-width:1200px) { #features-explorer.layers-open .hydrology-history { visibility:hidden; } }
+@media(max-width:700px) {
+  .hydrology-history-toggle strong { max-width:170px; font-size:11px; }
+  .hydrology-history>header output { font-size:10px; }
+  #features-explorer .map-bottom-controls .hydrology-history { padding:8px 10px 4px; }
+}
+
+.hydrology-custom-colors { display:grid; gap:6px; margin:12px 0; }
+.hydrology-custom-colors>div { display:flex; align-items:center; gap:10px; }
+.hydrology-custom-colors label { display:flex; align-items:center; gap:8px; flex:1; justify-content:space-between; font-size:12px; }
+.hydrology-custom-colors input[type=color] { flex:none; width:42px; height:30px; min-height:0; padding:2px; border:1px solid #a8bfc8; border-radius:5px; cursor:pointer; }
+.hydrology-custom-colors button { min-height:32px; padding:6px; font-size:11px; border-radius:5px; color:inherit; }
+.hydrology-custom-colors button:hover { background:#65848f25; }
+.hydrology-appearance-control { display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; margin:14px 0; font-size:12px; }
+.hydrology-appearance-control input { flex:0 0 100%; width:100%; accent-color:#3686b8; cursor:pointer; }

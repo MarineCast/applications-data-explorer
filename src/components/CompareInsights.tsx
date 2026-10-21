@@ -5,6 +5,9 @@ import { correlateLayers, numericValues, summarizeBox } from "../data/compareIns
 import type { BoxSummary, TemporalComparison } from "../data/compareInsights";
 
 export interface InsightComparison {
+  sameLayer?: boolean;
+  referenceOnly?:boolean;
+  referenceNote?:string;
   left: InsightDataset; right: InsightDataset; temporal?: TemporalComparison;
   cell?: { id: string; coordinates: [number, number]; leftQualifiers: { label: string; value: string }[]; rightQualifiers: { label: string; value: string }[] };
 }
@@ -131,17 +134,20 @@ function TemporalBoxes({ temporal, datasets }: { temporal: TemporalComparison; d
   </>;
 }
 
-export default function CompareInsights({ comparison }: { comparison: InsightComparison }) {
+function NumericComparison({ comparison, showSelection }: { comparison: InsightComparison; showSelection: boolean }) {
   const { left, right, temporal, cell } = comparison;
   const datasets = [left, right];
   const values = useMemo(() => [numericValues(left.values?.values() ?? []), numericValues(right.values?.values() ?? [])], [left.values, right.values]);
   const boxes = useMemo(() => values.map(summarizeBox), [values]);
   const correlation = useMemo(() => correlateLayers(left.values ?? new Map(), right.values ?? new Map()), [left.values, right.values]);
   const summaries = useMemo(() => [summarizeInsights(left.values?.values() ?? [], left.categorical), summarizeInsights(right.values?.values() ?? [], right.categorical)], [left.values, left.categorical, right.values, right.categorical]);
-  const numeric = !left.categorical && !right.categorical;
+  const circular = left.circular || right.circular;
+  const numeric = !left.categorical && !right.categorical && !circular;
   const ready = Boolean(left.values && right.values && !left.error && !right.error);
+
   return <section aria-label="Comparison insights" className="compare-insights">
     <h3>Compare layers <span className="insights-resolution">H3 R{left.resolution}</span></h3>
+    {comparison.sameLayer && <p className="insights-note comparison-identical-note" role="status">Both maps show the same variable and slice. Choose another variable in the comparison controls. Correlation is omitted for identical layers.</p>}
     <div className="compare-series-key">{datasets.map((dataset, side) => <div key={side}><i style={{ background: colors[side] }} /><span><strong>{side ? "Right" : "Left"}</strong> · {dataset.name}<small>{dataset.unit}{dataset.slice ? ` · ${dataset.slice.axis}: ${dataset.slice.label}` : ""}{dataset.note ? ` · ${dataset.note}` : ""}</small></span></div>)}</div>
     <p className="insights-scope">Original values · full active native layers · cells count equally</p>
     {!ready ? <p role={left.error || right.error ? "alert" : "status"}>{left.error || right.error || "Loading comparison layers…"}</p> : <>
@@ -155,24 +161,35 @@ export default function CompareInsights({ comparison }: { comparison: InsightCom
       {numeric ? <>
         <section className="insights-section"><h3>Paired histograms</h3><p className="insights-note">Share of available cells in each layer · shared frequency axis. {left.unit === right.unit ? "Shared value axis." : "Separate value axes in original units."}</p><PairedHistograms datasets={datasets} values={values} boxes={boxes} /></section>
         <section className="insights-section"><h3>Paired box plots</h3><p className="insights-note">Box: Q1–Q3 · line: median · whiskers: min–max. {left.unit === right.unit ? "Shared value axis." : "Each row uses its own units and value axis."}</p><PairedBoxes datasets={datasets} boxes={boxes} /></section>
-        <section className="insights-section" aria-label="Correlation"><h3>Correlation scatter plot</h3>
+        {!comparison.sameLayer && <section className="insights-section" aria-label="Correlation"><h3>Correlation scatter plot</h3>
           <p className="insights-note">Matched native H3 cells · current selected slices · both values non-null</p>
           <dl className="compare-correlation"><div><dt>Pearson r</dt><dd>{correlation.pearson === null ? "Unavailable" : correlation.pearson.toFixed(3)}</dd></div><div><dt>Spearman ρ</dt><dd>{correlation.spearman === null ? "Unavailable" : correlation.spearman.toFixed(3)}</dd></div><div><dt>Paired cells</dt><dd>{correlation.pairs.length.toLocaleString()}</dd></div><div><dt>Excluded cells</dt><dd>{correlation.excluded.toLocaleString()}</dd></div></dl>
           {correlation.pairs.length ? <ScatterPlot pairs={correlation.pairs} left={left} right={right} selected={cell?.id} /> : <p className="insights-empty">No cells have both numeric values.</p>}
           {correlation.pearson === null && <p className="insights-note">Correlation requires at least two paired cells and variation in both layers.</p>}
           <p className="insights-note">Spatial association across cells; no causal or independent-sample inference.</p>
-        </section>
-      </> : <p className="insights-empty">Histograms, box plots and numeric correlations require two numeric layers. Source category counts are retained above.</p>}
+        </section>}
+      </> : <p className="insights-empty">{circular ? "Directions are circular. Scalar means, box plots and numeric correlations are omitted; original selected values remain available." : "Histograms, box plots and numeric correlations require two numeric layers. Source category counts are retained above."}</p>}
     </>}
     {temporal && numeric && <section className="insights-section"><h3>Box plots over time</h3><p className="insights-note">Recorded slices only · full non-null support per layer and time · missing dates remain gaps. × means unavailable. Scroll horizontally for the full timeline.</p>
       {temporal.loading ? <p role="status">Loading recorded time slices… {temporal.rows.length} / {temporal.total}</p> : temporal.error ? <p role="alert">{temporal.error}</p> : <TemporalBoxes temporal={temporal} datasets={datasets} />}
       {temporal.rows.some(row => row.error) && <details className="insights-qualifiers"><summary>Unavailable time slices</summary>{temporal.rows.filter(row => row.error).map(row => <p key={row.key}>{row.label}: {row.error}</p>)}</details>}
     </section>}
-    <section className="insights-section" aria-label="Insights selected cell"><h3>Selected Cell</h3>{cell ? <>
+    {showSelection && <ComparisonSelected comparison={comparison}/>}
+    <section className="insights-section" aria-label="Insights data source"><h3>Data sources</h3>{datasets.map((dataset, side) => <details className="insights-qualifiers" key={side}><summary>{side ? "Right" : "Left"} · {dataset.name}</summary><dl className="insights-cell-details">{dataset.metadata.map(item => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}</dd></div>)}</dl></details>)}</section>
+  </section>;
+}
+
+export default function CompareInsights({ comparison, showSelection = true }: { comparison: InsightComparison; showSelection?: boolean }) {
+  const datasets = [comparison.left, comparison.right];
+  if(comparison.referenceOnly)return <section aria-label="Comparison insights" className="compare-insights"><h3>Reference selectors and original layers</h3><p>{comparison.referenceNote ?? "Hydrology mouth cells link to upstream river gauges. Spatial cell correlations, histograms and pooled summaries are omitted because these selectors are not a sampled influence surface."}</p>{datasets.map((d,i)=><div key={i}><h4>{i?"Right":"Left"} · {d.name}</h4><p>{d.unit}{d.slice ? ` · ${d.slice.axis}: ${d.slice.label}` : ""}</p><p>{d.note}</p></div>)}</section>;
+  return <NumericComparison comparison={comparison} showSelection={showSelection}/>;
+}
+
+export function ComparisonSelected({comparison, embedded = false}:{comparison:InsightComparison; embedded?:boolean}) {
+ const {cell}=comparison; const datasets=[comparison.left,comparison.right];
+ return <section className="insights-section" aria-label={embedded ? undefined : "Insights selected cell"}><h3>Selected Cell</h3>{cell ? <>
       <dl className="insights-cell-details"><div><dt>H3 index</dt><dd><code>{cell.id}</code></dd></div><div><dt>Latitude / longitude</dt><dd>{cell.coordinates.map(n => n.toFixed(6)).join(", ")}</dd></div>
         {datasets.map((dataset, side) => { const value = dataset.values?.get(cell.id); return <div key={side}><dt>{side ? "Right" : "Left"} value</dt><dd>{value == null ? "Unavailable" : typeof value === "number" && !dataset.categorical ? format(value, dataset) : String(value)}</dd></div>; })}
       </dl>{[cell.leftQualifiers, cell.rightQualifiers].map((items, side) => items.length > 0 && <details key={side} className="insights-qualifiers"><summary>{side ? "Right" : "Left"} source &amp; quality</summary><dl className="insights-cell-details">{items.map(item => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}</dd></div>)}</dl></details>)}
-    </> : <p className="insights-empty">Select a cell to inspect both original values at the same location.</p>}</section>
-    <section className="insights-section" aria-label="Insights data source"><h3>Data sources</h3>{datasets.map((dataset, side) => <details className="insights-qualifiers" key={side}><summary>{side ? "Right" : "Left"} · {dataset.name}</summary><dl className="insights-cell-details">{dataset.metadata.map(item => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}</dd></div>)}</dl></details>)}</section>
-  </section>;
+    </> : <p className="insights-empty">Select a cell to inspect both original values at the same location.</p>}</section>;
 }

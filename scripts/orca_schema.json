@@ -1,0 +1,195 @@
+{
+  "schema_version": "orca-study-sightings-v1",
+  "fields": [
+    {
+      "name": "event_id",
+      "arrow_type": "string",
+      "nullable": false
+    },
+    {
+      "name": "source",
+      "arrow_type": "string",
+      "nullable": false
+    },
+    {
+      "name": "source_record_id",
+      "arrow_type": "string",
+      "nullable": false
+    },
+    {
+      "name": "source_native_id",
+      "arrow_type": "string",
+      "nullable": true
+    },
+    {
+      "name": "source_event_id",
+      "arrow_type": "string",
+      "nullable": true
+    },
+    {
+      "name": "source_dataset_id",
+      "arrow_type": "string",
+      "nullable": true
+    },
+    {
+      "name": "source_occurrence_ids",
+      "arrow_type": "list<item: string>",
+      "nullable": true
+    },
+    {
+      "name": "source_occurrence_count",
+      "arrow_type": "int32",
+      "nullable": false
+    },
+    {
+      "name": "ecotype_detail",
+      "arrow_type": "string",
+      "nullable": false
+    },
+    {
+      "name": "category",
+      "arrow_type": "string",
+      "nullable": false
+    },
+    {
+      "name": "classification_status",
+      "arrow_type": "string",
+      "nullable": false
+    },
+    {
+      "name": "native_classification",
+      "arrow_type": "string",
+      "nullable": true
+    },
+    {
+      "name": "source_description",
+      "arrow_type": "string",
+      "nullable": true
+    },
+    {
+      "name": "observed_at_raw",
+      "arrow_type": "string",
+      "nullable": true
+    },
+    {
+      "name": "observed_date_raw",
+      "arrow_type": "string",
+      "nullable": true
+    },
+    {
+      "name": "pod_group_assignments",
+      "arrow_type": "list<item: struct<label: string not null, group_type: string not null, source_term: string, evidence_field: string not null, evidence_text: string, confidence: string not null, conflicting: bool not null>>",
+      "nullable": false
+    },
+    {
+      "name": "pod_group_status",
+      "arrow_type": "string",
+      "nullable": false
+    },
+    {
+      "name": "classification_evidence_json",
+      "arrow_type": "string",
+      "nullable": false
+    },
+    {
+      "name": "observed_at_utc",
+      "arrow_type": "timestamp[us, tz=UTC]",
+      "nullable": true
+    },
+    {
+      "name": "time_start_utc",
+      "arrow_type": "timestamp[us, tz=UTC]",
+      "nullable": true
+    },
+    {
+      "name": "time_end_utc",
+      "arrow_type": "timestamp[us, tz=UTC]",
+      "nullable": true
+    },
+    {
+      "name": "time_precision",
+      "arrow_type": "string",
+      "nullable": false
+    },
+    {
+      "name": "native_date",
+      "arrow_type": "date32[day]",
+      "nullable": true
+    },
+    {
+      "name": "source_timezone",
+      "arrow_type": "string",
+      "nullable": false
+    },
+    {
+      "name": "utc_date",
+      "arrow_type": "date32[day]",
+      "nullable": true
+    },
+    {
+      "name": "latitude",
+      "arrow_type": "double",
+      "nullable": true
+    },
+    {
+      "name": "longitude",
+      "arrow_type": "double",
+      "nullable": true
+    },
+    {
+      "name": "latitude_raw",
+      "arrow_type": "string",
+      "nullable": true
+    },
+    {
+      "name": "longitude_raw",
+      "arrow_type": "string",
+      "nullable": true
+    },
+    {
+      "name": "coordinate_uncertainty_m",
+      "arrow_type": "double",
+      "nullable": true
+    },
+    {
+      "name": "coordinate_transform",
+      "arrow_type": "string",
+      "nullable": false
+    },
+    {
+      "name": "coordinate_role",
+      "arrow_type": "string",
+      "nullable": true
+    },
+    {
+      "name": "h3_r6",
+      "arrow_type": "string",
+      "nullable": true
+    },
+    {
+      "name": "h3_precision_status",
+      "arrow_type": "string",
+      "nullable": false
+    },
+    {
+      "name": "source_license",
+      "arrow_type": "string",
+      "nullable": false
+    },
+    {
+      "name": "source_use_class",
+      "arrow_type": "string",
+      "nullable": false
+    },
+    {
+      "name": "source_retrieved_at_utc",
+      "arrow_type": "timestamp[us, tz=UTC]",
+      "nullable": true
+    },
+    {
+      "name": "qc_flags",
+      "arrow_type": "list<item: string>",
+      "nullable": false
+    }
+  ]
+}

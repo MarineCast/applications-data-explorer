@@ -1,0 +1,239 @@
+/* Features overlay regions: products at left, analysis at right, display controls below. */
+#features-explorer { --features-legend-bottom:16px; --features-legend-space:180px; --features-right-inset:16px; }
+#features-explorer:has(.insights-panel) { --features-right-inset:382px; }
+#features-explorer.has-weather-timeline { --features-legend-bottom:16px; --features-legend-space:306px; }
+#features-explorer .comparison-toolbar { position:absolute; z-index:16; top:16px; left:84px; right:260px; max-width:720px; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) 38px 38px; gap:4px; padding:6px; border-radius:11px; color:#24465f; background:#fffefbf5; }
+#features-explorer .comparison-layer-chip { position:relative; padding:7px 28px 7px 10px; min-width:0; text-align:left; border-radius:6px; }
+#features-explorer .comparison-layer-chip:hover { background:#edf3f6; }
+#features-explorer .comparison-layer-chip span { display:block; font-size:11px; color:#536d7f; margin-bottom:5px; }
+#features-explorer .comparison-layer-chip strong { display:block; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#features-explorer .comparison-layer-chip svg { position:absolute; right:8px; top:50%; }
+#features-explorer .comparison-swap,#features-explorer .comparison-exit { display:grid; place-items:center; border-radius:6px; }
+#features-explorer .comparison-toolbar p { grid-column:1/-1; margin:3px 8px 6px; font-size:12px; line-height:1.5; color:#80552f; }
+.comparison-setup { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px; }
+.comparison-setup section { min-width:0; }
+.comparison-setup h3 { font-size:14px; margin:12px 0 18px; }
+.comparison-setup .field { margin-bottom:16px; }
+.atlas-dialog:has(.comparison-setup) { width:760px; max-width:calc(100dvw - 32px); max-height:calc(100dvh - 48px); overflow:auto; }
+.comparison-grid-note { font-size:12px; color:#536d7f; line-height:1.6; }
+.comparison-appearance-link,.legend-appearance-scope label { display:flex; align-items:center; gap:9px; min-height:44px; font-size:12px; }
+.comparison-appearance-link input,.legend-appearance-scope input { accent-color:#267ca3; }
+.comparison-setup-actions { display:flex; gap:12px; justify-content:space-between; margin-top:20px; }
+.legend-appearance-scope { padding-bottom:10px; margin-bottom:12px; border-bottom:1px solid #e1e8eb; }
+.legend-appearance-scope p { margin:0; font-size:12px; color:#536d7f; }
+#features-explorer .data-domain-dock { max-height:calc(100% - 32px); overflow-y:auto; overflow-x:hidden; scrollbar-width:thin; }
+#features-explorer .data-domain-dock button { flex-shrink:0; }
+.data-domain-dock .domain-visible-name { display:none; }
+#features-explorer .data-domain-dock.domain-labels-open { width:210px; max-height:calc(100% - var(--features-legend-space)); }
+#features-explorer .data-domain-dock.domain-labels-open button { display:flex; justify-content:flex-start; gap:10px; width:100%; padding:6px 9px; }
+.data-domain-dock.domain-labels-open .domain-visible-name { display:block; text-align:left; font-size:12px; line-height:1.4; }
+.domain-visible-name small { display:block; font-size:10px; }
+.data-domain-dock.domain-labels-open .domain-tooltip { display:none; }
+/* Legends remain in one row and never move over the product rail. */
+#features-explorer.atlas-map.colorbar-map.drawer-map .map-legends { position:absolute; z-index:19; left:84px; right:var(--features-right-inset); bottom:var(--features-legend-bottom); top:auto; height:auto; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; pointer-events:none; }
+#features-explorer.atlas-map.colorbar-map.drawer-map .map-legends > .map-legend-tools,
+#features-explorer.atlas-map.colorbar-map.drawer-map .two-legends > .comparison-legend { position:relative; inset:auto; margin:0; width:min(310px,calc((100% - 14px)/2)); flex:none; pointer-events:auto; }
+#features-explorer.atlas-map.colorbar-map.drawer-map .map-legends:not(.two-legends) > .map-legend-tools { width:min(310px,100%); }
+#features-explorer.atlas-map.colorbar-map.drawer-map .map-legends .colorbar-legend { position:relative; inset:auto; width:100%; margin:0; }
+#features-explorer .metric-legend .colorbar-trigger { min-height:126px; height:auto; padding:14px 16px; }
+#features-explorer .legend-metric-name { display:block; font-size:14px; line-height:1.35; max-width:100%; overflow:hidden; text-overflow:ellipsis; }
+#features-explorer .legend-metric-context { font-size:12px; line-height:1.45; }
+#features-explorer .legend-coverage-key,#features-explorer .legend-surface-mode { font-size:11px; }
+.legend-value-state { display:block; color:#536d7f; font-size:12px; margin-top:6px; text-align:left; }
+.legend-category-preview { display:grid; gap:5px; max-height:88px; overflow:auto; margin:6px 0; text-align:left; font-size:12px; }
+.legend-category-preview > span { display:flex; align-items:center; gap:7px; overflow-wrap:anywhere; }
+.legend-category-preview i { display:inline-block; width:11px; height:11px; flex:none; border:1px solid #31536725; border-radius:2px; }
+#features-explorer .weather-time-slider { left:84px; right:var(--features-right-inset); bottom:16px; transform:none; width:auto; max-width:560px; min-width:0; z-index:20; }
+#features-explorer .map-legends .colorbar-settings { max-height:calc(100dvh - 340px); }
+.source-picker-search { display:block; width:100%; min-height:42px; border:1px solid #cbd9e1; border-radius:7px; padding:9px; margin:8px 0 12px; color:#24465f; font-size:13px; background:white; }
+.source-picker-distinction { overflow-wrap:anywhere; font-family:ui-monospace,monospace; }
+.source-picker-trigger .source-picker-trigger-value > span { white-space:normal; overflow-wrap:anywhere; line-height:1.4; }
+.viewshed-action-notice { pointer-events:auto; position:absolute; z-index:24; top:72px; right:16px; max-width:340px; padding:14px; font-size:12px; line-height:1.6; color:#315367; display:flex; align-items:flex-start; gap:12px; }
+.viewshed-action-notice button { flex:none; width:32px; height:32px; }
+.data-map-actions button[aria-disabled=true] { color:#7c8c96; }
+#features-explorer .hosted-viewshed .viewshed-bottom-dock { left:84px; bottom:16px; }
+#features-explorer .hosted-viewshed .viewshed-legend { width:310px; }
+#features-explorer .hosted-viewshed .viewshed-legend .colorbar-trigger { padding:14px 16px; min-height:126px; }
+#features-explorer .viewshed-legend-name { font-size:14px; line-height:1.35; }
+#features-explorer .viewshed-legend-support { font-size:11px; }
+#features-explorer .viewshed-legend-ticks { font-size:12px; }
+#features-explorer .domain-layer-panel .native-resolution { font-size:12px; }
+/* Keep the selectors fixed; only choices inside an open picker scroll. */
+#features-explorer .domain-layer-controls .domain-layer-panel { display:flex; flex-direction:column; height:auto; max-height:calc(100% - 32px); overflow:clip; }
+#features-explorer .domain-layer-panel > .panel-title { flex:none; position:static; box-shadow:none; }
+#features-explorer .domain-layer-panel > .layer-body { flex:0 1 auto; min-height:0; max-height:none; overflow-y:auto; }
+#features-explorer .domain-layer-panel .source-picker-popup { position:relative; top:auto; left:auto; right:auto; z-index:4; margin-top:8px; display:flex; flex-direction:column; height:auto; max-height:min(330px,45dvh); overflow:hidden; }
+#features-explorer .domain-layer-panel .source-picker-heading,
+#features-explorer .domain-layer-panel .source-picker-search,
+#features-explorer .domain-layer-panel .source-picker-feedback { flex:none; }
+#features-explorer .domain-layer-panel .source-picker-results { flex:1; min-height:0; max-height:none; padding-bottom:12px; scroll-padding-block:8px; }
+#features-explorer .insights-note,#features-explorer .insights-scope,#features-explorer .insights-coverage { font-size:12px; }
+.map-keyboard-target { display:none; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:22px; height:22px; border:2px solid white; border-radius:50%; box-shadow:0 0 0 1px #204c68,0 0 6px #204c68; pointer-events:none; }
+.map-keyboard-hint { display:none; position:absolute; top:82px; left:50%; transform:translateX(-50%); padding:8px 12px; background:#fffefbf5; border-radius:7px; color:#24465f; font-size:12px; pointer-events:none; }
+.maptiler-canvas:has(.maplibregl-canvas:focus-visible) .map-keyboard-target,.maptiler-canvas:has(.maplibregl-canvas:focus-visible) .map-keyboard-hint { display:block; }
+@media(max-width:1000px) and (min-width:701px) {
+  #features-explorer:has(.insights-panel) .comparison-toolbar { right:var(--features-right-inset); }
+  #features-explorer:has(.insights-panel) .legend-metric-context { font-size:11px; }
+}
+@media(max-width:700px) {
+  #features-explorer { --features-legend-bottom:10px; --features-right-inset:10px; --features-legend-space:184px; }
+  #features-explorer:has(.insights-panel) { --features-right-inset:10px; }
+  #features-explorer.has-weather-timeline { --features-legend-bottom:10px; --features-legend-space:310px; }
+  #features-explorer .comparison-toolbar { left:68px; right:10px; top:62px; gap:0; grid-template-columns:minmax(0,1fr) minmax(0,1fr) 30px 30px; }
+  #features-explorer .comparison-layer-chip { padding:7px; }
+  #features-explorer .comparison-layer-chip svg { display:none; }
+  #features-explorer .comparison-layer-chip span { font-size:10px; }
+  #features-explorer .comparison-layer-chip strong { font-size:12px; }
+  #features-explorer .comparison-swap,#features-explorer .comparison-exit { min-height:44px; }
+  #features-explorer.atlas-map.colorbar-map.drawer-map .map-legends { left:68px; gap:8px; }
+  #features-explorer.atlas-map.colorbar-map.drawer-map .map-legends > .map-legend-tools,
+  #features-explorer.atlas-map.colorbar-map.drawer-map .two-legends > .comparison-legend { width:calc((100% - 8px)/2); }
+  #features-explorer .metric-legend .colorbar-trigger { padding:10px; min-height:148px; }
+  #features-explorer .legend-metric-name { font-size:12px; line-height:1.4; white-space:normal; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+  #features-explorer .legend-metric-context { font-size:11px; }
+  #features-explorer .legend-coverage-key { font-size:10px; }
+  #features-explorer .weather-time-slider { left:68px; right:10px; bottom:176px; width:auto; }
+  #features-explorer .weather-time-top { flex-wrap:wrap; gap:4px; }
+  #features-explorer .weather-time-top strong { font-size:11px; }
+  #features-explorer .weather-time-top strong span { display:none; }
+  #features-explorer .weather-time-top input { width:105px; }
+  #features-explorer .dataset-insights .insights-panel.panel { top:62px; bottom:178px; right:10px; width:calc(100% - 20px); }
+  #features-explorer.has-weather-timeline .dataset-insights .insights-panel.panel { bottom:308px; }
+  #features-explorer .map-legends .colorbar-settings { position:fixed; left:68px; right:10px; bottom:176px; width:auto; max-width:none; max-height:calc(100dvh - 264px); }
+  #features-explorer.has-weather-timeline .map-legends .colorbar-settings { bottom:308px; max-height:calc(100dvh - 396px); }
+  #features-explorer .hosted-viewshed .viewshed-bottom-dock { left:68px; right:10px; bottom:10px; }
+  #features-explorer .hosted-viewshed .viewshed-legend { width:min(310px,100%); }
+  #features-explorer .hosted-viewshed .viewshed-legend .colorbar-settings { max-height:calc(100dvh - 264px); }
+  #features-explorer .hosted-viewshed .dataset-insights .insights-panel.panel { bottom:178px; }
+  .comparison-setup { grid-template-columns:1fr; gap:8px; }
+  .comparison-setup section + section { border-top:1px solid #dce5ea; padding-top:8px; }
+  .viewshed-action-notice { left:68px; right:10px; top:62px; }
+}
+.source-picker-trigger .source-picker-distinction { display:block; font-size:11px; color:#536d7f; margin-top:4px; }
+.comparison-identical-note { border:1px solid #e1d2b9; background:#fcf6e9; color:#80552f; padding:10px 12px; border-radius:7px; }
+@media(max-width:700px) {
+  #features-explorer.comparing .dataset-insights .insights-panel.panel { top:128px; }
+  #features-explorer .map-legends .colorbar-trigger { max-height:158px; overflow:auto; }
+}
+@media(max-width:700px) and (max-height:650px) {
+  #features-explorer .domain-layer-controls:has(.source-picker-popup) { z-index:21; }
+  #features-explorer:has(.insights-panel) .map-legends,
+  #features-explorer:has(.insights-panel) .weather-time-slider { visibility:hidden; }
+  #features-explorer .dataset-insights .insights-panel.panel { bottom:10px; }
+}
+.legend-appearance-scope small { display:block; margin-top:6px; color:#536d7f; font-size:11px; line-height:1.5; }
+.domain-dock-tooltip { position:fixed; z-index:70; transform:translateY(-50%); width:max-content; max-width:180px; padding:9px 12px; border:1px solid #dce4e7; border-radius:7px; background:#fffefb; color:#244c67; box-shadow:0 3px 12px #14345416; font:12px Arial,sans-serif; pointer-events:none; }
+.domain-dock-tooltip small { display:block; margin-top:5px; color:#536d7f; font-size:11px; }
+.atlas-dialog[open]:has(.comparison-setup) { display:flex; flex-direction:column; overflow:hidden; }
+.atlas-dialog:has(.comparison-setup) > header { flex:none; }
+.comparison-setup-scroll { overflow:auto; min-height:0; padding:0 3px; overscroll-behavior:contain; scrollbar-width:thin; }
+.comparison-setup-actions { flex:none; margin-top:16px; padding-top:12px; border-top:1px solid #dce5ea; }
+.comparison-setup-actions .button { margin-top:0; min-height:44px; }
+
+/* Independent right-side overlays: Insights at the top and legends anchored to the map bottom. */
+#features-explorer { --features-right-inset:16px; }
+#features-explorer:has(.insights-panel) { --features-right-inset:16px; }
+#features-explorer .dataset-insights--persistent .insights-tab { left:auto; right:var(--map-control-inset,16px); top:var(--map-control-inset,16px); visibility:visible; }
+#features-explorer .dataset-insights--persistent .insights-tab>svg:last-child { transform:none; }
+#features-explorer .dataset-insights--persistent .insights-tab[aria-expanded=true]>svg:last-child { transform:rotate(180deg); }
+#features-explorer .dataset-insights .insights-panel.panel { left:auto; right:var(--map-control-inset,16px); top:calc(var(--map-control-inset,16px) + 52px); bottom:auto; width:var(--insights-user-width,420px); height:var(--insights-user-height,calc(100% - 248px)); }
+#features-explorer.atlas-map.drawer-map .map-tools { right:calc(var(--map-control-inset,16px) + var(--insights-trigger-width,120px) + 8px); }
+#features-explorer .hosted-viewshed .viewshed-zoom-host { right:148px; }
+#features-explorer.atlas-map.colorbar-map.drawer-map.seascape-map .domain-layer-controls .domain-layer-panel { top:var(--map-control-inset,16px); }
+#features-explorer.atlas-map.colorbar-map.drawer-map .map-legends { position:absolute; top:auto; bottom:var(--features-legend-bottom); left:auto; right:16px; width:310px; max-width:calc(100% - 100px); justify-content:flex-end; }
+#features-explorer.atlas-map.colorbar-map.drawer-map .map-legends.two-legends { width:100%; flex-direction:row; align-items:flex-end; justify-content:space-between; gap:12px; }
+#features-explorer.atlas-map.colorbar-map.drawer-map .map-legends>.map-legend-tools,
+#features-explorer.atlas-map.colorbar-map.drawer-map .map-legends.two-legends>.comparison-legend { width:310px; position:relative; inset:auto; margin:0; }
+#features-explorer.atlas-map.colorbar-map.drawer-map .map-legends:not(.two-legends)>.map-legend-tools { width:100%; }
+#features-explorer.atlas-map.colorbar-map.drawer-map .map-legends .colorbar-legend { width:100%; }
+#features-explorer .map-legends .colorbar-settings { left:auto; right:0; max-width:calc(100dvw - 32px); }
+#features-explorer .hosted-viewshed .viewshed-bottom-dock { left:auto; right:16px; }
+#features-explorer .hosted-viewshed .viewshed-legend .colorbar-settings { left:auto; right:0; }
+#features-explorer.swipe-comparing .dataset-insights .insights-panel.panel { top:88px; }
+#features-explorer.swipe-comparing .domain-layer-controls .domain-layer-panel { top:88px; }
+/* A long category/comparison legend gets its own scroll area in short windows. */
+#features-explorer.atlas-map.colorbar-map.drawer-map .map-legends { max-height:none; overflow:visible; pointer-events:auto; scrollbar-width:thin; border-radius:12px; }
+#features-explorer.insights-open .map-legends .colorbar-settings { position:fixed; right:342px; bottom:var(--features-legend-bottom); width:310px; }
+@media(max-width:700px) {
+  #features-explorer { --features-right-inset:10px; }
+  #features-explorer:has(.insights-panel) { --features-right-inset:10px; }
+  #features-explorer .dataset-insights .insights-panel.panel { top:62px; right:10px; left:auto; bottom:auto; }
+  #features-explorer.insights-open .domain-layer-controls { visibility:visible; }
+  #features-explorer.atlas-map.colorbar-map.drawer-map .map-legends,
+  #features-explorer.atlas-map.colorbar-map.drawer-map .map-legends.two-legends { right:10px; left:auto; width:min(310px,calc(100dvw - 78px)); max-width:calc(100% - 78px); }
+  #features-explorer.atlas-map.colorbar-map.drawer-map .map-legends>.map-legend-tools,
+  #features-explorer.atlas-map.colorbar-map.drawer-map .map-legends.two-legends>.comparison-legend { width:100%; }
+  #features-explorer:has(.insights-panel) .map-legends,
+  #features-explorer:has(.insights-panel) .weather-time-slider { visibility:visible; }
+  #features-explorer .hosted-viewshed .viewshed-bottom-dock { left:auto; right:10px; visibility:visible; }
+  #features-explorer .hosted-viewshed .viewshed-legend { width:min(310px,calc(100dvw - 78px)); }
+  #features-explorer .hosted-viewshed.insights-open .domain-layer-controls { visibility:visible; }
+  #features-explorer .hosted-viewshed .domain-layer-panel { top:10px; }
+  #features-explorer.swipe-comparing .comparison-toolbar { left:68px; top:62px; }
+  #features-explorer.swipe-comparing .dataset-insights .insights-panel.panel { top:148px; }
+  #features-explorer.insights-open .map-legends .colorbar-settings { right:10px; bottom:calc(var(--features-legend-bottom) + 164px); width:calc(100dvw - 78px); }
+  #features-explorer.has-weather-timeline .weather-time-slider { bottom:16px; }
+  #features-explorer.has-weather-timeline { --features-legend-bottom:16px; }
+}
+@media(max-width:410px) { #features-explorer .dataset-insights--persistent .insights-tab { width:100px; } }
+
+/* Bottom controls share layout space; a timeline never lifts the legend off the map edge. */
+#features-explorer .map-bottom-controls { position:absolute; z-index:19; left:84px; right:16px; bottom:16px; display:grid; grid-template-areas:". timeline legend"; grid-template-columns:minmax(310px,1fr) minmax(0,720px) minmax(310px,1fr); align-items:end; gap:12px 20px; pointer-events:none; }
+#features-explorer.atlas-map.colorbar-map.drawer-map .map-bottom-controls .map-legends { position:relative; inset:auto; grid-area:legend; width:310px; max-width:100%; justify-self:end; }
+#features-explorer.has-weather-timeline .map-bottom-controls .weather-time-slider { position:relative; inset:auto; transform:none; grid-area:timeline; justify-self:center; width:100%; max-width:720px; min-width:0; pointer-events:auto; visibility:visible; }
+@media(max-width:1200px) {
+  #features-explorer .map-bottom-controls { grid-template-areas:"timeline" "legend"; grid-template-columns:minmax(0,1fr); }
+}
+@media(max-width:700px) {
+  #features-explorer.has-weather-timeline { --features-legend-bottom:10px; }
+  #features-explorer .map-bottom-controls { left:68px; right:10px; bottom:10px; }
+}
+
+#features-explorer .map-bottom-controls:has(.settings-open) { z-index:26; }
+#features-explorer.atlas-map.colorbar-map.drawer-map .map-legends:has(.settings-open) { z-index:21; }
+#features-explorer .map-bottom-controls .map-legends .colorbar-settings { position:fixed; left:auto; right:342px; bottom:16px; width:310px; max-height:calc(100dvh - 100px); }
+@media(max-width:700px) {
+  #features-explorer .map-bottom-controls .map-legends .colorbar-settings { left:68px; right:10px; bottom:174px; width:auto; max-width:none; max-height:calc(100dvh - 264px); }
+}
+
+/* Keep the legend available; only the timeline shares space with a compact selector. */
+@media(max-width:1200px) {
+  #features-explorer:has(.domain-layer-panel) .map-bottom-controls .weather-time-slider { visibility:hidden; }
+}
+
+/* Comparison legends use separate columns, so neither side is clipped behind the other. */
+#features-explorer.comparing .map-bottom-controls { grid-template-areas:"timeline" "legend"; grid-template-columns:minmax(0,1fr); }
+#features-explorer.atlas-map.colorbar-map.drawer-map .map-bottom-controls .map-legends.two-legends { width:100%; }
+#features-explorer.atlas-map.colorbar-map.drawer-map .map-bottom-controls .map-legends.two-legends > .map-legend-tools,
+#features-explorer.atlas-map.colorbar-map.drawer-map .map-bottom-controls .map-legends.two-legends > .comparison-legend { width:min(310px,calc((100% - 12px)/2)); min-width:0; }
+#features-explorer .map-legends .colorbar-trigger { max-height:230px; overflow-y:auto; }
+#features-explorer .timeline-side-control { pointer-events:auto; grid-column:1/-1; justify-self:center; padding:6px 10px; display:flex; gap:10px; align-items:center; font-size:12px; }
+@media(max-width:700px) {
+  #features-explorer .map-legends .colorbar-trigger { max-height:158px; }
+}
+
+/* Scenario controls can use the left column while the timeline stays centered. */
+#features-explorer .domain-layer-controls .domain-layer-panel.river-influence-panel{max-height:calc(100% - 32px)}
+
+/* Short windows reserve the fixed panel title, then let an open picker use the
+   complete body scrollport. The bottom legend lives in a separate column. */
+@media(max-height:500px) {
+  #features-explorer.atlas-map.colorbar-map.drawer-map.seascape-map .domain-layer-controls .domain-layer-panel { padding:12px; }
+  #features-explorer.atlas-map.drawer-map .domain-layer-panel > .panel-title { margin-bottom:8px; }
+  #features-explorer .domain-layer-panel .source-picker-popup { padding:8px; }
+  #features-explorer .domain-layer-panel > .layer-body { padding-top:0; }
+  #features-explorer .domain-layer-panel .source-picker-search { margin:4px 0; }
+}
+
+/* The compact drawer and bottom legend share the same column. Keep the
+   selector reachable while it is open; closing it restores the map controls. */
+@media(max-width:700px) {
+  #features-explorer .domain-layer-controls:has(.domain-layer-panel) { z-index:24; }
+  #features-explorer:has(.domain-layer-panel) .map-bottom-controls,
+  #features-explorer:has(.domain-layer-panel) .map-tools,
+  #features-explorer:has(.domain-layer-panel) .dataset-insights--persistent .insights-tab { visibility:hidden; }
+}
+
+@media(max-width:700px) and (max-height:360px) {
+  #features-explorer .domain-layer-panel .source-picker-popup { padding:4px; }
+}

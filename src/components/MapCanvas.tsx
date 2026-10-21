@@ -1,4 +1,12 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import WarningNotice from "./WarningNotice";
+import {humanVisibleFeatures,humanRecordName,humanRecordColor} from "../data/humanGeometry";
+import type {Geometry} from "geojson";
+import { hydrologyPointGeoJSON } from "../data/hydrologyOverlay";
+import { useAppTheme } from '../theme/appTheme';
+import { basemapPalette } from '../data/basemapTheme';
+import { orcaCategoryColors } from "../data/orca";
+import { membershipStyles } from "../data/governancePatterns";
+import { lazy, Suspense, useCallback, useEffect, useId, useRef, useState } from "react";
 import {
   colorFor,
   colorFromRange,
@@ -8,12 +16,32 @@ import {
 import { createPortal } from "react-dom";
 import type { MapCamera, MapCameraPeer } from "../data/mapCamera";
 import type { MapCanvasProps } from "../data/map";
+import { viewshedOverlays } from "../data/viewshedMap";
+import { sourceLabel } from "../data/viewshed";
+import type { MultiPolygon, Polygon } from "geojson";
 import { colorForScale } from "../data/colorScale";
-const MapTilerCanvas = lazy(() => import("./MapTilerCanvas"));
+import { loadGeographicRenderer } from "../data/geographicRenderer";
+const MapTilerCanvas = lazy(loadGeographicRenderer);
 import { Plus, Minus } from "lucide-react";
 import { cells, featureById, valueFor } from "../data/demo";
 function project(lat: number, lon: number): [number, number] {
   return [((lon + 126.15) / 4.9) * 1400, ((50.35 - lat) / 4.3) * 1000];
+}
+function geometryPath(geometry: Polygon | MultiPolygon) {
+  const polygons = geometry.type === "Polygon" ? [geometry.coordinates] : geometry.coordinates;
+  return polygons.flatMap(polygon => polygon.map(ring => ring.map(([lon, lat], index) =>
+    `${index ? "L" : "M"}${project(lat, lon).join(",")}`).join(" ") + "Z")).join(" ");
+}
+function humanPath(geometry:Geometry):string {
+  const line=(coords:number[][])=>coords.map(([lon,lat],i)=>`${i?"L":"M"}${project(lat,lon).join(",")}`).join(" ");
+  switch(geometry.type){
+    case "LineString":return line(geometry.coordinates);
+    case "MultiLineString":return geometry.coordinates.map(line).join(" ");
+    case "Polygon":return geometry.coordinates.map(c=>line(c)+"Z").join(" ");
+    case "MultiPolygon":return geometry.coordinates.flatMap(p=>p.map(c=>line(c)+"Z")).join(" ");
+    case "GeometryCollection":return geometry.geometries.map(humanPath).join(" ");
+    default:return "";
+  }
 }
 function points(coords: number[][]) {
   return coords.map(([lat, lon]) => project(lat, lon).join(",")).join(" ");
@@ -77,9 +105,14 @@ function localView(camera?: MapCamera) {
   return { zoom: 2 ** (camera.zoom - 6.7), offset: { x: 700 - x, y: 500 - y } };
 }
 function LocalMapCanvas({
+  humanGeometry,
+  hydrologyPoints,
+  orcaPoints,
+  viewshed,
   cameraLink,
   overlayHost,
   showControls = true,
+  nativeData = false,
   layer,
   colorScale,
   popup,
@@ -92,6 +125,12 @@ function LocalMapCanvas({
   opacity = 0.8,
   markers = [],
 }: MapCanvasProps) {
+  const [theme] = useAppTheme();
+  const basemap = basemapPalette(theme);
+  const patternPrefix = useId().replaceAll(":", "");
+  const memberships = membershipStyles(layer, colorScale);
+  const viewShapes = viewshed ? viewshedOverlays(viewshed) : undefined;
+  const moved = useRef(false);
   const [zoom, setZoom] = useState(() => localView(cameraLink?.getCamera()).zoom);
   const [offset, setOffset] = useState(() => localView(cameraLink?.getCamera()).offset);
   const cameraPeer = useRef<MapCameraPeer | null>(null);
@@ -126,9 +165,9 @@ function LocalMapCanvas({
   ];
   const displayCells = layer
     ? visibleLayerCells(layer, displayBounds)
-    : cells;
+    : nativeData ? [] : cells;
   const overlays = (<>
-      {popup && <div className="atlas-map-popup local-popup">{popup}</div>}
+      {(humanGeometry?.popup ?? popup) && <div className="atlas-map-popup local-popup">{humanGeometry?.popup ?? popup}</div>}
       {showControls && <div className="map-tools">
         <button
           aria-label="Zoom in"
@@ -148,20 +187,26 @@ function LocalMapCanvas({
     <div className="map-canvas">
       <svg
         aria-label={
-          layer
+          humanGeometry ? "Illustrative coastline with original Human source geometry" : layer
             ? `Illustrative coastline with native H3 R${layer.resolution} values · ${layer.sourceLabel}`
-            : "Illustrative Pacific Northwest map with synthetic H3 values"
+            : nativeData ? "Illustrative coastline awaiting native layer values"
+              : "Illustrative Pacific Northwest map with synthetic H3 values"
         }
         viewBox="0 0 1400 1000"
         preserveAspectRatio="xMidYMid slice"
+        onClick={event => {
+          if (!moved.current && !(event.target as Element).closest(".hex-cell,[data-human-record],[data-orca-point],[data-viewshed-role]")) { viewshed?.onBackground(); humanGeometry?.onBackground(); }
+        }}
         onPointerDown={(e) => {
-          if (!(e.target as Element).closest(".hex-cell")) {
+          moved.current = false;
+          if (!(e.target as Element).closest(".hex-cell,[data-human-record],[data-orca-point],[data-viewshed-role]")) {
             setDrag({ x: e.clientX, y: e.clientY });
             e.currentTarget.setPointerCapture(e.pointerId);
           }
         }}
         onPointerMove={(e) => {
           if (drag) {
+            if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) > 2) moved.current = true;
             moveView(zoom, {
               x: offset.x + (e.clientX - drag.x) / zoom,
               y: offset.y + (e.clientY - drag.y) / zoom,
@@ -172,6 +217,9 @@ function LocalMapCanvas({
         onPointerUp={() => { setDrag(null); if (drag) moveView(zoom, offset); }}
       >
         <defs>
+          {memberships?.patterns.map(pattern => <pattern key={pattern.id} id={`${patternPrefix}-${pattern.id}`} patternUnits="userSpaceOnUse" width="16" height="16" patternTransform="rotate(45)">
+            {pattern.colors.map((color,i) => <rect key={i} x={i*16/pattern.colors.length} y="0" width={16/pattern.colors.length+.05} height="16" fill={color} />)}
+          </pattern>)}
           <pattern
             id="water-grid"
             width="90"
@@ -195,13 +243,13 @@ function LocalMapCanvas({
             <path
               d="M-10 60 Q20 5 60 15 M-10 75 Q20 20 60 30"
               fill="none"
-              stroke="#a5b8a4"
+              stroke={basemap.forest}
               strokeWidth=".7"
               opacity=".35"
             />
           </pattern>
         </defs>
-        <rect width="1400" height="1000" fill="#e5eff0" />
+        <rect width="1400" height="1000" fill={basemap.ocean} />
         <rect width="1400" height="1000" fill="url(#water-grid)" />
         <g
           transform={`translate(700 500) scale(${zoom}) translate(-700 -500) translate(${offset.x} ${offset.y})`}
@@ -210,8 +258,8 @@ function LocalMapCanvas({
             <g key={i}>
               <polygon
                 points={points(p)}
-                fill="#e7ebdf"
-                stroke="#aebfaf"
+                fill={basemap.land}
+                stroke={basemap.coast}
                 strokeWidth="1.3"
               />
               <polygon points={points(p)} fill="url(#terrain)" />
@@ -231,7 +279,7 @@ function LocalMapCanvas({
                   key={c.id}
                   points={points(boundaryFor(c))}
                   fill={
-                    layer
+                    layer?.cellAppearance?.get(c.id)?.color ?? (memberships?.cells.has(c.id) ? `url(#${patternPrefix}-${memberships.cells.get(c.id)})` : layer
                       ? colorScale
                         ? colorForScale(
                             layer.values.get(c.id) ?? null,
@@ -241,9 +289,9 @@ function LocalMapCanvas({
                             layer.values.get(c.id) ?? null,
                             layer.range,
                           )
-                      : colorFor(valueFor(c, feature, month), feature)
+                      : colorFor(valueFor(c, feature, month), feature))
                   }
-                  fillOpacity={opacity}
+                  fillOpacity={opacity * (layer?.cellAppearance?.get(c.id)?.opacity ?? 1)}
                   stroke={selected === c.id ? "#183f44" : "#ffffff"}
                   strokeWidth={selected === c.id ? 3 : 0.8}
                   className="hex-cell"
@@ -270,6 +318,46 @@ function LocalMapCanvas({
                   </title>
                 </polygon>
               ))}
+          {viewShapes && viewshed && <g className="viewshed-overlay">
+            {viewShapes.targets.features.map(target => <path key={`target:${target.id}`} data-viewshed-role="target"
+              d={geometryPath(target.geometry)} fill={target.properties!.color} fillOpacity={viewshed.opacity ?? .75}
+              fillRule="evenodd" stroke={target.properties!.selected ? "#123f62" : "white"}
+              strokeWidth={target.properties!.selected ? 3 : viewshed.gridVisible === false ? 0 : .65}
+              role="button" tabIndex={0} aria-label={`Inspect water target ${target.id}`}
+              onClick={() => viewshed.onTarget(String(target.id))}
+              onKeyDown={event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); viewshed.onTarget(String(target.id)); } }} />)}
+            {viewShapes.sources.features.map(source => <path key={`source:${source.id}`} data-viewshed-role="source"
+              d={geometryPath(source.geometry)} fill={source.properties!.color}
+              fillOpacity={viewshed.mode === "targetSources" ? source.properties!.paired ? viewshed.opacity ?? .75 : .14 : viewshed.mode === "target" ? .22 : .45}
+              fillRule="evenodd" stroke="#9e7840" strokeWidth={source.properties!.selected ? 2.5 : viewshed.gridVisible === false ? 0 : .7}
+              role="button" tabIndex={0} aria-label={`Select land source ${sourceLabel(String(source.id))}`}
+              onClick={() => viewshed.onSource(String(source.id))}
+              onKeyDown={event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); viewshed.onSource(String(source.id)); } }} />)}
+            {viewShapes.observers.features.map(observer => {
+              const [x, y] = project(observer.geometry.coordinates[1], observer.geometry.coordinates[0]);
+              return <circle key={observer.id} cx={x} cy={y} r={2.5 / zoom} fill="#542f0b" pointerEvents="none" />;
+            })}
+          </g>}
+          {humanGeometry && [...humanVisibleFeatures(humanGeometry).footprints,...humanVisibleFeatures(humanGeometry).records].map(f=>{
+            const [x,y]=project(f.properties.label_point[1],f.properties.label_point[0]);
+            const common={"data-human-record":true,role:"button",tabIndex:0,"aria-label":`Inspect ${humanRecordName(f)}`,
+              onClick:()=>humanGeometry.onSelect(f.properties.record_id),onKeyDown:(event:React.KeyboardEvent<SVGElement>)=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();humanGeometry.onSelect(f.properties.record_id);}}};
+            return f.geometry.type==="Point"?<circle key={f.id} {...common} cx={x} cy={y} r={(humanGeometry.selected===f.properties.record_id?7:5)/zoom} fill={humanRecordColor(f)} fillOpacity={humanGeometry.opacity} stroke="white" strokeWidth={1.5/zoom}><title>{humanRecordName(f)}</title></circle>
+              :<path key={f.id} {...common} d={humanPath(f.geometry)} fill={f.properties.role==="source_footprint"?humanRecordColor(f):"none"} fillOpacity={humanGeometry.opacity*.2} stroke={humanRecordColor(f)} strokeOpacity={humanGeometry.opacity} strokeWidth={2/zoom}><title>{humanRecordName(f)}</title></path>;
+          })}
+          {hydrologyPoints && hydrologyPointGeoJSON(hydrologyPoints).features.map(node => {
+            const [x, y] = project(node.geometry.coordinates[1], node.geometry.coordinates[0]);
+            const p = node.properties!;
+            return <circle key={node.id} data-hydrology-node cx={x} cy={y} r={(p.radius + (p.selected ? 2 : 0)) / zoom}
+              fill={p.missing ? "none" : p.color} fillOpacity={hydrologyPoints.appearance?.opacity ?? .88} stroke={p.color} strokeWidth={(p.selected ? 4 : 2.5) / zoom}
+              role="button" tabIndex={0} aria-label={`Inspect ${p.name} river`}
+              onClick={() => hydrologyPoints.onSelect(p.river)} onKeyDown={event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); hydrologyPoints.onSelect(p.river); } }}>
+              <title>{p.name} · {p.missing ? "Unavailable" : p.value} · approximate mouth reference</title></circle>;
+          })}
+          {orcaPoints?.records.filter(r => r.latitude !== null && r.longitude !== null).slice(0, 1000).map(record => {
+            const [x,y] = project(record.latitude!, record.longitude!);
+            return <circle data-orca-point key={record.event_id} cx={x} cy={y} r={5} fill={orcaCategoryColors[record.category]} stroke="white" strokeWidth={1.5} tabIndex={0} role="button" aria-label={`Inspect sighting ${record.event_id}`} onClick={() => orcaPoints.onSelect(record.event_id)} onKeyDown={event => { if(event.key === "Enter" || event.key === " ") { event.preventDefault(); orcaPoints.onSelect(record.event_id); } }}><title>{record.source} · {record.category}</title></circle>;
+          })}
           {markers.map((s) => {
             const [x, y] = project(s.cell.lat, s.cell.lon);
             return (
@@ -329,7 +417,7 @@ function LocalMapCanvas({
         </g>
       </svg>
       {overlayHost ? createPortal(overlays, overlayHost) : overlays}
-      {!layer && (
+      {!layer && !nativeData && (
         <span className="map-attribution">
           Illustrative coastline · H3 r5 · Synthetic values
         </span>
@@ -357,29 +445,21 @@ export default function MapCanvas(props: MapCanvasProps) {
         />
       </Suspense>
     );
-  if (props.basemap === "maptiler" && props.layer)
+  if (props.basemap === "maptiler" && (props.nativeData || props.layer))
     return (
-      <div className="map-canvas map-wait-state" role="alert">
-        <div>
-          <p>{failed ? "Basemap unavailable." : "Basemap key not configured."}</p>
-          <p>
-            {failed
-              ? "Retry to load the geographic map."
-              : "Configure the MapTiler key described in the app README to load the geographic map."}
-          </p>
-          {failed && <button className="button" onClick={() => setFailed(false)}>Retry basemap</button>}
-        </div>
+      <div className="map-canvas map-wait-state">
+        <WarningNotice title={failed ? "Basemap unavailable" : "Basemap key not configured"}
+          message={failed ? "Retry to load the geographic map." : "Configure the MapTiler key described in the app README to load the geographic map."}
+          onRetry={failed ? () => setFailed(false) : undefined} retryLabel="Retry basemap" />
       </div>
     );
   return (
     <div className="map-provider">
       <LocalMapCanvas {...props} />
       {props.basemap === "maptiler" && (
-        <span className="basemap-notice" role="status">
-          {failed
-            ? "Basemap unavailable · local fallback"
-            : "Local basemap · MapTiler key not configured"}
-        </span>
+        <WarningNotice title={failed ? "Basemap unavailable" : "Basemap key not configured"}
+          role="status" message={failed ? "Local basemap fallback is active." : "Local basemap · MapTiler key not configured"}
+          onRetry={failed ? () => setFailed(false) : undefined} retryLabel="Retry basemap" />
       )}
     </div>
   );

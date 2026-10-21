@@ -1,0 +1,79 @@
+{
+  "kind": "governance-memberships",
+  "schemaVersion": 1,
+  "rows": 4,
+  "group": "management_areas",
+  "column": "management_areas__feature_memberships_v1",
+  "countColumn": "management_areas__recorded_feature_count",
+  "statusColumn": "management_areas__feature_memberships_v1_status",
+  "dictionary": [
+    {
+      "feature_id": "dfo:21-0",
+      "records": [
+        {
+          "source_dataset_id": "dfo",
+          "source_feature_id": "zero",
+          "feature_name": null,
+          "feature_type": "marine_area",
+          "authority": "DFO",
+          "jurisdiction": null,
+          "region": null,
+          "area_system_id": "dfo.marine",
+          "area_code": "21-0",
+          "area_title": null,
+          "area_hierarchy_level": null,
+          "parent_area_code": null,
+          "geometry_part_ids": [
+            "part-c"
+          ]
+        }
+      ]
+    },
+    {
+      "feature_id": "wdfw:7",
+      "records": [
+        {
+          "source_dataset_id": "wdfw",
+          "source_feature_id": "19",
+          "feature_name": "San Juan Islands",
+          "feature_type": "marine_area",
+          "authority": "WDFW",
+          "jurisdiction": null,
+          "region": null,
+          "area_system_id": "wdfw.marine",
+          "area_code": "7",
+          "area_title": null,
+          "area_hierarchy_level": null,
+          "parent_area_code": null,
+          "geometry_part_ids": [
+            "part-a",
+            "part-b"
+          ]
+        }
+      ]
+    }
+  ],
+  "indices": [
+    [
+      0,
+      1
+    ],
+    null,
+    [],
+    [
+      1
+    ]
+  ],
+  "counts": [
+    2,
+    null,
+    0,
+    1
+  ],
+  "statuses": [
+    "partial",
+    "unknown",
+    "observed",
+    "partial"
+  ]
+}

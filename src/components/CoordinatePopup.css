@@ -1,0 +1,10 @@
+.viewshed-coordinate-popup { position:absolute; z-index:8; width:232px; max-width:calc(100% - 16px); padding:12px; border:1px solid #cad8d9; border-radius:8px; background:#fffffff7; box-shadow:0 5px 24px #244c5428; color:#244d60; font-family:Arial,sans-serif; }
+.viewshed-coordinate-popup header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; font-size:12px; }
+.viewshed-coordinate-popup header button { display:grid; place-items:center; width:22px; height:22px; }
+.viewshed-coordinate-popup label { display:flex; flex-direction:column; gap:6px; font-size:10px; color:#627b85; }
+.viewshed-coordinate-popup input { width:100%; font:11px ui-monospace,monospace; padding:8px 6px; border:1px solid #d6e1de; border-radius:4px; color:#214b60; background:#f5f8f5; }
+.viewshed-copy-coordinates { display:flex; align-items:center; gap:7px; font-size:11px; color:#21586b; margin-top:10px; padding:4px 2px; }
+.viewshed-copy-status { display:block; font-size:10px; line-height:1.5; }.viewshed-copy-status:empty { display:none; }
+.viewshed-coordinate-popup button:focus-visible,.viewshed-coordinate-popup input:focus-visible { outline:2px solid #59a5ca; outline-offset:2px; }
+.viewshed-coordinate-popup { background:var(--panel); border-color:var(--border); color:#315367; }
+.viewshed-coordinate-popup label { color:var(--muted); }.viewshed-coordinate-popup input { background:white; color:#315367; border-color:var(--border); }.viewshed-copy-coordinates { color:#315367; }

@@ -1,0 +1,14 @@
+.governance-membership-inspector { color: #173f60; font: 12px/1.5 Arial, sans-serif; }
+.governance-membership-inspector h3 { font-size: 14px; margin: 0 0 10px; }
+.governance-membership-inspector h4 { font-size: 12px; margin: 0 0 5px; overflow-wrap: anywhere; }
+.governance-membership-support, .governance-membership-note { color: #617491; font-size: 11px; }
+.governance-membership-list { margin: 12px 0; padding-left: 20px; }
+.governance-membership-list > li { margin-bottom: 18px; padding-left: 3px; }
+.governance-feature-id { margin: 0 0 8px; overflow-wrap: anywhere; }
+.governance-source-record + .governance-source-record { border-top: 1px solid #e8edf1; margin-top: 10px; padding-top: 10px; }
+.governance-source-record dl { display: grid; gap: 5px; margin: 8px 0; }
+.governance-source-record dl > div { display: grid; grid-template-columns: minmax(75px, 1fr) minmax(0, 2fr); gap: 8px; }
+.governance-source-record dt { color: #617491; }
+.governance-source-record dd { margin: 0; overflow-wrap: anywhere; }
+.governance-source-record summary { min-height: 32px; cursor: pointer; }
+.governance-source-record code { font-size: 10px; overflow-wrap: anywhere; }

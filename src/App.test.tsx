@@ -1,5 +1,5 @@
 import { beforeEach, describe, it, expect } from "vitest";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "./App";
 import DemoMapPage from "./pages/DemoMapPage";
@@ -7,16 +7,6 @@ import { cells, valueFor, formatValue } from "./data/demo";
 beforeEach(() => window.history.replaceState(null, "", "/"));
 async function renderAtMap() {
   return render(<DemoMapPage />);
-}
-async function navigate(name: string) {
-  const user = userEvent.setup();
-  await user.click(screen.getByRole("button", { name: "Page navigation" }));
-  await user.click(
-    within(screen.getByRole("navigation", { name: "Main navigation" })).getByRole("button", {
-      name: new RegExp(name),
-    }),
-  );
-  return user;
 }
 describe("frontend interactions", () => {
   it("opens page navigation from the wave icon on hover and removes header navigation links", async () => {
@@ -30,7 +20,7 @@ describe("frontend interactions", () => {
     await user.hover(trigger);
     const menu = screen.getByRole("navigation", { name: "Main navigation" });
     expect(within(menu).getAllByRole("button").map(button => button.querySelector("strong")?.textContent)).toEqual([
-      "Home", "Features", "Sightings", "Relationships", "Viewshed", "Health",
+      "Home", "Features", "Relationships", "Models", "Forecasts", "Data Health",
     ]);
     const relationship = within(menu).getByRole("button", { name: /Relationships/ });
     await user.hover(relationship);
@@ -50,7 +40,7 @@ describe("frontend interactions", () => {
     const trigger = screen.getByRole("button", { name: "Page navigation" });
     await user.pointer([{ keys: "[TouchA>]", target: trigger }, { keys: "[/TouchA]", target: trigger }]);
     expect(trigger).toHaveAttribute("aria-expanded", "true");
-    await user.click(screen.getByRole("heading", { name: "Health" }));
+    await user.click(screen.getByRole("heading", { name: "Data Health" }));
     expect(trigger).toHaveAttribute("aria-expanded", "false");
     trigger.focus();
     await user.keyboard("{ArrowDown}");
@@ -161,44 +151,33 @@ describe("frontend interactions", () => {
     );
     expect(inspector()).toHaveTextContent("Vessel activity · Oct 2026");
   });
-  it("navigates and changes relationship pairs from the matrix", async () => {
+  it.each(["models", "forecasts"])("shows %s as coming soon", (page) => {
+    window.history.replaceState(null, "", `/#${page}`);
     render(<App />);
-    const user = await navigate("Relationships");
-    await user.click(screen.getByRole("button", { name: "Legend" }));
-    expect(screen.getByRole("dialog", { name: "Relationships legend key" })).toHaveTextContent("Paired observations");
-    await user.keyboard("{Escape}");
-    expect(screen.getByRole("button", { name: "Legend" })).toHaveFocus();
-    await user.click(
-      screen.getByRole("button", {
-        name: "Compare Vessel activity with Viewability",
-      }),
-    );
-    expect(screen.getByLabelText("X feature")).toHaveValue("traffic");
-    expect(screen.getByLabelText("Y feature")).toHaveValue("viewability");
-    await user.selectOptions(screen.getByLabelText("Season"), "summer");
-    expect(screen.getByLabelText("Season")).toHaveValue("summer");
+    expect(screen.getByText("Coming soon")).toBeVisible();
+    expect(screen.getByRole("link", { name: "Explore Features" })).toHaveAttribute("href", "#map");
+    expect(screen.queryByLabelText("X feature")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Legend" })).not.toBeInTheDocument();
   });
-  it("filters sightings and handles an empty combination", async () => {
+  it.each(["#sightings", "#sightings?species=orca"])("opens legacy %s links in Features", (hash) => {
+    window.history.replaceState(null, "", `/${hash}`);
     render(<App />);
-    const user = await navigate("Sightings");
-    await user.click(screen.getByRole("button", { name: "Legend" }));
-    expect(screen.getByRole("dialog", { name: "Sightings legend key" })).toHaveTextContent("Background feature pairs");
-    await user.click(screen.getByRole("button", { name: "Close legend" }));
-    await user.click(screen.getByLabelText("Background"));
-    await user.click(screen.getByRole("button", { name: "Legend" }));
-    expect(screen.getByRole("dialog", { name: "Sightings legend key" })).not.toHaveTextContent("Background feature pairs");
-    await user.click(document.body);
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    await user.selectOptions(screen.getByLabelText("Species"), "orca");
-    await user.selectOptions(screen.getByLabelText("Season"), "summer");
-    await user.selectOptions(screen.getByLabelText("Encounter"), "single");
-    expect(screen.getByRole("status")).toHaveTextContent(
-      "No demo encounters match",
-    );
+    expect(window.location.hash).toBe("#map");
+    expect(screen.getByRole("heading", { name: "Features" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Sightings" })).not.toBeInTheDocument();
+  });
+  it.each(["hashchange", "popstate"])("redirects legacy Sightings navigation on %s", (event) => {
+    window.history.replaceState(null, "", "/#health");
+    render(<App />);
+    window.history.replaceState(null, "", "/#sightings");
+    fireEvent(window, new Event(event));
+    expect(window.location.hash).toBe("#map");
+    expect(screen.getByRole("heading", { name: "Features" })).toBeInTheDocument();
   });
   it("supports health empty/error/retry and release comparison", async () => {
+    window.history.replaceState(null, "", "/#health");
     render(<App />);
-    const user = await navigate("Health");
+    const user = userEvent.setup();
     await user.click(screen.getByRole("button", { name: "Legend" }));
     expect(screen.getByRole("dialog", { name: "Health legend key" })).toHaveTextContent("Missing ≠ observed zero");
     await user.keyboard("{Escape}");

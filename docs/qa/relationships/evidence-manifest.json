@@ -1,0 +1,93 @@
+{
+  "owner": "Relationships implementation",
+  "checked": "2026-10-20",
+  "appHead": "9282c47eede1ff37f21201891b629234ca6407b8",
+  "evidence": {
+    "docs/qa/relationships/actual-data-checks.json": {
+      "bytes": 13564,
+      "sha256": "dea249480612e7ef3a46ae54fc1b698955687d75d1010eaaaf625f094ab3b717"
+    },
+    "docs/qa/relationships/browser-exported-recipe.json": {
+      "bytes": 1164,
+      "sha256": "e8e4ea90ad899ae3521c40e8fb0e62ddf5ddb7728e2f54c8fd7f78a415f91429"
+    },
+    "docs/qa/relationships/desktop-comparison-first.jpg": {
+      "bytes": 431986,
+      "sha256": "66f9bf0a46d8f8a2084f4fd5cb844776b1543e960ab6fadfd49b568a96eabf68"
+    },
+    "docs/qa/relationships/desktop-comparison.jpg": {
+      "bytes": 601554,
+      "sha256": "e5efc3ce78f3106baa0ccf1409de7f3afb87962a327a3cc6cb731816f9d0bab5"
+    },
+    "docs/qa/relationships/desktop-detail-1.jpg": {
+      "bytes": 29185,
+      "sha256": "0f854568fbb11a84005fe060a6954d6c63e265ec4a265381d833f237c7c05caa"
+    },
+    "docs/qa/relationships/desktop-detail-2.jpg": {
+      "bytes": 32574,
+      "sha256": "34beedd9be75164c7f929f78fdeac43011e3b50b5208a8de345ef2c84db1de40"
+    },
+    "docs/qa/relationships/desktop-detail-3.jpg": {
+      "bytes": 105451,
+      "sha256": "b0602819db569ee8139ae4c4f0564100a2f950da200b81fbab5644b8da5d60b6"
+    },
+    "docs/qa/relationships/desktop-first.jpg": {
+      "bytes": 107595,
+      "sha256": "49ab77513e185acc8296140a8edf22d41a680391d396b00019919c48a3627424"
+    },
+    "docs/qa/relationships/desktop.jpg": {
+      "bytes": 172278,
+      "sha256": "ff2af07fd877349c9d04a9178903977324f2d7d2e1433d817ad23670acb64129"
+    },
+    "docs/qa/relationships/environment.json": {
+      "bytes": 262,
+      "sha256": "f6399897573a2fb72da592d3c78fd3899db8a6cfcc43dcdb2733d7bcce60be89"
+    },
+    "docs/qa/relationships/map-preserved.jpg": {
+      "bytes": 82186,
+      "sha256": "7acf01b9349d6ea008b0fb600409513cf4fd90ade4702abf018786599da22fb6"
+    },
+    "docs/qa/relationships/mobile-comparison.jpg": {
+      "bytes": 217910,
+      "sha256": "e697fcd9973bf450ad1a4ca175f49b3156c3741eee614d5a279c26456f336a96"
+    },
+    "docs/qa/relationships/mobile-variables.jpg": {
+      "bytes": 34849,
+      "sha256": "0d605c4da6c71ace2e3f675a747526c6672b231d74d66dae1cc7f6c9303501b6"
+    },
+    "docs/qa/relationships/mobile.jpg": {
+      "bytes": 55070,
+      "sha256": "184db43b357645f2992d4063c1ffe3ec3f342ba562833342e8457a0059db5372"
+    },
+    "docs/qa/relationships/response-night.jpg": {
+      "bytes": 236760,
+      "sha256": "76dd1cf7016225fc717818057ffa74262df8be9ef48341862ccccfdb4e2bb481"
+    },
+    "docs/qa/relationships/static-recipe.json": {
+      "bytes": 996,
+      "sha256": "32142feda487b33d9428a5238e37e5b09b9e3150b5af18c30f025caa90ac6051"
+    },
+    "docs/qa/relationships/strict-empty.jpg": {
+      "bytes": 230761,
+      "sha256": "f94bd287547156cdb5452562102823526c6843c4e2f280072a12405095f490f9"
+    },
+    "docs/qa/relationships/test-summary.json": {
+      "bytes": 230,
+      "sha256": "2bbff413ca076c9eeeda5c33c2c341255f835d4b7a8e74ec11778f84d7e7e413"
+    }
+  },
+  "implementation": {
+    "scripts/relationships.py": "544e3b92f8693fa7ee0ff72c259249485674bf58900d04378b276df8d6ea4b59",
+    "scripts/relationships_api.py": "4a4fc41224ae1188073401856c718712fe15e1cb6641b0ee6b61814bb80186ca",
+    "scripts/check_relationships_local.py": "53eb08fd84fe964b8c6eebf4bada8997c3d8b0e370733133a611e966bc139664",
+    "scripts/test_relationships.py": "fa7240fbbe78776c8f47a693a3dba6772ea3a4fae48ce1e9c1f925d1a8740db6",
+    "src/data/relationships.ts": "15417c65e09f85ed1d673a9b749ba71e08cba88304ef76cd3ccecc08a0f0d56a",
+    "src/pages/RelationshipsPage.tsx": "fb854edb805824e2ec170c8c126f822642e8497f8d7465bffd7d8b883f90f18a",
+    "src/pages/RelationshipsPage.css": "70493577adae70c38aec852b617b16a24dbd5a5144fd8af20614cb00a5c6268c",
+    "src/pages/RelationshipsPlots.tsx": "751c3f90e3f45b0167915de7e8822477cfe43a8da0e3b68d681977c548d924c6",
+    "src/pages/RelationshipsPage.test.tsx": "6b3df44788b166e134c129f0f6da806dac7b1910db6b163939a20098d82c97f9",
+    "requirements-relationships.txt": "825997d774089c44bd4f3a21553ea4b4e72d9a121c767586acee3282513ae709"
+  },
+  "dataPolicy": "Current final Data only; no Data writes or acquisition performed",
+  "runtime": "localhost FastAPI 8001 and isolated Vite 5179; no persistent service installed"
+}

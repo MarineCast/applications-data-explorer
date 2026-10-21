@@ -1,0 +1,32 @@
+{
+  "prepared_columns": 25,
+  "prepared_features": 18,
+  "features": [
+    "Generalized fallback",
+    "Native land footprint unknown",
+    "Modeled rock presence score",
+    "Rock valid neighbor weight",
+    "Rock valid positive weight neighbors",
+    "Modeled sediment gravel fraction",
+    "Gravel valid neighbor weight",
+    "Gravel valid positive weight neighbors",
+    "Modeled sediment sand fraction",
+    "Sand valid neighbor weight",
+    "Sand valid positive weight neighbors",
+    "Modeled sediment mud fraction",
+    "Mud valid neighbor weight",
+    "Mud valid positive weight neighbors",
+    "Sediment fraction sum",
+    "Sediment normalized entropy",
+    "Physical hardness",
+    "Joint rock sediment fraction"
+  ],
+  "every_browser_column_equals_final_parquet": true,
+  "qualifier_bindings_valid": true,
+  "source_checksum_current": true,
+  "cached_stale_catalog_rejected": true,
+  "retained_null_metrics": [
+    "Physical hardness",
+    "Joint rock sediment fraction"
+  ]
+}

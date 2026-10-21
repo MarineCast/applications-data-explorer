@@ -1,0 +1,10 @@
+.legend-info { position:absolute; top:8px; right:8px; z-index:2; pointer-events:auto; }
+.legend-info-trigger { display:grid; place-items:center; width:32px; height:32px; border-radius:50%; color:#587884; background:transparent; }
+.legend-info-trigger:hover,.legend-info-trigger[aria-expanded=true] { color:#244b62; background:#e8efed; }
+.legend-info-trigger:focus-visible { outline:2px solid #518e9a; outline-offset:1px; }
+.colorbar-legend:has(>.legend-info) .legend-metric-name { padding-right:30px; }
+.legend-info-popup { position:fixed; z-index:90; width:min(320px,calc(100dvw - 24px)); padding-block:8px; pointer-events:auto; overflow-y:auto; }
+.legend-info-content { border:1px solid #cbd9de; border-radius:10px; padding:14px; background:#fffefb; color:#426078; box-shadow:0 8px 28px #173f6026; font:12px/1.6 Arial,sans-serif; }
+html[data-app-theme="dark"] .legend-info .legend-info-trigger { color:#accbd1; }
+html[data-app-theme="dark"] .legend-info-trigger:hover,html[data-app-theme="dark"] .legend-info-trigger[aria-expanded=true] { color:#e1f0ef; background:#315466; }
+html[data-app-theme="dark"] .legend-info-content { background:#193442; color:#dce8ee; border-color:#496675; box-shadow:0 8px 28px #04121b66; }

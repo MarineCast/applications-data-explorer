@@ -1,0 +1,32 @@
+{
+  "url": "http://127.0.0.1:5173/#map",
+  "separateHiddenTab": true,
+  "removedSelectionBefore": "Source grid degrees",
+  "fallbackAfterRefresh": "Mapped bed extent in full h3 m2",
+  "retainedSelection": "Modeled sediment sand fraction",
+  "nativeResolution": 6,
+  "retainedPickerNames": [
+    "Generalized fallback",
+    "Gravel valid neighbor weight",
+    "Gravel valid positive weight neighbors",
+    "Joint rock sediment fractionNo available values",
+    "Modeled rock presence score",
+    "Modeled sediment gravel fraction",
+    "Modeled sediment mud fraction",
+    "Modeled sediment sand fraction",
+    "Mud valid neighbor weight",
+    "Mud valid positive weight neighbors",
+    "Native land footprint unknown",
+    "Physical hardnessNo available values",
+    "Rock valid neighbor weight",
+    "Rock valid positive weight neighbors",
+    "Sand valid neighbor weight",
+    "Sand valid positive weight neighbors",
+    "Sediment fraction sum",
+    "Sediment normalized entropy"
+  ],
+  "screenshots": [
+    "substrate-picker.jpg",
+    "substrate-map.jpg"
+  ]
+}

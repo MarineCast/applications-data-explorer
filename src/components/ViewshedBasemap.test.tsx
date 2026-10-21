@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { pair, sourceA, sourceB, targetB, viewshedFixture } from "../test/viewshedFixture";
 import type { ViewshedMapProps } from "../data/viewshedMap";
-import { createViewshedScale } from "../data/viewshedScale";
+import { createViewshedScale, viewshedColor } from "../data/viewshedScale";
 
 const fake = vi.hoisted(() => ({
   events: new Map<string, (event?: unknown) => void>(),
@@ -59,6 +59,23 @@ beforeEach(() => {
 afterEach(() => { vi.unstubAllGlobals(); vi.useRealTimers(); });
 
 describe("viewshed geographic basemap", () => {
+  it("colors reverse land sources independently while every water target remains selectable", () => {
+    const original = props();
+    const scores = [pair(sourceA, sourceA, .4, .4), pair(sourceB, sourceA, .8, .8)];
+    const scale = createViewshedScale(scores, "lower", "ocean", "fixed", [0, 1]);
+    render(<ViewshedBasemap {...original} mode="targetSources" scores={scores} colorScale={scale} onUnavailable={vi.fn()} />);
+    act(() => fake.events.get("load")?.());
+    const sources = fake.data.get("viewshed-sources")!.mock.calls.at(-1)![0];
+    expect(sources.features.map((feature: { properties: { color: string } }) => feature.properties.color))
+      .toEqual([viewshedColor(.4, scale), viewshedColor(.8, scale)]);
+    const targets = fake.data.get("viewshed-targets")!.mock.calls.at(-1)![0];
+    expect(targets.features).toHaveLength(2);
+    expect(targets.features[0].properties.color).toBe("#cddfe6");
+    fake.query.mockReturnValue([{ source: "viewshed-targets", properties: { id: sourceA } }]);
+    act(() => fake.events.get("click")?.({ point: { x: 1, y: 2 } }));
+    expect(original.onTarget).toHaveBeenCalledWith(sourceA);
+    expect(original.onSource).not.toHaveBeenCalled();
+  });
   it("uses the OrcaCast_Public basemap with direct wheel/drag/pinch gestures, labels and separate coastal roles", () => {
     const view = render(<ViewshedBasemap {...props()} onUnavailable={vi.fn()} />);
     expect(fake.options).toHaveBeenCalledWith(expect.objectContaining({

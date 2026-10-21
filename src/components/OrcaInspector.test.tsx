@@ -1,0 +1,9 @@
+import {render,screen,within} from "@testing-library/react";
+import {describe,it,expect} from "vitest";
+import OrcaInspector from "./OrcaInspector";
+import {orcaFixture,orcaFixtureCell} from "../test/orcaFixture";
+describe("source-backed Orca inspector",()=>{
+ it("shows multiple reported pods, source date and description as plain text",()=>{const data=orcaFixture();const{container}=render(<OrcaInspector data={data} records={data.records} eventId="synthetic:mixed"/>);const inspector=screen.getByRole("region",{name:"Reported sighting records"});expect(inspector).toHaveTextContent("J");expect(inspector).toHaveTextContent("K");expect(inspector).toHaveTextContent("2024-02-29 12:00 UTC");expect(inspector).toHaveTextContent("<img src=x onerror=alert(1)>");expect(container.querySelector('img')).toBeNull();});
+ it("defaults to an itemized pod/group table for a cell, keeps a distinct total and retains unknown assignments",()=>{const data=orcaFixture();render(<OrcaInspector data={data} records={data.records} cell={orcaFixtureCell}/>);expect(screen.getByText("5 distinct source-deduplicated sighting records")).toBeInTheDocument();const table=screen.getByRole("table");expect(within(table).getByRole("row",{name:/J pod 2/})).toBeInTheDocument();expect(table).toHaveTextContent("Unknown pod/group");expect(table).toHaveTextContent("T65A matriline");expect(screen.getByText(/line totals may exceed/)).toBeInTheDocument();expect(screen.queryByText("native mixed")).not.toBeInTheDocument();});
+ it("states missing source descriptions without filling or inferring pods",()=>{const data=orcaFixture();render(<OrcaInspector data={data} records={data.records} eventId="synthetic:unknown"/>);expect(screen.getByText("No description supplied by source.")).toBeInTheDocument();expect(screen.getByText("Unknown pod/group")).toBeInTheDocument();});
+});

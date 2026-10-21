@@ -1,0 +1,71 @@
+/* The shared maritime theme covers chrome only; scientific ramps and marks keep their own colors. */
+.app-theme-toggle { display:grid; place-items:center; width:38px; height:38px; flex:none; margin-left:12px; border:1px solid #cbd9df; border-radius:50%; color:#315767; background:#eff4f3; }
+.app-theme-toggle:hover { background:#e0ebe8; }
+.coming-soon-page { display:grid; place-items:center; min-height:calc(100dvh - 62px); padding:40px 24px; background:linear-gradient(145deg,#eaf0ed,#dce8eb); }
+.coming-soon-card { width:min(580px,100%); padding:clamp(28px,5vw,56px); border:1px solid #a7bfc6; border-radius:18px; background:#f9faf7eb; box-shadow:0 20px 70px #163b4c12; color:#193d4e; }
+.coming-soon-card>svg { color:#547f81; display:block; margin-bottom:28px; }
+.coming-soon-badge { display:inline-block; margin-bottom:14px; padding:5px 9px; border:1px solid #9ebdb9; border-radius:5px; font:10px/1.5 system-ui,sans-serif; letter-spacing:1px; text-transform:uppercase; color:#446b70; }
+.coming-soon-card h1 { font:400 clamp(32px,4vw,48px)/1.15 Georgia,serif; margin-bottom:14px; }
+.coming-soon-card p { margin:10px 0; }
+.coming-soon-detail { color:#617882; }
+.coming-soon-link { display:inline-flex; align-items:center; gap:12px; margin-top:24px; text-decoration:none; }
+
+html[data-app-theme="dark"] { color-scheme:dark; background:#0e2431; }
+html[data-app-theme="dark"] .app { --atlas-ink:#dce8ee; --atlas-blue:#9bcfd5; --atlas-line:#3b5665; --night-surface:#193442; --night-raised:#203e50; --night-field:#102b3b; --night-border:#3b5665; --night-ink:#dce8ee; --night-muted:#a4bdc9; color:#dce8ee; background:#102b3b; }
+html[data-app-theme="dark"] :is(.app-header,.navigation.panel) { background:#132e3df5 !important; border-color:#3b5665 !important; color:#dce8ee; }
+html[data-app-theme="dark"] .brand>span { color:#e0e9ed; }
+html[data-app-theme="dark"] :is(.brand small,.navigation small,.navigation .eyebrow) { color:#a4bdc9; }
+html[data-app-theme="dark"] .navigation button { color:#dce8ee; }
+html[data-app-theme="dark"] .navigation button:hover,html[data-app-theme="dark"] .navigation button[aria-current=page] { background:#2c4d5d; }
+html[data-app-theme="dark"] .wave-navigation { color:#98c6c3; background:#244b5a; border-color:#4c6c76; }
+html[data-app-theme="dark"] .app-theme-toggle { background:#244657; border-color:#4c6c76; color:#d7e9ed; }
+html[data-app-theme="dark"] .app-theme-toggle:hover { background:#35596a; }
+html[data-app-theme="dark"] :is(.seascape-loading,.map-wait-state) { color:#c8dbe4; background:#102b3b; }
+
+/* Popups and tooltips can be portaled to document.body. */
+html[data-app-theme="dark"] :is(.map-mode .panel,.atlas-dialog,.source-picker-popup,.source-picker-trigger,.source-picker-description,.domain-dock-tooltip,.atlas-map-popup,.map-layer-status,.map-keyboard-hint,.map-source-label,.basemap-notice,.native-zoom-notice,.comparison-toolbar,.data-domain-dock,.maplibregl-ctrl-group,.maplibregl-ctrl-attrib,.map-attribution,.weather-time-slider,.weather-insights,.viewshed-inspector) {
+  background-color:#193442 !important; color:#dce8ee !important; border-color:#3b5665 !important; box-shadow:0 6px 22px #04121b38;
+}
+html[data-app-theme="dark"] :is(.atlas-dialog>header,.panel-title,.insights-header,.viewshed-panel-heading,.legend-popup-heading,.weather-panel-header,.weather-time-slider-header) { background-color:#193442 !important; color:#dce8ee !important; border-color:#3b5665 !important; }
+html[data-app-theme="dark"] :is(.map-mode,.atlas-dialog,.domain-dock-tooltip,.source-picker-popup) :is(h2,h3,h4,strong,label,summary,button,dt,dd,p,small,span,code) { color:inherit; }
+html[data-app-theme="dark"] :is(.map-mode .field,.source-picker-heading,.source-picker-choice,.source-picker-description>strong,.insights-dataset-heading h3,.insights-stats dd,.insights-section>h3,.active-layer-breadcrumb,.data-map-actions button,.colorbar-trigger,.legend-popup-heading,.legend-palette-name,.comparison-layer-chip) { color:#dce8ee !important; }
+html[data-app-theme="dark"] :is(.map-mode,.atlas-dialog) :is(select,input:not([type=range]):not([type=checkbox]):not([type=color]),textarea) { background:#102b3b !important; color:#dce8ee !important; border-color:#496675 !important; }
+html[data-app-theme="dark"] :is(.map-mode,.atlas-dialog) input::placeholder { color:#91aab7; }
+html[data-app-theme="dark"] :is(.source-picker-row:hover,.source-picker-info:hover,.source-picker-copy:hover,.data-domain-dock button:hover,.colorbar-trigger:hover,.map-tools button:hover,.legend-advanced,.insights-stats div,.insights-resolution,.source-picker-description,.comparison-layer-chip:hover) { background-color:#244657 !important; }
+html[data-app-theme="dark"] :is(.source-picker-row.selected,.data-domain-dock button[aria-pressed=true],.insights-tabs button[aria-selected=true],.legend-palette[aria-pressed=true],.button.primary) { background-color:#2e5464 !important; color:#e9f4f1 !important; border-color:#8ab9b6 !important; }
+html[data-app-theme="dark"] :is(.source-picker-row,.source-picker-description,.insights-section,.insights-header,.legend-advanced,.legend-appearance-scope,.legend-popup-heading,.colorbar-settings,.comparison-setup-actions,.data-domain-dock,.panel-title) { border-color:#3b5665 !important; }
+html[data-app-theme="dark"] :is(.source-picker-feedback,.source-picker-results h3,.source-picker-choice small,.source-picker-description dt,.source-picker-description .source-picker-note,.source-picker-distinction,.source-picker-empty,.native-resolution,.source-note,.legend-scale-note,.legend-value-state,.insights-note,.insights-empty,.insights-scope,.insights-coverage,.insights-cell-details dt,.insights-stats dt,.insights-dataset-heading p,.comparison-grid-note,.comparison-layer-chip span,.map-legend-foot,.colorbar-unit,.legend-ticks,.map-legend-ticks,.weather-time-slider p) { color:#a4bdc9 !important; }
+html[data-app-theme="dark"] :is(.map-mode,.atlas-dialog) button:disabled { color:#829ba8 !important; }
+html[data-app-theme="dark"] .data-map-actions button[aria-disabled=true] { color:#829ba8 !important; }
+html[data-app-theme="dark"] :is(.map-mode,.atlas-dialog) input { accent-color:#8ec6c4; }
+html[data-app-theme="dark"] :is(.map-mode,.atlas-dialog) :is(button,a,input,select):focus-visible { outline-color:#a8ded1; }
+html[data-app-theme="dark"] :is(.insights-histogram,.insights-boxplot,.insights-timeseries) text { fill:#a4bdc9; }
+html[data-app-theme="dark"] .comparison-identical-note { background:#453e2c; color:#e6d4b2; border-color:#796b4c; }
+html[data-app-theme="dark"] .map-labels text { fill:#b8cdd4; stroke:#23383e; paint-order:stroke; stroke-width:2px; }
+html[data-app-theme="dark"] .maplibregl-ctrl-group button .maplibregl-ctrl-icon { filter:invert(1); }
+html[data-app-theme="dark"] .coming-soon-page { background:radial-gradient(ellipse at 70% 20%,#244555,#0d2534 75%); }
+html[data-app-theme="dark"] .coming-soon-card { color:#e0eaee; background:#193747e8; border-color:#476776; box-shadow:0 20px 70px #06182344; }
+html[data-app-theme="dark"] .coming-soon-card>svg { color:#a0cfca; }
+html[data-app-theme="dark"] .coming-soon-badge { color:#b5d8d4; border-color:#648e92; }
+html[data-app-theme="dark"] .coming-soon-detail { color:#a7bfcb; }
+html[data-app-theme="dark"] .coming-soon-link { color:#dceeea; background:#2a505f; border-color:#557d89; }
+@media(max-width:700px) { .app-theme-toggle { margin-left:6px; width:34px; height:34px; } }
+html[data-app-theme="dark"] :is(.data-map-actions button,.map-tools button,.collapsed-product-dock,.domain-dock-toggle,.insights-tab,.legend-palette,.button) { background-color:#203e50 !important; color:#dce8ee; border-color:#496675 !important; }
+html[data-app-theme="dark"] :is(.map-mode,.atlas-dialog) .button:hover { background-color:#315668 !important; }
+html[data-app-theme="dark"] :is(.viewshed-page,.viewshed-layer) { --panel:#193442; --border:#3b5665; --muted:#a4bdc9; }
+html[data-app-theme="dark"] :is(.hydrology-controls,.hydrology-insights,.weather-insights,.governance-membership-inspector,.orca-controls,.orca-inspector,.orca-demography,.orca-point-legend) { color:#dce8ee; }
+html[data-app-theme="dark"] :is(.hydrology-current,.compare-support>div,.weather-stat,.insights-distribution-details,.viewshed-coordinate-popup,.viewshed-controls,.viewshed-zoom,.weather-time-slider,.weather-time-panel) { background-color:#203e50 !important; color:#dce8ee !important; border-color:#3b5665 !important; }
+html[data-app-theme="dark"] :is(.hydrology-chart,.weather-insight-chart,.compare-chart,.compare-time-axes,.insights-histogram) text { fill:#a4bdc9; }
+html[data-app-theme="dark"] :is(.weather-insights,.hydrology-insights) :is(th,td) { border-color:#3b5665; }
+html[data-app-theme="dark"] .hydrology-threshold-note { background:#413d2e; color:#e2d1ae; }
+html[data-app-theme="dark"] .hydrology-empty { color:#e2b4a7; border-color:#825e56; }
+html[data-app-theme="dark"] .insights-view-tabs { background:#102b3b; }
+html[data-app-theme="dark"] .insights-view-tabs button { color:#a4bdc9 !important; }
+html[data-app-theme="dark"] .insights-view-tabs button[aria-selected=true] { background:#315466; color:#edf6f4 !important; box-shadow:none; }
+html[data-app-theme="dark"] .insights-view-tabs button:disabled { color:#829ba8 !important; }
+.app:not(.map-mode)>.app-header>.app-theme-toggle { margin-left:auto; }
+html[data-app-theme="dark"] .map-mode :is(.maps,.map-provider,.maptiler-canvas,.map-canvas,.maplibregl-map) { background-color:#112c3d !important; }
+
+html[data-app-theme="dark"] .legend-popup-heading { box-shadow:0 -18px 0 #193442 !important; }
+html[data-app-theme="dark"] .legend-palette-row:has(input:checked) { background:#315466 !important; color:#e4f1ef !important; }
+html[data-app-theme="dark"] .legend-advanced { color:#b7ccd4 !important; }

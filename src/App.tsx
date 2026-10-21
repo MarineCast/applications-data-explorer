@@ -1,28 +1,36 @@
 import { useEffect, useRef, useState } from "react";
 import {
   House,
-  Menu,
+  Sun,
+  Moon,
+  Boxes,
+  MapPinned,
   Waves,
   Map,
   GitCompareArrows,
-  Fish,
   ShieldCheck,
   ArrowUpRight,
-  Eye,
 } from "lucide-react";
 import HomePage from "./pages/HomePage";
 import type { ExplorerPage } from "./pages/HomePage";
 import MapPage from "./pages/MapPage";
 import RelationshipsPage from "./pages/RelationshipsPage";
-import SightingsPage from "./pages/SightingsPage";
+import { preloadGeographicMap } from "./data/geographicRenderer";
+import ComingSoonPage from "./pages/ComingSoonPage";
+import { useAppTheme } from "./theme/appTheme";
+import "./theme/FeatureTheme.css";
 import HealthPage from "./pages/HealthPage";
-import ViewshedPage from "./pages/ViewshedPage";
 type Page = "home" | ExplorerPage;
 function pageFromHash(): Page {
-  const hash = window.location.hash.slice(1);
-  return ["home", "map", "viewshed", "relationships", "sightings", "health"].includes(hash)
+  const hash = window.location.hash.slice(1).split("?")[0];
+  if (hash === "viewshed" || hash === "sightings") return "map";
+  return ["home", "map", "relationships", "models", "forecasts", "health"].includes(hash)
     ? (hash as Page)
     : "home";
+}
+function normalizeLegacyHash() {
+  if (window.location.hash === "#viewshed") window.history.replaceState(null, "", "#map?layer=viewshed");
+  else if (window.location.hash.slice(1).split("?")[0] === "sightings") window.history.replaceState(null, "", "#map");
 }
 const pages = [
   {
@@ -38,31 +46,37 @@ const pages = [
     icon: Map,
   },
   {
-    id: "sightings" as const,
-    name: "Sightings",
-    description: "Inspect synthetic observation context",
-    icon: Fish,
-  },
-  {
     id: "relationships" as const,
     name: "Relationships",
-    description: "Compare features and distributions",
+    description: "Explore support-aware feature associations",
     icon: GitCompareArrows,
   },
   {
-    id: "viewshed" as const,
-    name: "Viewshed",
-    description: "See water target scores from land cells",
-    icon: Eye,
+    id: "models" as const,
+    name: "Models",
+    description: "Marine models · coming soon",
+    icon: Boxes,
+  },
+  {
+    id: "forecasts" as const,
+    name: "Forecasts",
+    description: "Model results on the map · coming soon",
+    icon: MapPinned,
   },
   {
     id: "health" as const,
-    name: "Health",
+    name: "Data Health",
     description: "Review coverage and provenance",
     icon: ShieldCheck,
   },
 ];
 export default function App() {
+  useEffect(preloadGeographicMap, []);
+  const [theme, setTheme] = useAppTheme();
+  useEffect(() => {
+    document.documentElement.dataset.appTheme = theme;
+    return () => { delete document.documentElement.dataset.appTheme; };
+  }, [theme]);
   const [page, setPage] = useState<Page>(pageFromHash);
   const [open, setOpen] = useState(false);
   const navigationRoot = useRef<HTMLDivElement>(null);
@@ -93,10 +107,13 @@ export default function App() {
       document.removeEventListener("keydown", escape);
     };
   }, [open]);
-  const [viewshedContext, setViewshedContext] = useState("Average target viewability / Lower estimate");
+  const [mapEntry, setMapEntry] = useState(() => window.location.hash === "#viewshed" || window.location.hash === "#map?layer=viewshed" ? "viewshed" : undefined);
+  useEffect(() => { normalizeLegacyHash(); }, []);
   useEffect(() => {
     const update = () => {
+      normalizeLegacyHash();
       setPage(pageFromHash());
+      setMapEntry(window.location.hash === "#viewshed" || window.location.hash === "#map?layer=viewshed" ? "viewshed" : undefined);
       setOpen(false);
     };
     window.addEventListener("hashchange", update);
@@ -107,15 +124,17 @@ export default function App() {
     };
   }, []);
   const navigate = (next: Page) => {
-    if (window.location.hash !== `#${next}`)
-      window.history.pushState(null, "", `#${next}`);
-    setPage(next);
+    const hash = next === "viewshed" ? "#map?layer=viewshed" : `#${next}`;
+    if (window.location.hash !== hash) window.history.pushState(null, "", hash);
+    setMapEntry(next === "viewshed" ? "viewshed" : undefined);
+    setPage(next === "viewshed" ? "map" : next);
     setOpen(false);
   };
-  const atlasPage = page === "map" || page === "viewshed";
+  const [mapHeaderHost, setMapHeaderHost] = useState<HTMLDivElement | null>(null);
+  const atlasPage = page === "map";
   return (
-    <div className={`app unified-shell ${page === "home" ? "home-mode" : ""} ${atlasPage ? "map-mode" : ""} ${page === "viewshed" ? "viewshed-mode" : ""}`}>
-      <header className="app-header">
+    <div data-app-theme={theme} className={`app unified-shell ${page === "home" ? "home-mode" : ""} ${atlasPage ? "map-mode" : ""} `}>
+      {page !== "home" && <header className="app-header">
         <div
           className="brand-navigation"
           ref={navigationRoot}
@@ -150,7 +169,7 @@ export default function App() {
               }
             }}
           >
-            {page === "home" ? <><span>Menu</span><Menu size={18} /></> : <Waves size={33} />}
+            <Waves size={33} />
           </button>
           <a
             className="brand"
@@ -192,26 +211,19 @@ export default function App() {
             </nav>
           )}
         </div>
-        {page === "viewshed" && (
-          <div className="atlas-location viewshed-context">
-            <Map size={16} />
-            <span>
-              Viewshed / {viewshedContext} <small>Local viewshed pilot</small>
-            </span>
-          </div>
-        )}
-      </header>
+        {(page === "map" || page === "relationships") && <div className={page === "map" ? "data-map-header-host" : "rel-header-host"} ref={setMapHeaderHost} />}
+        <button className="app-theme-toggle" aria-label={theme === 'dark' ? 'Switch to day mode' : 'Switch to night mode'} title={theme === 'dark' ? 'Switch to day mode' : 'Switch to night mode'} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+          {theme === 'dark' ? <Sun size={19} aria-hidden="true" /> : <Moon size={19} aria-hidden="true" />}
+        </button>
+      </header>}
       {page === "home" ? (
-        <HomePage onNavigate={navigate} menuOpen={open} />
+        <HomePage onNavigate={navigate} />
       ) : page === "map" ? (
-        <MapPage />
-      ) : page === "viewshed" ? (
-        <ViewshedPage onContextChange={setViewshedContext} />
+        <MapPage key={mapEntry ?? "features"} headerHost={mapHeaderHost} initialDomain={mapEntry} />
       ) : page === "relationships" ? (
-        <RelationshipsPage />
-      ) : page === "sightings" ? (
-        <SightingsPage />
-      ) : (
+        <RelationshipsPage headerHost={mapHeaderHost} />
+      ) : page === "models" || page === "forecasts" ? (
+        <ComingSoonPage page={page} />      ) : (
         <HealthPage />
       )}
     </div>

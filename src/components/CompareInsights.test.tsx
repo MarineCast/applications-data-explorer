@@ -10,7 +10,7 @@ it("uses one comparison panel with original-unit paired plots, full-pair correla
   render(<DatasetInsights open onOpenChange={() => {}} dataset={left} comparison={{ left, right,
     cell: { id: "a", coordinates: [48, -123], leftQualifiers: [{ label: "Coverage", value: "partial" }], rightQualifiers: [] } }} />);
   expect(screen.getAllByLabelText("Dataset insights")).toHaveLength(1);
-  expect(screen.getByRole("heading", { name: "Comparison Insights" })).toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: "Compare" })).toBeInTheDocument();
   expect(screen.queryByLabelText("Insights layer")).not.toBeInTheDocument();
   expect(screen.getByRole("img", { name: "Paired histograms" })).toBeInTheDocument();
   expect(screen.getByRole("img", { name: "Paired box plots" })).toBeInTheDocument();
@@ -31,4 +31,18 @@ it("renders paired recorded-time boxes with unavailable support and preserves ca
   expect(screen.getByLabelText("Right layer summary")).toHaveTextContent("false1true1");
   expect(screen.queryByRole("img", { name: /Correlation scatter plot/ })).not.toBeInTheDocument();
   expect(screen.getByText(/require two numeric layers/)).toBeInTheDocument();
+});
+
+it("omits spatial statistics for Hydrology reference-only comparison",()=>{
+ render(<DatasetInsights open onOpenChange={()=>{}} dataset={left} comparison={{left,right,referenceOnly:true}}/>);
+ expect(screen.getByText(/these selectors are not a sampled influence surface/)).toBeInTheDocument();
+ expect(screen.queryByLabelText("Correlation")).not.toBeInTheDocument();expect(screen.queryByRole("img",{name:"Paired histograms"})).not.toBeInTheDocument();
+});
+
+
+it("retains native Human record semantics and omits fabricated cell statistics",()=>{
+ const note="Native Human records retain original point, line and area identities.";
+ render(<DatasetInsights open onOpenChange={()=>{}} dataset={left} comparison={{left:{...left,unit:"source records"},right,referenceOnly:true,referenceNote:note}}/>);
+ expect(screen.getByText(note)).toBeInTheDocument();expect(screen.queryByText(/Hydrology mouth cells/)).not.toBeInTheDocument();
+ expect(screen.queryByLabelText("Correlation")).not.toBeInTheDocument();expect(screen.queryByRole("img",{name:"Paired histograms"})).not.toBeInTheDocument();
 });

@@ -1,0 +1,371 @@
+{
+  "checked_utc": "2026-10-19T00:52:54.408872+00:00",
+  "path": "/Users/tylerstevenson/Documents/Code_Repos/MarineCast/Data/Seascape/substrate-r6-static.parquet",
+  "rows_before": 2621,
+  "rows_after": 2621,
+  "columns_before": 42,
+  "columns_after": 27,
+  "removed_mapping": [
+    {
+      "label": "Source observation date status",
+      "field": "SUBSTRATE_MODEL__SOURCE_OBSERVATION_DATE_STATUS"
+    },
+    {
+      "label": "Sediment texture status",
+      "field": "SUBSTRATE_MODEL__SEDIMENT_TEXTURE_STATUS"
+    },
+    {
+      "label": "Sand point sample status",
+      "field": "SUBSTRATE_MODEL__SAND_POINT_SAMPLE_STATUS"
+    },
+    {
+      "label": "Sand mask status",
+      "field": "SUBSTRATE_MODEL__SAND_MASK_STATUS"
+    },
+    {
+      "label": "Rock point sample status",
+      "field": "SUBSTRATE_MODEL__ROCK_POINT_SAMPLE_STATUS"
+    },
+    {
+      "label": "Rock mask status",
+      "field": "SUBSTRATE_MODEL__ROCK_MASK_STATUS"
+    },
+    {
+      "label": "Point support status",
+      "field": "SUBSTRATE_MODEL__POINT_SUPPORT_STATUS"
+    },
+    {
+      "label": "Mud point sample status",
+      "field": "SUBSTRATE_MODEL__MUD_POINT_SAMPLE_STATUS"
+    },
+    {
+      "label": "Mud mask status",
+      "field": "SUBSTRATE_MODEL__MUD_MASK_STATUS"
+    },
+    {
+      "label": "H3 areal substrate coverage",
+      "field": "SUBSTRATE_MODEL__H3_AREAL_SUBSTRATE_COVERAGE"
+    },
+    {
+      "label": "Gravel point sample status",
+      "field": "SUBSTRATE_MODEL__GRAVEL_POINT_SAMPLE_STATUS"
+    },
+    {
+      "label": "Gravel mask status",
+      "field": "SUBSTRATE_MODEL__GRAVEL_MASK_STATUS"
+    },
+    {
+      "label": "Unsupported physical metrics reason",
+      "field": "SUBSTRATE_MODEL__UNSUPPORTED_PHYSICAL_METRICS_REASON"
+    },
+    {
+      "label": "Source observation period",
+      "field": "SUBSTRATE_MODEL__SOURCE_OBSERVATION_PERIOD"
+    },
+    {
+      "label": "Source grid degrees",
+      "field": "SUBSTRATE_MODEL__SOURCE_GRID_DEGREES"
+    }
+  ],
+  "retained_table_equals": true,
+  "retained_ipc_sha256_before": "bbdbb6b018d2227d6b7839c987c90184d7938402a710d4d8e15fca1347a25c7b",
+  "retained_ipc_sha256_after": "bbdbb6b018d2227d6b7839c987c90184d7938402a710d4d8e15fca1347a25c7b",
+  "retained_fields": [
+    {
+      "name": "H3_INDEX",
+      "type": "large_string",
+      "nulls_before": 0,
+      "nulls_after": 0,
+      "array_equal": true
+    },
+    {
+      "name": "H3_RESOLUTION",
+      "type": "int64",
+      "nulls_before": 0,
+      "nulls_after": 0,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__H3_RESOLUTION",
+      "type": "int64",
+      "nulls_before": 0,
+      "nulls_after": 0,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__REPRESENTATIVE_POINT_LONGITUDE",
+      "type": "double",
+      "nulls_before": 0,
+      "nulls_after": 0,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__REPRESENTATIVE_POINT_LATITUDE",
+      "type": "double",
+      "nulls_before": 0,
+      "nulls_after": 0,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__GENERALIZED_FALLBACK",
+      "type": "bool",
+      "nulls_before": 0,
+      "nulls_after": 0,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__NATIVE_LAND_FOOTPRINT_UNKNOWN",
+      "type": "bool",
+      "nulls_before": 0,
+      "nulls_after": 0,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__WATER_MASK_VERSION",
+      "type": "large_string",
+      "nulls_before": 0,
+      "nulls_after": 0,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__SPATIAL_SUPPORT_VERSION",
+      "type": "large_string",
+      "nulls_before": 0,
+      "nulls_after": 0,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__MODELED_ROCK_PRESENCE_SCORE",
+      "type": "double",
+      "nulls_before": 316,
+      "nulls_after": 316,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__ROCK_VALID_NEIGHBOR_WEIGHT",
+      "type": "double",
+      "nulls_before": 0,
+      "nulls_after": 0,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__ROCK_VALID_POSITIVE_WEIGHT_NEIGHBORS",
+      "type": "int64",
+      "nulls_before": 0,
+      "nulls_after": 0,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__MODELED_SEDIMENT_GRAVEL_FRACTION",
+      "type": "double",
+      "nulls_before": 316,
+      "nulls_after": 316,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__GRAVEL_VALID_NEIGHBOR_WEIGHT",
+      "type": "double",
+      "nulls_before": 0,
+      "nulls_after": 0,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__GRAVEL_VALID_POSITIVE_WEIGHT_NEIGHBORS",
+      "type": "int64",
+      "nulls_before": 0,
+      "nulls_after": 0,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__MODELED_SEDIMENT_SAND_FRACTION",
+      "type": "double",
+      "nulls_before": 316,
+      "nulls_after": 316,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__SAND_VALID_NEIGHBOR_WEIGHT",
+      "type": "double",
+      "nulls_before": 0,
+      "nulls_after": 0,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__SAND_VALID_POSITIVE_WEIGHT_NEIGHBORS",
+      "type": "int64",
+      "nulls_before": 0,
+      "nulls_after": 0,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__MODELED_SEDIMENT_MUD_FRACTION",
+      "type": "double",
+      "nulls_before": 316,
+      "nulls_after": 316,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__MUD_VALID_NEIGHBOR_WEIGHT",
+      "type": "double",
+      "nulls_before": 0,
+      "nulls_after": 0,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__MUD_VALID_POSITIVE_WEIGHT_NEIGHBORS",
+      "type": "int64",
+      "nulls_before": 0,
+      "nulls_after": 0,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__SEDIMENT_FRACTION_SUM",
+      "type": "double",
+      "nulls_before": 316,
+      "nulls_after": 316,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__SEDIMENT_NORMALIZED_ENTROPY",
+      "type": "double",
+      "nulls_before": 316,
+      "nulls_after": 316,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__DERIVATION_METHOD",
+      "type": "large_string",
+      "nulls_before": 0,
+      "nulls_after": 0,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__SOURCE_PRODUCT_VERSION",
+      "type": "large_string",
+      "nulls_before": 0,
+      "nulls_after": 0,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__PHYSICAL_HARDNESS",
+      "type": "double",
+      "nulls_before": 2621,
+      "nulls_after": 2621,
+      "array_equal": true
+    },
+    {
+      "name": "SUBSTRATE_MODEL__JOINT_ROCK_SEDIMENT_FRACTION",
+      "type": "double",
+      "nulls_before": 2621,
+      "nulls_after": 2621,
+      "array_equal": true
+    }
+  ],
+  "source_context_equal": true,
+  "source_context_sha256": "db88237cc25ccbb5e4495690b3f995039032d8607fb3b318732dd5825545aba4",
+  "product_sha256_before": "12edd78c7269c044339dad724b2448756ae0326b35b58a8764657c86a7946f44",
+  "product_sha256_after": "f4748b7705c04456d480e4d9548f78037fa5b2f27ea7dc5d1f8f822be3d17841",
+  "catalog_sha256_before": "9124e15536cdbcc043d0a4474b6824eaeabd5802803e38f6d5d3bdb2c5f5f3ec",
+  "catalog_sha256_after": "3bd9dd552d9bcfa6faef159c3cd48a625435be13fbe2534eedfdeed39b9a1586",
+  "unrelated_seascape_files_unchanged": 46,
+  "all_file_checksums_before": {
+    "coastal-bounds-r8-static.parquet": "d8075203d0b750b6cd0dbc97c0dda88541a99e285a5dbc8546f42dbc1fd6c7d7",
+    "coast-complexity-r6-static.parquet": "713a1d879084440bb61204dccb8810d6d8cc6ba42f042848d408d8b8a3b6d117",
+    "kelp-r6-dynamic.parquet": "c9692ed309352b927186a5817584cc24d060d3c6f9ec31658a3908fd3912c36e",
+    "waterbody-morphometry-r8-static.parquet": "589c65ecbf735035b53207ffe89c199032eed60550b553fa9417e932c5b5ea19",
+    "coast-complexity-r8-static.parquet": "57dd8323d0f14ed3a95c7b814de8883decf0f724dcec700bc181a9bc2a9ca9f2",
+    "fluvial-connectivity-r8-static.parquet": "1ecb7626374c7fd38ee571a2cec8ecf0564db3795fc58c3fce34b31392162695",
+    "kelp-r6-static.parquet": "ff123144e1bbcae43f77ba81c0add7effdc9bd6bdd9fcd36281cfd1f2a4a31e8",
+    "substrate-r6-static.parquet": "12edd78c7269c044339dad724b2448756ae0326b35b58a8764657c86a7946f44",
+    "anthropogenic-r6-static.parquet": "3abf873f9e387ca67c83e8cb0eece810c670c15278e4d9d222ba8d65756e2920",
+    "kelp-r8-static.parquet": "10a773449e1f8f5bdaa127d58c5a5425178bf350f967ca424f34ef19d0fdcc59",
+    "kelp-r8-dynamic.parquet": "24d3e088dd95479b8bb15774081b4d90412c328c94323a06086d64cf0963a568",
+    "freshwater-r8-static.parquet": "5b8834182ff5dd3f10b3f35f0eb64f03a09cf9075c84fe3777a7eeea395faa85",
+    "anthropogenic-r8-static.parquet": "f670b96b4c6d00ec5f7384d5965fbdc16526e3d2e79241593c4a1dbae62f6073",
+    "annual-kelp-footprints-r8-dynamic.parquet": "420a0aab920ebafe5ca5982468a7ecd5a0e76b410e99d5df46fd06a796a86d57",
+    "nearshore-transitions-r6-static.parquet": "5ffdc3143b066ea0d6e29eb204acd34d4c21b5517615e3c26ac13c2c77344a72",
+    "bathymetry-r8-static.parquet": "bb9ad82a1edfe84e6d4cf4c618a5df2c1e85a02ebadae18726b2ba139333a235",
+    "bivalve-r8-static.parquet": "0382d6ccc5b54fe292e9d4015675a1e5e8db821d25b75205ea20239098cb1421",
+    "seagrass-r6-dynamic.parquet": "e8da3e851e4373c2e1ffa9c8424688adc38bc12435eb2cc8137e7053f353a854",
+    "nearshore-transitions-r8-static.parquet": "d37328065e20d9ecebcf92f900f6c88120b9e89cddaf5cbff595b67927ac74e1",
+    "bivalve-r6-static.parquet": "6a9ea9c23acadca80bd1cbb3b1fb65a2c4f27e37a7b68dac67ef09c137812d85",
+    "bathymetry-r6-static.parquet": "d901137de7ec25d1aa0c4d7134d0a875a14a2ab3840391ceb000aa88519a658c",
+    "estuary-r8-static.parquet": "ad0ea8243def2b7ed5c303c7722ec23c318e636e7a5036c4a5cd761b9da25320",
+    "spatial-support-r8-static.parquet": "b7094f879853f7b16addf3678a218a2e7027c619f69cf6916c0c5f93edc7d917",
+    "catalog.json": "9124e15536cdbcc043d0a4474b6824eaeabd5802803e38f6d5d3bdb2c5f5f3ec",
+    "shoreline-r6-static.parquet": "0e9743595c8d5eb010a0ba00f0dbd16299bab8df6b7ca970e5627970fcd26951",
+    "mapped-kelp-mosaic-r6-static.parquet": "c737cbaac0512274008a0055e4becddd533c61893f24f3ed382693601196cf6e",
+    "mapped-substrate-classes-r8-static.parquet": "baa2395581990b1fa4cb355996140d5b65dd5ec787c8b0b4faf3452d45fc3d3d",
+    "seagrass-r8-dynamic.parquet": "920ec9a1c6296e3772e02477aa78ecee5432ee7015afdd34db8b28757eb0fc37",
+    "shoreline-r8-static.parquet": "b675963b99e85bf22ea45e44890669073063e635214680c7ec91bc65aaaba7b1",
+    "spatial-support-r6-static.parquet": "eedf56acc109eaed04a311b80bc16af4b66706ab9d000e2c577faaa19f74904a",
+    "terrain-r8-static.parquet": "819cab01408b4939ad58eadbe5450028fb71fad61f7f7cb671bd7a66af1d6026",
+    "mapped-kelp-mosaic-r8-static.parquet": "cc1c638cc3d295377ae46be54a2971a23dd7f7e2aa970fad38d8c859e752d421",
+    "annual-kelp-footprints-r6-dynamic.parquet": "c603f19b81066891fd47e42bfec6cd097fad88f84538ba5bf20782039609f5e6",
+    "mapped-substrate-classes-r6-static.parquet": "2e09e0493e5751179d5c166e2d6804bf66d4ad6dbf4d3de4d82531e75451c77f",
+    "research/outlet-inventory.parquet": "a16acdd989e8ad27ba020e4bd28fc2c8f0511689c9bff7d92e04adbc79bcbe24",
+    "research/gateway-relationships-r8.parquet": "a2d85b07f829b9facdaa9bef1c69311a80bfd816bd3aa4cc1b14cdee70265497",
+    "research/gateway-routes.parquet": "541b992715d6412e2a4f6191d084c96be83b1897d57a34acb708d0c0c9272203",
+    "research/passage-associations-r8.parquet": "8ec865314067cb2f4d0031d506c7ba37b69fdd4ca8a0fcb94f255f6f1d56b9db",
+    "research/outlet-relationships-r6.parquet": "4faaf8e7a913043a39447fda78ced7614c351a5f2f0c45b065d38c306102aa25",
+    "research/gateway-inventory.parquet": "458c18c1ec4a1cbe95a2320f1c311b61289a53dac655f0cb9e550a4dd12f5bb8",
+    "research/freshwater-mouth-inventory.parquet": "f3ea1bb2fa6bdaaf99c20b9e8395112fda23ad922c6273efdfd4b48c728a9e79",
+    "research/passage-cross-sections.parquet": "63c2ce8424e03cf55a1fc68f902b14fe2b2a8368f827d2986fe898acd8d4b1fc",
+    "research/gateway-attachments.parquet": "67d5bd99653df840988a076ccb9a33d9b9a17457b629448394c54b3da4c38bc3",
+    "research/gateway-relationships-r6.parquet": "33d5ce892e53ff23b221901caa14992d7f324ac6b1fda7a90963012d61ca7840",
+    "research/passage-inventory.parquet": "fb186dc3738e5c60446aa78e1770ac6feedcd8715c9295f926a46cb1dc9ec86a",
+    "research/passage-associations-r6.parquet": "2b39c08e9d1e7cfd1ba105b396fb74759d75ff949547e5d47f0f1c66b013706e",
+    "research/outlet-relationships-r8.parquet": "561cbabdf58353a01984e9e184e4da08e558169213c7e7a5e525f279141481bc",
+    "research/sill-candidates.parquet": "350ad813f948c63d53e0f061a88243d9b6fd283ab5c20705deccb6f4883cb803"
+  },
+  "all_file_checksums_after": {
+    "coastal-bounds-r8-static.parquet": "d8075203d0b750b6cd0dbc97c0dda88541a99e285a5dbc8546f42dbc1fd6c7d7",
+    "coast-complexity-r6-static.parquet": "713a1d879084440bb61204dccb8810d6d8cc6ba42f042848d408d8b8a3b6d117",
+    "kelp-r6-dynamic.parquet": "c9692ed309352b927186a5817584cc24d060d3c6f9ec31658a3908fd3912c36e",
+    "waterbody-morphometry-r8-static.parquet": "589c65ecbf735035b53207ffe89c199032eed60550b553fa9417e932c5b5ea19",
+    "coast-complexity-r8-static.parquet": "57dd8323d0f14ed3a95c7b814de8883decf0f724dcec700bc181a9bc2a9ca9f2",
+    "fluvial-connectivity-r8-static.parquet": "1ecb7626374c7fd38ee571a2cec8ecf0564db3795fc58c3fce34b31392162695",
+    "kelp-r6-static.parquet": "ff123144e1bbcae43f77ba81c0add7effdc9bd6bdd9fcd36281cfd1f2a4a31e8",
+    "substrate-r6-static.parquet": "f4748b7705c04456d480e4d9548f78037fa5b2f27ea7dc5d1f8f822be3d17841",
+    "anthropogenic-r6-static.parquet": "3abf873f9e387ca67c83e8cb0eece810c670c15278e4d9d222ba8d65756e2920",
+    "kelp-r8-static.parquet": "10a773449e1f8f5bdaa127d58c5a5425178bf350f967ca424f34ef19d0fdcc59",
+    "kelp-r8-dynamic.parquet": "24d3e088dd95479b8bb15774081b4d90412c328c94323a06086d64cf0963a568",
+    "freshwater-r8-static.parquet": "5b8834182ff5dd3f10b3f35f0eb64f03a09cf9075c84fe3777a7eeea395faa85",
+    "anthropogenic-r8-static.parquet": "f670b96b4c6d00ec5f7384d5965fbdc16526e3d2e79241593c4a1dbae62f6073",
+    "annual-kelp-footprints-r8-dynamic.parquet": "420a0aab920ebafe5ca5982468a7ecd5a0e76b410e99d5df46fd06a796a86d57",
+    "nearshore-transitions-r6-static.parquet": "5ffdc3143b066ea0d6e29eb204acd34d4c21b5517615e3c26ac13c2c77344a72",
+    "bathymetry-r8-static.parquet": "bb9ad82a1edfe84e6d4cf4c618a5df2c1e85a02ebadae18726b2ba139333a235",
+    "bivalve-r8-static.parquet": "0382d6ccc5b54fe292e9d4015675a1e5e8db821d25b75205ea20239098cb1421",
+    "seagrass-r6-dynamic.parquet": "e8da3e851e4373c2e1ffa9c8424688adc38bc12435eb2cc8137e7053f353a854",
+    "nearshore-transitions-r8-static.parquet": "d37328065e20d9ecebcf92f900f6c88120b9e89cddaf5cbff595b67927ac74e1",
+    "bivalve-r6-static.parquet": "6a9ea9c23acadca80bd1cbb3b1fb65a2c4f27e37a7b68dac67ef09c137812d85",
+    "bathymetry-r6-static.parquet": "d901137de7ec25d1aa0c4d7134d0a875a14a2ab3840391ceb000aa88519a658c",
+    "estuary-r8-static.parquet": "ad0ea8243def2b7ed5c303c7722ec23c318e636e7a5036c4a5cd761b9da25320",
+    "spatial-support-r8-static.parquet": "b7094f879853f7b16addf3678a218a2e7027c619f69cf6916c0c5f93edc7d917",
+    "catalog.json": "3bd9dd552d9bcfa6faef159c3cd48a625435be13fbe2534eedfdeed39b9a1586",
+    "shoreline-r6-static.parquet": "0e9743595c8d5eb010a0ba00f0dbd16299bab8df6b7ca970e5627970fcd26951",
+    "mapped-kelp-mosaic-r6-static.parquet": "c737cbaac0512274008a0055e4becddd533c61893f24f3ed382693601196cf6e",
+    "mapped-substrate-classes-r8-static.parquet": "baa2395581990b1fa4cb355996140d5b65dd5ec787c8b0b4faf3452d45fc3d3d",
+    "seagrass-r8-dynamic.parquet": "920ec9a1c6296e3772e02477aa78ecee5432ee7015afdd34db8b28757eb0fc37",
+    "shoreline-r8-static.parquet": "b675963b99e85bf22ea45e44890669073063e635214680c7ec91bc65aaaba7b1",
+    "spatial-support-r6-static.parquet": "eedf56acc109eaed04a311b80bc16af4b66706ab9d000e2c577faaa19f74904a",
+    "terrain-r8-static.parquet": "819cab01408b4939ad58eadbe5450028fb71fad61f7f7cb671bd7a66af1d6026",
+    "mapped-kelp-mosaic-r8-static.parquet": "cc1c638cc3d295377ae46be54a2971a23dd7f7e2aa970fad38d8c859e752d421",
+    "annual-kelp-footprints-r6-dynamic.parquet": "c603f19b81066891fd47e42bfec6cd097fad88f84538ba5bf20782039609f5e6",
+    "mapped-substrate-classes-r6-static.parquet": "2e09e0493e5751179d5c166e2d6804bf66d4ad6dbf4d3de4d82531e75451c77f",
+    "research/outlet-inventory.parquet": "a16acdd989e8ad27ba020e4bd28fc2c8f0511689c9bff7d92e04adbc79bcbe24",
+    "research/gateway-relationships-r8.parquet": "a2d85b07f829b9facdaa9bef1c69311a80bfd816bd3aa4cc1b14cdee70265497",
+    "research/gateway-routes.parquet": "541b992715d6412e2a4f6191d084c96be83b1897d57a34acb708d0c0c9272203",
+    "research/passage-associations-r8.parquet": "8ec865314067cb2f4d0031d506c7ba37b69fdd4ca8a0fcb94f255f6f1d56b9db",
+    "research/outlet-relationships-r6.parquet": "4faaf8e7a913043a39447fda78ced7614c351a5f2f0c45b065d38c306102aa25",
+    "research/gateway-inventory.parquet": "458c18c1ec4a1cbe95a2320f1c311b61289a53dac655f0cb9e550a4dd12f5bb8",
+    "research/freshwater-mouth-inventory.parquet": "f3ea1bb2fa6bdaaf99c20b9e8395112fda23ad922c6273efdfd4b48c728a9e79",
+    "research/passage-cross-sections.parquet": "63c2ce8424e03cf55a1fc68f902b14fe2b2a8368f827d2986fe898acd8d4b1fc",
+    "research/gateway-attachments.parquet": "67d5bd99653df840988a076ccb9a33d9b9a17457b629448394c54b3da4c38bc3",
+    "research/gateway-relationships-r6.parquet": "33d5ce892e53ff23b221901caa14992d7f324ac6b1fda7a90963012d61ca7840",
+    "research/passage-inventory.parquet": "fb186dc3738e5c60446aa78e1770ac6feedcd8715c9295f926a46cb1dc9ec86a",
+    "research/passage-associations-r6.parquet": "2b39c08e9d1e7cfd1ba105b396fb74759d75ff949547e5d47f0f1c66b013706e",
+    "research/outlet-relationships-r8.parquet": "561cbabdf58353a01984e9e184e4da08e558169213c7e7a5e525f279141481bc",
+    "research/sill-candidates.parquet": "350ad813f948c63d53e0f061a88243d9b6fd283ab5c20705deccb6f4883cb803"
+  }
+}

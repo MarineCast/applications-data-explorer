@@ -1,0 +1,9 @@
+.weather-insights .insights-section { padding-top:16px; margin-top:16px; border-top:1px solid #e1e8ec; }
+.weather-insight-chart { display:block; width:100%; height:auto; margin:8px 0; overflow:visible; }
+.weather-insight-chart text { font:10px Arial,sans-serif; fill:#6d8190; }
+.weather-insights details { color:#57748a; font:11px/1.5 Arial,sans-serif; }
+.weather-insights summary { cursor:pointer; padding:8px 0; }
+.weather-insights table { width:100%; border-collapse:collapse; font:10px/1.6 monospace; }
+.weather-insights th,.weather-insights td { padding:5px 2px; text-align:right; border-bottom:1px solid #e5ecef; overflow-wrap:anywhere; }
+.weather-insights th:first-child,.weather-insights td:first-child { text-align:left; }
+.weather-retry { text-decoration:underline; color:#167dac; padding:8px 0; }

@@ -1,0 +1,13 @@
+#features-explorer .categorical-legend{background:var(--panel,#fffdf9);border-radius:10px;overflow:hidden}
+#features-explorer .categorical-legend .colorbar-trigger{height:auto;min-height:0;padding:12px 14px 6px;box-shadow:none;background:transparent;text-align:left}
+.category-legend-items{padding:0 10px 10px;font-size:12px}
+.category-legend-list{display:grid;max-height:210px;overflow-y:auto}
+#features-explorer .category-legend-list button{display:flex;align-items:center;gap:9px;min-height:28px;width:100%;padding:4px;color:inherit;background:transparent;border:0;border-radius:4px;font-size:12px;text-align:left;cursor:pointer}
+.category-legend-list i{display:inline-block;width:10px;height:10px;flex:none;border-radius:50%}
+#features-explorer .category-legend-list button:hover{background:rgba(80,110,130,.1)}
+.category-legend-list button[aria-pressed="false"]{opacity:.4}
+.category-legend-list button:focus-visible{outline:2px solid #216da1;outline-offset:-2px}
+.category-legend-pages{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}
+.category-legend-items input{width:100%;margin:4px 0 8px}
+html[data-app-theme="dark"] #features-explorer .categorical-legend{background:#193442;color:#dce8ee}
+@media(max-width:760px){.category-legend-list{max-height:140px}}

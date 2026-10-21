@@ -24,7 +24,7 @@ export function createViewshedScale(
   scores: ViewScore[], metric: ViewMetric, palette: PaletteId,
   mode: ViewshedScaleMode, custom: [number, number],
 ): ViewshedColorScale {
-  const values = new Map(scores.map(score => [score.target_h3, score[metric] ?? null]));
+  const values = new Map(scores.map((score, index) => [String(index), score[metric] ?? null]));
   const scale = createColorScale(values, palette, mode === "quantile" ? "quantile" : "minmax");
   if (mode === "log") {
     const min = Math.log1p(scale.edges[0] * 100);

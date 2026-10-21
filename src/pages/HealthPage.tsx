@@ -21,7 +21,7 @@ export default function HealthPage() {
       <div className="page-heading">
         <div>
           <span className="eyebrow">PRODUCT INTEGRITY</span>
-          <h1>Health</h1>
+          <h1>Data Health</h1>
           <p>Coverage, quality, and release context.</p>
         </div>
         <span className="tag">Fixture metadata</span>

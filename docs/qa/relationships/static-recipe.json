@@ -1,0 +1,32 @@
+{
+  "variables": [
+    "seascape:6:seascape-substrate-static-r6:SUBSTRATE_MODEL__MODELED_SEDIMENT_SAND_FRACTION",
+    "seascape:6:seascape-substrate-static-r6:SUBSTRATE_MODEL__MODELED_SEDIMENT_MUD_FRACTION",
+    "seascape:6:seascape-substrate-static-r6:SUBSTRATE_MODEL__MODELED_SEDIMENT_GRAVEL_FRACTION",
+    "seascape:6:seascape-bathymetry-static-r6:bathymetry__DISTANCE_TO_ISOBATH_50_M"
+  ],
+  "mode": "features",
+  "resolution": 6,
+  "method": "spearman",
+  "cohort": "pairwise",
+  "plot": "scatter",
+  "x": null,
+  "y": null,
+  "start": null,
+  "end": null,
+  "slice": null,
+  "includeQuality": false,
+  "membershipEncoding": "none",
+  "threshold": 0.8,
+  "categories": [
+    "srkw"
+  ],
+  "interval": "monthly",
+  "precision": "strict",
+  "bindings": {
+    "seascape": "2c1cddd7333bb296c76d43b3a8f8b97f90c0638609cc7eb55eea3139fa69efb3"
+  },
+  "analysisVersion": "relationships-1",
+  "samplingSeed": 19,
+  "adapterSha256": "d015ee1def2aadcbe9d6a4bc1229b2d4e947c8b6bb2453432399d27516da5c2e"
+}

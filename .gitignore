@@ -9,3 +9,6 @@ dist/
 # Local source-backed browser cache; prepare with scripts/prepare_seascape.py
 /public/local-data/
 __pycache__/
+
+# Optional isolated localhost analytics environment
+.venv-relationships/

@@ -1,0 +1,13 @@
+# Use the existing scientific Python environment, or an isolated venv.
+fastapi>=0.115,<0.151
+uvicorn>=0.30,<1
+pydantic>=2.9,<3
+numpy>=2,<3
+pandas>=2.2,<4
+scipy>=1.14,<2
+pyarrow>=18,<25
+h3>=4.2,<5
+shapely>=2,<3
+pyproj>=3.7,<4
+# API contract tests
+httpx>=0.27,<1

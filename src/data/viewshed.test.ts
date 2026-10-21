@@ -1,6 +1,6 @@
 import { createHash, webcrypto } from "node:crypto";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { loadSource, loadViewshed, scoreColor, validateScores, validateWeights } from "./viewshed";
+import { loadSource, loadTargetSources, loadViewshed, scoreColor, validateScores, validateWeights } from "./viewshed";
 import { pair, sourceA, sourceB, viewshedFixture, weightedViewshedFixture } from "../test/viewshedFixture";
 
 let serial = 0;
@@ -28,6 +28,28 @@ function fixture(weighted = false) {
 }
 afterEach(() => vi.unstubAllGlobals());
 describe("viewshed read-only pilot adapter", () => {
+  it("reverses checked pairs without averaging and reuses the checked index", async () => {
+    fixture();
+    const data = await loadViewshed();
+    const rows = await loadTargetSources(data, sourceA);
+    expect(rows).toEqual([pair()]);
+    expect(rows[0].source_h3).toBe(sourceA);
+    expect(rows[0].average_viewability).toBeNull();
+    const reads = vi.mocked(fetch).mock.calls.length;
+    expect(await loadTargetSources(data, data.targets[1].id)).toEqual([pair(sourceB, data.targets[1].id, .8, .8)]);
+    expect(vi.mocked(fetch).mock.calls.length).toBe(reads);
+    await expect(loadTargetSources(data, sourceB)).rejects.toThrow("outside");
+  });
+  it("rejects reverse views if a source partition fails verification and permits retry", async () => {
+    const f = fixture();
+    const data = await loadViewshed();
+    const url = data.catalog.sources[sourceB].url;
+    const original = f.bodies.get(url)!;
+    f.bodies.set(url, "{}");
+    await expect(loadTargetSources(data, sourceA)).rejects.toThrow("checksum");
+    f.bodies.set(url, original);
+    expect(await loadTargetSources(data, sourceA)).toEqual([pair()]);
+  });
   it("validates weight lineage, profile and conditional target denominators", async () => {
     fixture(true);
     const data = await loadViewshed();

@@ -1,0 +1,18 @@
+{
+  "width": 1800,
+  "height": 2600,
+  "minX": -381.95121951219505,
+  "maxX": 159.51219512195172,
+  "minZ": -379.3438643884187,
+  "maxZ": 395.1698693105093,
+  "clearanceScale": 0.1,
+  "clearanceUrl": "/assets/home/coastal-world/clearance.bin",
+  "boundsWgs84": [
+    -125.5,
+    46.8,
+    -121.8,
+    50.3
+  ],
+  "source": "GSHHG 2.3.7 L1 with retained San Juan mask inset",
+  "sourceSha256": "8dbbe7e071e77e9e75f2d639239099ebca8d5c16d6a07df8169729d49f15cf41"
+}

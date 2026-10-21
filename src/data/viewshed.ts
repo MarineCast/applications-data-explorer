@@ -210,6 +210,38 @@ export async function loadSource(data: ViewshedData, source: string): Promise<Vi
     throw new Error("Invalid viewshed source pair support.");
   return body.pairs;
 }
+
+const reverseIndexes = new WeakMap<ViewshedData, Promise<Map<string, ViewPair[]>>>();
+/** Read all checked partitions with bounded concurrency; retain exact pair identity/values. */
+export async function loadTargetSources(data: ViewshedData, target: string): Promise<ViewPair[]> {
+  if (!data.targets.some(cell => cell.id === target)) throw new Error("Target is outside this pilot.");
+  let request = reverseIndexes.get(data);
+  if (!request) {
+    request = (async () => {
+      const index = new Map<string, ViewPair[]>();
+      let next = 0;
+      await Promise.all(Array.from({ length: Math.min(6, data.sources.length) }, async () => {
+        while (next < data.sources.length) {
+          const source = data.sources[next++].id;
+          for (const pair of await loadSource(data, source)) {
+            const rows = index.get(pair.target_h3) ?? [];
+            rows.push(pair);
+            index.set(pair.target_h3, rows);
+          }
+        }
+      }));
+      for (const average of data.averages) {
+        const rows = index.get(average.target_h3);
+        if (rows?.length !== average.modeled_source_count) throw new Error("Incomplete reverse viewshed support.");
+        rows.sort((a, b) => a.source_h3.localeCompare(b.source_h3));
+      }
+      return index;
+    })();
+    reverseIndexes.set(data, request);
+    request.catch(() => reverseIndexes.delete(data));
+  }
+  return (await request).get(target) ?? [];
+}
 export function percent(value: number | null) {
   return value === null ? "Unknown" : `${(value * 100).toFixed(1)}%`;
 }

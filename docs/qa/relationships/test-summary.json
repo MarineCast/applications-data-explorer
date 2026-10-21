@@ -1,0 +1,10 @@
+{
+  "numTotalTests": 498,
+  "numPassedTests": 498,
+  "numFailedTests": 0,
+  "numTotalTestSuites": 133,
+  "success": true,
+  "backendTestsPassed": 20,
+  "relevantUiTestsAfterRefinements": 13,
+  "finalUiNavigationTestsPassed": 25
+}

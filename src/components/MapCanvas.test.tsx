@@ -29,7 +29,7 @@ it("shows a neutral loading state until the geographic renderer loads, without i
   vi.stubEnv("VITE_MAPTILER_KEY", "synthetic-test-key");
   const view = render(<MapCanvas basemap="maptiler" layer={layer} feature="temperature" month={0} />);
   expect(screen.getByRole("status")).toHaveTextContent("Loading map");
-  expect(view.container.querySelector("svg")).toBeNull();
+  expect(view.container.querySelector("svg.map-canvas")).toBeNull();
   expect(screen.queryByText(/VANCOUVER ISLAND|Synthetic|Illustrative/)).not.toBeInTheDocument();
   await act(async () => moduleGate.release());
   expect(await screen.findByRole("region", { name: "Geographic map" })).toBeInTheDocument();
@@ -40,7 +40,10 @@ it("shows an honest missing-key state for native data rather than an illustrated
   vi.stubEnv("VITE_MAPTILER_KEY", "");
   const view = render(<MapCanvas basemap="maptiler" layer={layer} feature="temperature" month={0} />);
   expect(screen.getByRole("alert")).toHaveTextContent("Basemap key not configured");
-  expect(view.container.querySelector("svg")).toBeNull();
+  expect(view.container.querySelector("svg.map-canvas")).toBeNull();
+  view.rerender(<MapCanvas basemap="maptiler" nativeData feature="temperature" month={0} />);
+  expect(screen.getByRole("alert")).toHaveTextContent("Basemap key not configured");
+  expect(view.container.querySelector("svg.map-canvas")).toBeNull();
 });
 
 it("retries a failed geographic renderer without switching to an illustrative map", async () => {
@@ -49,7 +52,7 @@ it("retries a failed geographic renderer without switching to an illustrative ma
   const view = render(<MapCanvas basemap="maptiler" layer={layer} feature="temperature" month={0} />);
   await user.click(await screen.findByRole("button", { name: "Simulate basemap failure" }));
   expect(screen.getByRole("alert")).toHaveTextContent("Basemap unavailable");
-  expect(view.container.querySelector("svg")).toBeNull();
+  expect(view.container.querySelector("svg.map-canvas")).toBeNull();
   await user.click(screen.getByRole("button", { name: "Retry basemap" }));
   expect(await screen.findByRole("region", { name: "Geographic map" })).toBeInTheDocument();
 });

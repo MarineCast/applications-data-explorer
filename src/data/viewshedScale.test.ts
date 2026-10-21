@@ -9,6 +9,13 @@ function scores(...values: number[]): ViewScore[] {
     average_viewability: value, input_unknown_fraction: 0 }));
 }
 describe("viewshed display scales", () => {
+  it("keeps different source weights when all pairs share one water target", () => {
+    const rows = [pair(), { ...pair(), source_h3: "8728d1874ffffff", lower: .8 }];
+    const scale = createViewshedScale(rows, "lower", "ocean", "auto", [0, 1]);
+    expect(scale.count).toBe(2);
+    expect(scale.edges[0]).toBe(.4);
+    expect(scale.edges[10]).toBe(.8);
+  });
   it("reveals small differences using all active scores without changing scores", () => {
     const rows = scores(0, .01, .02);
     const before = JSON.stringify(rows);

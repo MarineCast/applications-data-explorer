@@ -83,3 +83,12 @@ describe("full-area map scales", () => {
     });
   });
 });
+
+it("keeps fixed depth colors stable across supports and preserves unavailable values", () => {
+  const a = createColorScale(new Map([["a", 50], ["b", null], ["c", 1800]]), "ocean", "depth");
+  const b = createColorScale(new Map([["a", 50], ["b", 60]]), "ocean", "depth");
+  expect(colorForScale(50, a)).toBe(colorForScale(50, b));
+  expect(colorForScale(49.9, a)).not.toBe(colorForScale(50, a));
+  expect(colorForScale(1000, a)).toBe(colorForScale(10000, a));
+  expect(colorForScale(null, a)).toBe(missingColor);
+});

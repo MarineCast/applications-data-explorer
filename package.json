@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
+    "backend": "python3 scripts/relationships_api.py",
+    "test:relationships": "python3 -m unittest discover -s scripts -p 'test_relationships*.py'",
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b",
     "lint": "eslint .",

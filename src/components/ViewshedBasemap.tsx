@@ -19,8 +19,8 @@ export default function ViewshedBasemap({ onUnavailable, ...props }: ViewshedMap
   const [ready, setReady] = useState(false);
   const [zoom, setZoom] = useState(8);
   const overlays = useMemo(() => viewshedOverlays({ data: props.data, scores: props.scores,
-    source: props.source, selection: props.selection, metric: props.metric, mode: props.mode, colorScale: props.colorScale }),
-  [props.data, props.scores, props.source, props.selection, props.metric, props.mode, props.colorScale]);
+    source: props.source, selection: props.selection, metric: props.metric, mode: props.mode, colorScale: props.colorScale, allTargets: props.allTargets }),
+  [props.data, props.scores, props.source, props.selection, props.metric, props.mode, props.colorScale, props.allTargets]);
   const latest = useRef({ ...props, overlays });
   useEffect(() => { latest.current = { ...props, overlays }; });
   const bounds = props.data.catalog.bounds;
@@ -61,8 +61,8 @@ export default function ViewshedBasemap({ onUnavailable, ...props }: ViewshedMap
         paint: { "line-color": ["case", ["get", "selected"], "#123f62", "#ffffff"],
           "line-width": ["case", ["get", "selected"], 3, latest.current.gridVisible === false ? 0 : .65] } }, labels);
       instance.addLayer({ id: SOURCE_FILL, type: "fill", source: SOURCES,
-        paint: { "fill-color": ["case", ["get", "selected"], "#efb553", "#d3a864"],
-          "fill-opacity": latest.current.mode === "target" ? .22 : .45 } }, labels);
+        paint: { "fill-color": ["get", "color"],
+          "fill-opacity": latest.current.mode === "targetSources" ? ["case", ["get", "paired"], latest.current.opacity ?? .75, .14] : latest.current.mode === "target" ? .22 : .45 } }, labels);
       instance.addLayer({ id: "viewshed-source-outline", type: "line", source: SOURCES,
         paint: { "line-color": ["case", ["get", "selected"], "#693d0c", "#9e7840"],
           "line-width": ["case", ["get", "selected"], 2.5, latest.current.gridVisible === false ? 0 : .7] } }, labels);
@@ -116,7 +116,7 @@ export default function ViewshedBasemap({ onUnavailable, ...props }: ViewshedMap
     (instance.getSource(TARGETS) as GeoJSONSource)?.setData(overlays.targets);
     (instance.getSource(SOURCES) as GeoJSONSource)?.setData(overlays.sources);
     (instance.getSource(OBSERVERS) as GeoJSONSource)?.setData(overlays.observers);
-    instance.setPaintProperty(SOURCE_FILL, "fill-opacity", props.mode === "target" ? .22 : .45);
+    instance.setPaintProperty(SOURCE_FILL, "fill-opacity", props.mode === "targetSources" ? ["case", ["get", "paired"], props.opacity ?? .75, .14] : props.mode === "target" ? .22 : .45);
     instance.setPaintProperty(TARGET_FILL, "fill-opacity", props.opacity ?? .75);
     instance.setPaintProperty("viewshed-target-outline", "line-width", ["case", ["get", "selected"], 3, props.gridVisible === false ? 0 : .65]);
     instance.setPaintProperty("viewshed-source-outline", "line-width", ["case", ["get", "selected"], 2.5, props.gridVisible === false ? 0 : .7]);

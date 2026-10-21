@@ -1,12 +1,13 @@
 import { useMemo, useRef, useState } from "react";
 import ViewshedZoomControls from "./ViewshedZoomControls";
 import type { MultiPolygon, Polygon } from "geojson";
+import type { ViewPair } from "../data/viewshed";
 import { sourceLabel } from "../data/viewshed";
 import { viewshedColor } from "../data/viewshedScale";
 import type { ViewshedMapProps } from "../data/viewshedMap";
 import { coordinatePopupPosition } from "../data/mapCoordinates";
 
-export default function ViewshedLocalMap({ data, scores, source, selection, metric, mode, colorScale, onSource, onTarget, onBackground, onCoordinates, controlsContainer, opacity = .75, gridVisible = true }: ViewshedMapProps) {
+export default function ViewshedLocalMap({ data, scores, source, selection, metric, mode, colorScale, allTargets, onSource, onTarget, onBackground, onCoordinates, controlsContainer, opacity = .75, gridVisible = true }: ViewshedMapProps) {
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [drag, setDrag] = useState<{ x: number; y: number } | null>(null);
@@ -34,6 +35,8 @@ export default function ViewshedLocalMap({ data, scores, source, selection, metr
     return { project, unproject, land: path(data.land), sources: new Map(data.sources.map(s => [s.id, path(s.geometry)])), targets: new Map(data.targets.map(t => [t.id, path(t.geometry)])) };
   }, [data]);
   const values = useMemo(() => new Map(scores.map(s => [s.target_h3, s])), [scores]);
+  const reverse = mode === "targetSources";
+  const sourceValues = new Map((scores as ViewPair[]).map(row => [row.source_h3, row]));
   const changeZoom = (next: number) => {
     onCoordinates(null);
     setZoom(Math.max(1, Math.min(8, next)));
@@ -73,16 +76,16 @@ export default function ViewshedLocalMap({ data, scores, source, selection, metr
       <rect width="1200" height="850" fill="#e5eff2" />
       <g ref={mapGroup} transform={`translate(600 425) scale(${zoom}) translate(-600 -425) translate(${offset.x} ${offset.y})`}>
         <path d={geometry.land} fill="#e6eadf" stroke="#b5c3b5" strokeWidth="1" fillRule="evenodd" vectorEffect="non-scaling-stroke" />
-        {data.targets.filter(t => values.has(t.id)).map(t => {
-          const score = values.get(t.id)!;
-          return <path key={`target:${t.id}`} data-cell="target" d={geometry.targets.get(t.id)} fill={viewshedColor(score[metric] ?? null, colorScale)}
+        {data.targets.filter(t => allTargets || reverse || values.has(t.id)).map(t => {
+          const score = values.get(t.id);
+          return <path key={`target:${t.id}`} data-cell="target" d={geometry.targets.get(t.id)} fill={reverse || !score ? "#cddfe6" : viewshedColor(score?.[metric] ?? null, colorScale)}
             fillOpacity={opacity} fillRule="evenodd" stroke={selection?.role === "target" && selection.id === t.id ? "#123f62" : "#ffffff"} strokeWidth={selection?.role === "target" && selection.id === t.id ? 3 : gridVisible ? .65 : 0}
             vectorEffect="non-scaling-stroke" role="button" tabIndex={-1} aria-label={`Inspect water target ${t.id}`}
             onClick={() => onTarget(t.id)} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onTarget(t.id); } }}>
           </path>;
         })}
-        {data.sources.map(s => <path key={`source:${s.id}`} data-cell="source" d={geometry.sources.get(s.id)} fill={selection?.role === "source" && selection.id === s.id ? "#efb553" : "#d3a864"}
-          fillOpacity={mode === "target" ? .22 : selection?.role === "source" && selection.id === s.id ? .95 : .4} fillRule="evenodd"
+        {data.sources.map(s => <path key={`source:${s.id}`} data-cell="source" d={geometry.sources.get(s.id)} fill={reverse && sourceValues.has(s.id) ? viewshedColor(sourceValues.get(s.id)![metric] ?? null, colorScale) : selection?.role === "source" && selection.id === s.id ? "#efb553" : "#d3a864"}
+          fillOpacity={reverse ? sourceValues.has(s.id) ? opacity : .14 : mode === "target" ? .22 : selection?.role === "source" && selection.id === s.id ? .95 : .4} fillRule="evenodd"
           stroke={selection?.role === "source" && selection.id === s.id ? "#693d0c" : "#9e7840"} strokeWidth={selection?.role === "source" && selection.id === s.id ? 2.5 : gridVisible ? .7 : 0}
           vectorEffect="non-scaling-stroke" role="button" tabIndex={-1} aria-label={`Select land source ${sourceLabel(s.id)}`}
           onClick={() => onSource(s.id)} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSource(s.id); } }} />)}

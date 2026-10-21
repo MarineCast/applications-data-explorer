@@ -1,0 +1,32 @@
+import {expect,it} from "vitest";
+import type {SeascapeFeature} from "./seascape";
+import {criticalHabitatFeatures,savedCriticalHabitat,criticalHabitatCount,criticalHabitatAssignment} from "./criticalHabitat";
+import {governanceMembershipLabel,governanceIdentityView} from "./governanceMemberships";
+import type {GovernanceMembershipData} from "./governanceMemberships";
+import fixture from "./governanceMemberships.fixture.json";
+const field=(column:string,resolution=6)=>({id:"GOVERNANCE__"+column,column,dataset:"governance",resolution,productId:`governance-r${resolution}`,definition:"Original source definition",unit:"count",qualifiers:[criticalHabitatCount+"_status"],membershipColumn:column===criticalHabitatAssignment?column:undefined}) as SeascapeFeature;
+it.each([6,8])("offers exactly Count and Assignment without changing native values/bindings at R%s",resolution=>{
+ const columns=[criticalHabitatCount,criticalHabitatAssignment,criticalHabitatCount+"_status","critical_habitat__recorded_polygon_union_area_fraction","critical_habitat__recorded_point_feature_count","critical_habitat__recorded_line_union_length_m"];
+ const all=columns.map(c=>field(c,resolution));const others={...field(criticalHabitatCount,resolution),dataset:"human"};
+ const before=structuredClone(all.slice(0,2));const actual=criticalHabitatFeatures([...all,others]);
+ expect(actual.map(f=>f.name).slice(0,2)).toEqual(["Critical Habitat Count","Critical Habitat Assignment"]);
+ actual.slice(0,2).forEach((f,i)=>{for(const k of ["id","column","membershipColumn","qualifiers","definition","unit","productId"] as const)expect(f[k]).toEqual(before[i][k]);});
+ expect(actual.at(-1)).toBe(others);
+ for(const col of columns.slice(2))expect(savedCriticalHabitat(actual,"GOVERNANCE__"+col)?.column).toBe(criticalHabitatCount);
+ expect(savedCriticalHabitat(actual,"GOVERNANCE__"+criticalHabitatAssignment)?.column).toBe(criticalHabitatAssignment);
+ expect(savedCriticalHabitat(actual,"GOVERNANCE__ports__count")).toBeUndefined();
+});
+it("keeps synthetic Canadian/U.S. memberships together with original species names, distinct IDs and unknown support",()=>{
+ const record=fixture.dictionary[0].records[0];
+ const usa={feature_id:"noaa_critical_habitat_polygon:1",records:[{...record,source_dataset_id:"noaa_critical_habitat_polygon",source_feature_id:"noaa_critical_habitat_polygon:1",feature_name:"Killer whale",jurisdiction:"United States"}]};
+ const canada={feature_id:"dfo_aquatic_critical_habitat:1",records:[{...record,source_dataset_id:"dfo_aquatic_critical_habitat",source_feature_id:"dfo_aquatic_critical_habitat:1",feature_name:"Killer whale",jurisdiction:"Canada"}]};
+ const murrelet={feature_id:"eccc_marbled_murrelet_marine_critical_habitat:21712",records:[{...record,source_dataset_id:"eccc_marbled_murrelet_marine_critical_habitat",source_feature_id:"eccc_marbled_murrelet_marine_critical_habitat:21712",feature_name:"Marbled Murrelet [Sidney]",feature_type:"conditional_marine_critical_habitat_reference",jurisdiction:"Canada"}]};
+ const data={rows:2,group:"critical_habitat",column:criticalHabitatAssignment,countColumn:criticalHabitatCount,statusColumn:criticalHabitatAssignment+"_status",cells:[[canada,murrelet,usa],null],counts:[3,null],statuses:["partial","unknown"]} as GovernanceMembershipData;
+ const view=governanceIdentityView(data,["both","unknown"]);
+ expect(governanceMembershipLabel(canada)).toBe("Killer whale");expect(governanceMembershipLabel(usa)).toBe("Killer whale");
+ expect(governanceMembershipLabel(murrelet)).toBe("Marbled Murrelet [Sidney]");
+ expect(view.categoryMemberships.get("both")).toHaveLength(3);expect(view.values.get("unknown")).toBeNull();
+ expect(new Set(view.categoryKeys).size).toBe(view.categoryKeys.length);
+ expect(data.cells[0]?.flatMap(m=>m.records.map(r=>r.jurisdiction))).toEqual(["Canada","Canada","United States"]);
+ expect(data.cells[0]?.[1].records[0].feature_type).toBe("conditional_marine_critical_habitat_reference");
+});

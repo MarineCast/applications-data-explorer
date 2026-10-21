@@ -1,3 +1,4 @@
+import "./CoordinatePopup.css";
 import { useEffect, useRef, useState } from "react";
 import { Check, Copy, X } from "lucide-react";
 import { coordinateText } from "../data/mapCoordinates";

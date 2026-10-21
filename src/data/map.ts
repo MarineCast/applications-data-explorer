@@ -1,21 +1,36 @@
+import type { HumanGeometryView } from "./humanGeometry";
+import type { HydrologyPoints } from "./hydrologyOverlay";
+import type { OrcaPoints } from "./orcaOverlay";
+import { membershipStyles } from "./governancePatterns";
 import { cellToBoundary } from "h3-js";
-import type { FeatureCollection, Polygon } from "geojson";
+import type { FeatureCollection, Polygon, MultiPolygon } from "geojson";
 import { cells, featureById, valueFor } from "./demo";
 import type { Cell, FeatureId, Region, Sighting } from "./demo";
 import { colorForScale } from "./colorScale";
 import type { ColorScale } from "./colorScale";
 import type { ReactNode } from "react";
+import type { ViewshedMapProps } from "./viewshedMap";
 import type { MapCameraLink } from "./mapCamera";
+import type { SurfaceSettings } from "./smoothSurface";
 export interface MapLayer {
+  /** Explicit per-cell support, independent of numeric zero/missing values. */
+  cellAppearance?:ReadonlyMap<string,{color?:string;opacity:number;kind:string}>;
   id: string;
   name: string;
   unit: string;
   range: [number, number];
   resolution: number;
+  circular?: boolean;
   cells: Cell[];
   values: ReadonlyMap<string, number | null>;
   sourceLabel: string;
   categories?: string[];
+  categoryKeys?: string[];
+  categoryMemberships?: ReadonlyMap<string, readonly number[] | null>;
+  membershipLegend?: { entries: { key: string; label: string; role: "mixed" | "feature" }[]; support: { key: string; label: string; cells: number }[] };
+  /** Optional clipped support for display interpolation, keyed by native cell identity. */
+  surfaceGeometries?: ReadonlyMap<string, Polygon | MultiPolygon>;
+  missingColor?: string;
 }
 export type MapBounds = [number, number, number, number];
 export function boundaryFor(cell: Cell) {
@@ -48,11 +63,20 @@ export function colorFromRange(v: number | null, range: [number, number]) {
   return palette[Math.min(5, Math.floor(t * 6))];
 }
 export interface MapCanvasProps {
+  humanGeometry?: HumanGeometryView;
+  hydrologyPoints?: HydrologyPoints;
+  orcaPoints?: OrcaPoints;
+  viewshed?: ViewshedMapProps;
+  smoothing?: SurfaceSettings;
+  outlines?: boolean;
+  onBoundsChange?: (bounds: MapBounds) => void;
   cameraLink?: MapCameraLink;
   overlayHost?: HTMLElement | null;
   showControls?: boolean;
   popup?: ReactNode;
   colorScale?: ColorScale;
+  /** Keep the native-data map mounted even while its overlay is loading. */
+  nativeData?: boolean;
   layer?: MapLayer;
   feature: FeatureId;
   month: number;
@@ -76,6 +100,7 @@ export function cellGeoJSON(
   bounds?: MapBounds,
   colorScale?: ColorScale,
 ): FeatureCollection<Polygon> {
+  const memberships = membershipStyles(layer, colorScale);
   return {
     type: "FeatureCollection",
     features: (layer ? visibleLayerCells(layer, bounds) : cells)
@@ -87,14 +112,17 @@ export function cellGeoJSON(
           id: c.id,
           properties: {
             id: c.id,
+            membershipPattern: memberships?.cells.get(c.id) ?? "",
             value: layer
               ? (layer.values.get(c.id) ?? null)
               : valueFor(c, feature, month),
-            color: layer
+            opacity: layer?.cellAppearance?.get(c.id)?.opacity ?? 1,
+            support: layer?.cellAppearance?.get(c.id)?.kind ?? "native",
+            color: layer?.cellAppearance?.get(c.id)?.color ?? (layer
               ? colorScale
                 ? colorForScale(layer.values.get(c.id) ?? null, colorScale)
                 : colorFromRange(layer.values.get(c.id) ?? null, layer.range)
-              : colorFor(valueFor(c, feature, month), feature),
+              : colorFor(valueFor(c, feature, month), feature)),
           },
           geometry: {
             type: "Polygon",

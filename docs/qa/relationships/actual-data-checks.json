@@ -1,0 +1,316 @@
+{
+  "static-r6": {
+    "status": 200,
+    "seconds": 0.675,
+    "grain": "One row per native H3 R6 cell \u00b7 static support",
+    "diagnostics": {
+      "eligible": 2621,
+      "matchedKeys": 2621,
+      "complete": 2305,
+      "excluded": 316,
+      "missingLeftKey": 0,
+      "missingRightKey": 0,
+      "leftNull": 316,
+      "rightNull": 316,
+      "bothNull": 316,
+      "coverage": 0.8794353300267074,
+      "distinctCompleteCells": 2305,
+      "distinctCompletePeriods": 0,
+      "exclusionNote": "Key and null counts overlap; excluded is the distinct excluded-row count. Coverage denominator is the union of selected pair keys."
+    },
+    "statistics": {
+      "value": -0.5714182907344354,
+      "method": "spearman",
+      "reason": null
+    },
+    "plot": "scatter",
+    "response": null,
+    "source_bindings": {
+      "seascape": "2c1cddd7333bb296c76d43b3a8f8b97f90c0638609cc7eb55eea3139fa69efb3"
+    }
+  },
+  "numeric-category": {
+    "status": 200,
+    "seconds": 0.12,
+    "grain": "One row per native H3 R6 cell \u00b7 static support",
+    "diagnostics": {
+      "eligible": 2637,
+      "matchedKeys": 2429,
+      "complete": 2197,
+      "excluded": 440,
+      "missingLeftKey": 16,
+      "missingRightKey": 192,
+      "leftNull": 316,
+      "rightNull": 0,
+      "bothNull": 0,
+      "coverage": 0.8331437239287068,
+      "distinctCompleteCells": 2197,
+      "distinctCompletePeriods": 0,
+      "exclusionNote": "Key and null counts overlap; excluded is the distinct excluded-row count. Coverage denominator is the union of selected pair keys."
+    },
+    "statistics": null,
+    "plot": "box",
+    "response": null,
+    "source_bindings": {
+      "seascape": "eba24248c4bf1dc00d018ec7c7dfda2af79e38edb8c7c292491236666aa99cb7"
+    }
+  },
+  "recorded-srkw-strict": {
+    "status": 200,
+    "seconds": 9.601,
+    "grain": "One row per native H3 R6 cell with positive reported bins in the selected window",
+    "diagnostics": {
+      "eligible": 0,
+      "matchedKeys": 0,
+      "complete": 0,
+      "excluded": 0,
+      "missingLeftKey": 0,
+      "missingRightKey": 0,
+      "leftNull": 0,
+      "rightNull": 0,
+      "bothNull": 0,
+      "coverage": 0,
+      "distinctCompleteCells": 0,
+      "distinctCompletePeriods": 0,
+      "exclusionNote": "Key and null counts overlap; excluded is the distinct excluded-row count. Coverage denominator is the union of selected pair keys."
+    },
+    "statistics": null,
+    "plot": "scatter",
+    "response": {
+      "sourceRecords": 72422,
+      "selectedCategoryRecords": 44966,
+      "eligibleRecords": 0,
+      "exclusions": {
+        "cell_confinement_not_established": 44966
+      },
+      "positiveBins": 0,
+      "distinctCells": 0,
+      "distinctPeriods": 0,
+      "precisionStatuses": {
+        "assignment_only_unknown_accuracy": 44833,
+        "assignment_only_reported_uncertainty": 133
+      },
+      "precisionPolicy": "strict",
+      "policy": "Positive reported bins only, summed once per cell over the declared window. Unreported/unsurveyed cells are not zeros. Recorded source records, not abundance, occupancy or validated absence.",
+      "deduplication": "Stable SOURCE_RECORD_ID upsert within source. No proximity-only cross-source merge. Cross-source duplicate encounters remain possible.",
+      "coverage": "Opportunistic reports and configured research archives, not a complete survey. Sparse counts contain only positive record counts; a missing cell/bin is unknown/no report, never biological absence or surveyed zero. No effort denominator supplied. Unlocated/out-of-envelope and source-QC records are excluded with audit. Unknown time records appear only All time. Historical corrections outside refreshed windows are not guaranteed.",
+      "rights": "LOCAL INTERNAL USE ONLY. Provider UNKNOWN/INTERNAL_ONLY settings preserved. Exact sensitive/restricted locations remain local. No redistribution or publication rights established. CWR derivative use requires written approval; no approval obtained.",
+      "temporalPolicy": "Half-open actual source time bounds. Timestamp lexical precision is representation precision, not clock accuracy. Native day spans source-local midnight to next midnight. UTC bins require whole-interval containment; unknown timezone/date cannot enter dated UTC bins. Weeks start Monday 00:00 UTC; months/years are calendar UTC. No synthetic noon used. GBIF date-only/offset-free timestamps have unknown source timezone; generic configured UTC is not publisher evidence. Such rows keep native_date but enter only All time. Known native dates outside the requested calendar window are excluded even when UTC support is unknown.",
+      "analysisFrame": "Positive recorded native cells only; source-wide predictor rows outside this frame are reported separately, never absence labels."
+    },
+    "source_bindings": {
+      "seascape": "c8ad9f2a1a12e91f92f0c3a456d2050cbaef78741784641dedcd349d78617a95",
+      "orca": "0a6b1fdd24a3385de1e5e2fc7ef75271c7bcb843af699c5493f90ae127499fba:2205f2e07e849f9a5083fe1732879e975c8943e613fffb4a550c9246fc9cbb26"
+    }
+  },
+  "recorded-srkw-qualified": {
+    "status": 200,
+    "seconds": 0.193,
+    "grain": "One row per native H3 R6 cell with positive reported bins in the selected window",
+    "diagnostics": {
+      "eligible": 96,
+      "matchedKeys": 96,
+      "complete": 96,
+      "excluded": 0,
+      "missingLeftKey": 0,
+      "missingRightKey": 0,
+      "leftNull": 0,
+      "rightNull": 0,
+      "bothNull": 0,
+      "coverage": 1.0,
+      "distinctCompleteCells": 96,
+      "distinctCompletePeriods": 0,
+      "exclusionNote": "Key and null counts overlap; excluded is the distinct excluded-row count. Coverage denominator is the union of selected pair keys."
+    },
+    "statistics": {
+      "value": 0.0528653066001869,
+      "method": "spearman",
+      "reason": null
+    },
+    "plot": "scatter",
+    "response": {
+      "sourceRecords": 72422,
+      "selectedCategoryRecords": 44966,
+      "eligibleRecords": 879,
+      "exclusions": {
+        "outside_requested_window": 43953,
+        "unknown_or_cross_bin_utc_interval": 134
+      },
+      "positiveBins": 244,
+      "distinctCells": 96,
+      "distinctPeriods": 12,
+      "precisionStatuses": {
+        "assignment_only_unknown_accuracy": 44833,
+        "assignment_only_reported_uncertainty": 133
+      },
+      "precisionPolicy": "reported",
+      "policy": "Positive reported bins only, summed once per cell over the declared window. Unreported/unsurveyed cells are not zeros. Recorded source records, not abundance, occupancy or validated absence.",
+      "deduplication": "Stable SOURCE_RECORD_ID upsert within source. No proximity-only cross-source merge. Cross-source duplicate encounters remain possible.",
+      "coverage": "Opportunistic reports and configured research archives, not a complete survey. Sparse counts contain only positive record counts; a missing cell/bin is unknown/no report, never biological absence or surveyed zero. No effort denominator supplied. Unlocated/out-of-envelope and source-QC records are excluded with audit. Unknown time records appear only All time. Historical corrections outside refreshed windows are not guaranteed.",
+      "rights": "LOCAL INTERNAL USE ONLY. Provider UNKNOWN/INTERNAL_ONLY settings preserved. Exact sensitive/restricted locations remain local. No redistribution or publication rights established. CWR derivative use requires written approval; no approval obtained.",
+      "temporalPolicy": "Half-open actual source time bounds. Timestamp lexical precision is representation precision, not clock accuracy. Native day spans source-local midnight to next midnight. UTC bins require whole-interval containment; unknown timezone/date cannot enter dated UTC bins. Weeks start Monday 00:00 UTC; months/years are calendar UTC. No synthetic noon used. GBIF date-only/offset-free timestamps have unknown source timezone; generic configured UTC is not publisher evidence. Such rows keep native_date but enter only All time. Known native dates outside the requested calendar window are excluded even when UTC support is unknown.",
+      "analysisFrame": "Positive recorded native cells only; source-wide predictor rows outside this frame are reported separately, never absence labels."
+    },
+    "source_bindings": {
+      "seascape": "c8ad9f2a1a12e91f92f0c3a456d2050cbaef78741784641dedcd349d78617a95",
+      "orca": "0a6b1fdd24a3385de1e5e2fc7ef75271c7bcb843af699c5493f90ae127499fba:2205f2e07e849f9a5083fe1732879e975c8943e613fffb4a550c9246fc9cbb26"
+    }
+  },
+  "weather-partial-day": {
+    "status": 200,
+    "seconds": 0.228,
+    "grain": "One row per native H3 R5 cell \u00d7 UTC day (repeated cells; temporal dependence)",
+    "diagnostics": {
+      "eligible": 926,
+      "matchedKeys": 926,
+      "complete": 463,
+      "excluded": 463,
+      "missingLeftKey": 0,
+      "missingRightKey": 0,
+      "leftNull": 463,
+      "rightNull": 0,
+      "bothNull": 0,
+      "coverage": 0.5,
+      "distinctCompleteCells": 463,
+      "distinctCompletePeriods": 1,
+      "exclusionNote": "Key and null counts overlap; excluded is the distinct excluded-row count. Coverage denominator is the union of selected pair keys."
+    },
+    "statistics": {
+      "value": -0.8108382255981529,
+      "method": "spearman",
+      "reason": null
+    },
+    "plot": "scatter",
+    "response": null,
+    "source_bindings": {
+      "meteorology": "f9bfc8a900943439518907502532eef3b55f68c6894b2195a6308ca7ad0e6048:476d0eb388c244edd1ed4f065ca3ed1d471058ddf32f64d44336c40e251bc094"
+    }
+  },
+  "weather-cross-grid-refused": {
+    "status": 422,
+    "seconds": 0.01,
+    "error": {
+      "detail": "Native resolutions differ. No weather upscaling or implicit H3 parent join is supported."
+    }
+  },
+  "survey-year-native": {
+    "status": 200,
+    "seconds": 0.176,
+    "grain": "One row per native H3 R6 cell \u00b7 recorded survey slice 2024-01-01",
+    "diagnostics": {
+      "eligible": 2628,
+      "matchedKeys": 2420,
+      "complete": 67,
+      "excluded": 2561,
+      "missingLeftKey": 7,
+      "missingRightKey": 201,
+      "leftNull": 316,
+      "rightNull": 2359,
+      "bothNull": 229,
+      "coverage": 0.025494672754946726,
+      "distinctCompleteCells": 67,
+      "distinctCompletePeriods": 0,
+      "exclusionNote": "Key and null counts overlap; excluded is the distinct excluded-row count. Coverage denominator is the union of selected pair keys."
+    },
+    "statistics": {
+      "value": -0.053296884200156346,
+      "method": "spearman",
+      "reason": null
+    },
+    "plot": "scatter",
+    "response": null,
+    "source_bindings": {
+      "seascape": "5d90a6af5912b9ed26ddc3755b911a4c288ea844349ee5f35ebd1c53d650dde0"
+    }
+  },
+  "governance-exact-sets": {
+    "status": 200,
+    "seconds": 0.071,
+    "grain": "One row per native H3 R6 cell \u00b7 static support",
+    "diagnostics": {
+      "eligible": 2621,
+      "matchedKeys": 2621,
+      "complete": 0,
+      "excluded": 2621,
+      "missingLeftKey": 0,
+      "missingRightKey": 0,
+      "leftNull": 316,
+      "rightNull": 2621,
+      "bothNull": 316,
+      "coverage": 0.0,
+      "distinctCompleteCells": 0,
+      "distinctCompletePeriods": 0,
+      "exclusionNote": "Key and null counts overlap; excluded is the distinct excluded-row count. Coverage denominator is the union of selected pair keys."
+    },
+    "statistics": null,
+    "plot": "box",
+    "response": null,
+    "source_bindings": {
+      "governance": "de555cda7f6da87555af22e4300888654036ebd8450d7b8bafa2ffc9bb20b6f9",
+      "seascape": "c8ad9f2a1a12e91f92f0c3a456d2050cbaef78741784641dedcd349d78617a95"
+    }
+  },
+  "human-native-r7": {
+    "status": 200,
+    "seconds": 0.48,
+    "grain": "One row per native H3 R7 cell \u00b7 static support",
+    "diagnostics": {
+      "eligible": 13461,
+      "matchedKeys": 13461,
+      "complete": 274,
+      "excluded": 13187,
+      "missingLeftKey": 0,
+      "missingRightKey": 0,
+      "leftNull": 13187,
+      "rightNull": 13187,
+      "bothNull": 13187,
+      "coverage": 0.020355099918282445,
+      "distinctCompleteCells": 274,
+      "distinctCompletePeriods": 0,
+      "exclusionNote": "Key and null counts overlap; excluded is the distinct excluded-row count. Coverage denominator is the union of selected pair keys."
+    },
+    "statistics": {
+      "value": 0.386131621880849,
+      "method": "spearman",
+      "reason": null
+    },
+    "plot": "scatter",
+    "response": null,
+    "source_bindings": {
+      "human": "022339d58e18818ebb2d66b27fdfe8fbca2fbfc1f099dcc889fac4b6489a2a85"
+    }
+  },
+  "static-r8": {
+    "status": 200,
+    "seconds": 2.862,
+    "variables": [
+      "bathymetry__BATHYMETRY",
+      "bathymetry__BATHYMETRY_FRAC_0_10_M"
+    ],
+    "grain": "One row per native H3 R8 cell \u00b7 static support",
+    "diagnostics": {
+      "eligible": 81380,
+      "matchedKeys": 81380,
+      "complete": 77034,
+      "excluded": 4346,
+      "missingLeftKey": 0,
+      "missingRightKey": 0,
+      "leftNull": 4346,
+      "rightNull": 4346,
+      "bothNull": 4346,
+      "coverage": 0.9465962152863111,
+      "distinctCompleteCells": 77034,
+      "distinctCompletePeriods": 0,
+      "exclusionNote": "Key and null counts overlap; excluded is the distinct excluded-row count. Coverage denominator is the union of selected pair keys."
+    },
+    "statistics": {
+      "value": -0.5265065361802017,
+      "method": "spearman",
+      "reason": null
+    },
+    "plot": "density",
+    "source_bindings": {
+      "seascape": "526e986daaca53d53031cfd9cc568abf30c1fb77b7edb6ff9578c5d3d00ba025"
+    }
+  }
+}
