@@ -1,3 +1,5 @@
+import TideEventInsights from "../components/TideEventInsights";
+import StationTemperaturePanel from "../components/StationTemperaturePanel";
 import { savedVesselRouting, vesselRoutingRecorded } from "../data/vesselRouting";
 import { savedPortFeature } from "../data/humanPorts";
 import { isPercentCoverage, savedConservation } from "../data/marineConservation";
@@ -16,7 +18,9 @@ import {RiverInfluenceSettings,RiverInfluenceInsights} from "../components/River
 import {riverInfluenceLayer,defaultInfluenceSettings,isRiverInfluenceFeature,riverInfluenceDatasetInfo} from "../data/riverInfluence";
 import type {InfluenceSettings} from "../data/riverInfluence";
 import HydrologyHistory from "../components/HydrologyHistory";
-import HumanPopulationInsights from "../components/HumanPopulationInsights";
+import OceanHistory from "../components/OceanHistory";
+import HumanCalendar from "../components/HumanCalendar";
+import HumanPopulationInsights, { HumanPopulationCoverage } from "../components/HumanPopulationInsights";
 import { populationSupport, populationScaleValues, samePopulationQuantity, populationLegendContext } from "../data/humanPopulation";
 import { hydrologyLayer, hydrologyCaveat } from "../data/hydrology";
 import type { HydrologyMetricId } from "../data/hydrology";
@@ -71,7 +75,7 @@ import { createColorScale, createCategoryScale, palettes } from "../data/colorSc
 import { standardizeLayer } from "../data/standardize";
 import type { MapBounds, MapLayer } from "../data/map";
 import type { PaletteId, ScaleMode } from "../data/colorScale";
-import type { Cell } from "../data/demo";
+import type { Cell } from "../data/map";
 import {
   loadSeascapeLayer,
   sourceValue,
@@ -93,11 +97,13 @@ function displayScale(layer: MapLayer | undefined, field: SeascapeFeature | unde
     const scale = membershipCategoryScale(layer, palette);
     return waterAssignmentFamily(field?.column) ? { ...scale, colors: geographicWaterColors.slice(0, layer.categories?.length ?? 0) } : scale;
   }
+  if (field?.tideEvents) return {...createCategoryScale(layer.values,layer.categories??[],palette),colors:["#287f9d"]};
   if (layer.categories) return createCategoryScale(layer.values, layer.categories, palette);
   const effectiveMode = !mode || mode === "depth" ? isDepth(field) && !standardized ? "depth" : "equal" : mode;
-  if ((field?.dataset === "meteorology" || field?.dataset === "hydrology"&&!isRiverInfluenceFeature(field)) && !standardized && effectiveMode !== "quantile") {
-    const range = field.circular ? [0, 360] : layer.range;
-    const fixed = createColorScale(new Map([["min", range[0]], ["max", range[1]]]), palette, effectiveMode);
+  if ((field?.dataset === "oceanography" || field?.dataset === "meteorology" || field?.dataset === "hydrology"&&!isRiverInfluenceFeature(field)) && !standardized && effectiveMode !== "quantile") {
+    const extent = Math.max(...layer.range.map(Math.abs));
+    const range = field.signed ? [-extent, extent] : field.circular ? [0, 360] : layer.range;
+    const fixed = createColorScale(new Map([["min", range[0]], ["max", range[1]]]), field.signed && palette === "ocean" ? "balance" : palette, effectiveMode);
     return { ...fixed, count: [...layer.values.values()].filter(value => value !== null).length };
   }
   const populationValues = !standardized && field?.dataset === "human" ? populationScaleValues(layer as SeascapeLayer) : undefined;
@@ -182,6 +188,8 @@ export default function SeascapeMapPage({ headerHost, initialDomain }: { headerH
   const [viewshedOverlay, setViewshedOverlay] = useState<ViewshedMapProps>();
   const [viewshedActive, setViewshedActive] = useState(initialDomain === "viewshed");
   const [hydrologyDay, setHydrologyDay] = useState<string>();
+  const [temperatureStation, setTemperatureStation] = useState<string>();
+  const [stationDay, setStationDay] = useState<string>();
   const [hydrologyRiver, setHydrologyRiver] = useState<string>();
 
   const [orcaState, setOrcaState] = useState<OrcaState>(defaultOrcaState);
@@ -418,9 +426,9 @@ export default function SeascapeMapPage({ headerHost, initialDomain }: { headerH
       values: feature?.dataset === "hydrology"&&!isRiverInfluenceFeature(feature) && hydro && hydroDay ? new Map(hydro.rivers.map(r=>[r.id,r.series[feature.column as HydrologyMetricId].values[hydro.dates.indexOf(hydroDay)]])) : layer?.rawValues ?? layer?.values, categorical: Boolean(layer?.categories ?? feature?.kind === "categorical"),
       colors: palettes[style.palette].colors, error: rightSide ? right.error : left.error,
       categoryColors: layer?.categories ? new Map((feature?.membershipColumn ? layer.categories : feature?.categories ?? layer.categories).map((value, i) => [value, (rightSide ? rightScale : leftScale)?.colors[i] ?? palettes[style.palette].colors[0]])) : undefined,
-      note: [layer?.riverInfluence?.recipe.qualification,feature?.dataset === "hydrology"&&!isRiverInfluenceFeature(feature) ? hydrologyCaveat : undefined, feature?.dataset === "marine-mammals" ? orcaCaveat : undefined, feature?.membershipColumn ? "Recorded membership categories; overlapping features are retained in full. Stripe widths do not indicate area shares." : undefined, feature?.dataset === "meteorology" ? `ERA5 reanalysis · UTC calendar periods · ~31 km source. ${feature.circular ? "Direction is circular; scalar mean, median, smoothing and z-scores are omitted." : "Default colors use the full-record range, so playback colors stay comparable."}` : undefined,
-        !(["hydrology","marine-mammals","river-influence"].includes(feature?.dataset??"")) && style.smoothing.enabled && !layer?.categories && !feature?.circular ? "Map: Gaussian blended display. Insights: original source cells." : undefined,
-        !(["hydrology","marine-mammals","river-influence"].includes(feature?.dataset??"")) && style.standardize && !layer?.categories && !feature?.circular ? standardized?.unavailable ? "Standardization is unavailable. Insights retains original values." : "Map: z-scores. Insights: original source values." : undefined].filter(Boolean).join(" ") || undefined,
+      note: [feature?.dataset === "oceanography" ? feature.definition : undefined, layer?.riverInfluence?.recipe.qualification,feature?.dataset === "hydrology"&&!isRiverInfluenceFeature(feature) ? hydrologyCaveat : undefined, feature?.dataset === "marine-mammals" ? orcaCaveat : undefined, feature?.membershipColumn ? "Recorded membership categories; overlapping features are retained in full. Stripe widths do not indicate area shares." : undefined, feature?.dataset === "meteorology" ? `ERA5 reanalysis · UTC calendar periods · ~31 km source. ${feature.circular ? "Direction is circular; scalar mean, median, smoothing and z-scores are omitted." : "Default colors use the full-record range, so playback colors stay comparable."}` : undefined,
+        !(["hydrology","marine-mammals","river-influence","oceanography"].includes(feature?.dataset??"")) && style.smoothing.enabled && !layer?.categories && !feature?.circular ? "Map: Gaussian blended display. Insights: original source cells." : undefined,
+        !(["hydrology","marine-mammals","river-influence","oceanography"].includes(feature?.dataset??"")) && style.standardize && !layer?.categories && !feature?.circular ? standardized?.unavailable ? "Standardization is unavailable. Insights retains original values." : "Map: z-scores. Insights: original source values." : undefined].filter(Boolean).join(" ") || undefined,
       metadata: [
         { label: "Original variable", value: feature?.name ?? "Unavailable" },
         { label: "Family", value: feature?.family ?? "Unavailable" },
@@ -481,10 +489,10 @@ export default function SeascapeMapPage({ headerHost, initialDomain }: { headerH
       source_sha256: current.field.sourceSha256,
       source_record_context: current.field.sourceRecordContext,
       column: current.field.column ?? current.id,
-      display_smoothing: !["hydrology","marine-mammals","river-influence"].includes(current.field.dataset??"") && currentAppearance.smoothing.enabled && !current.categories && !current.field.circular ? {
+      display_smoothing: !["hydrology","marine-mammals","river-influence","oceanography"].includes(current.field.dataset??"") && currentAppearance.smoothing.enabled && !current.categories && !current.field.circular ? {
         requested: true, method: "normalized Gaussian blend of native-cell values", sigma_cell_widths: currentAppearance.smoothing.radius, contours: currentAppearance.smoothing.contours, visualization_only: true,
       } : undefined,
-      display_standardization: !["hydrology","marine-mammals","river-influence"].includes(current.field.dataset??"") && currentAppearance.standardize && !current.categories && !current.field.circular
+      display_standardization: !["hydrology","marine-mammals","river-influence","oceanography"].includes(current.field.dataset??"") && currentAppearance.standardize && !current.categories && !current.field.circular
         ? {
             formula: isPercentCoverage(current.field) ? "(value * 100 - mean) / std" : "(value - mean) / std",
             ...(isPercentCoverage(current.field) ? { input_unit: current.field.unit, mean_unit: "%", std_unit: "%" } : {}),
@@ -529,7 +537,17 @@ export default function SeascapeMapPage({ headerHost, initialDomain }: { headerH
   const changeField = (value: string) => {
     setSelectedLocation(undefined);
     setId(value);
+    const nextField = catalog?.features.find(f => f.id === value);
     setSelectionNotice("");
+    if (nextField?.dataset === "oceanography") {
+      setResolution(nextField.resolution);
+      const nextProduct = catalog?.products?.[nextField.productId ?? ""];
+      if (slice && nextProduct && "slices" in nextProduct && !nextProduct.slices[slice]) {
+        setSlice(nextProduct.defaultSlice);
+        const dates = Object.keys(nextProduct.slices);
+        setSelectionNotice(`Date switched to ${nextProduct.defaultSlice}; this product covers ${dates[0]}–${dates.at(-1)}.`);
+      }
+    }
     if(dataset!=="hydrology"||isRiverInfluenceFeature(catalog?.features.find(f=>f.id===value))!==leftInfluence)setSelected(undefined);
     setSelectedEvent(undefined);
   };
@@ -636,23 +654,18 @@ export default function SeascapeMapPage({ headerHost, initialDomain }: { headerH
   const leftMap = (
     <div className="map-layer-frame">
       <MapCanvas
-        nativeData
         onBoundsChange={setLeftBounds}
-        basemap="maptiler"
         cameraLink={cameraLink}
         overlayHost={overlayHost}
-        feature="temperature"
-        month={0}
         humanGeometry={leftNative}
         layer={viewshedActive || leftPoints || leftNative ? undefined : leftMapDisplay}
         orcaPoints={!viewshedActive && leftPoints ? pointOverlays[0] : undefined}
-        hydrologyPoints={!viewshedActive && leftHydro && hydro && hydroDay ? {data:hydro,metric:field!.column as HydrologyMetricId,day:hydroDay,appearance:hydrologyAppearance,selected:hydrologyRiver,onSelect:id=>inspectHydrology(id,false,false)} : undefined}
+        hydrologyPoints={!viewshedActive && leftHydro && hydro && hydroDay ? {data:hydro,metric:field!.column as HydrologyMetricId,day:hydroDay,appearance:hydrologyAppearance,stationDay:stationDay??hydroDay,selectedStation:temperatureStation,onSelectStation:setTemperatureStation,selected:hydrologyRiver,onSelect:id=>inspectHydrology(id,false,false)} : undefined}
         viewshed={viewshedActive ? viewshedOverlay : undefined}
         colorScale={leftScale}
-        region="all"
         showGrid={!leftPoints && !leftHydro && !leftNative}
         outlines={leftHydro?false:outlines}
-        smoothing={viewshedActive || leftNative || leftOrca || leftHydro || leftInfluence || field?.circular ? { ...smoothing, enabled: false } : smoothing}
+        smoothing={viewshedActive || leftNative || leftOrca || leftHydro || leftInfluence || field?.dataset === "oceanography" || field?.circular ? { ...smoothing, enabled: false } : smoothing}
         opacity={opacity}
         selected={selected?.right === false ? selected.cell.id : undefined}
         popup={cellPopup(left.layer, false)}
@@ -675,23 +688,18 @@ export default function SeascapeMapPage({ headerHost, initialDomain }: { headerH
   const rightMap = (
     <div className="map-layer-frame">
       <MapCanvas
-        nativeData
         onBoundsChange={setRightBounds}
-        basemap="maptiler"
         cameraLink={cameraLink}
         overlayHost={overlayHost}
         showControls={false}
-        feature="temperature"
-        month={0}
         humanGeometry={rightNative}
         layer={rightPoints || rightNative ? undefined : rightMapDisplay}
         orcaPoints={rightPoints ? pointOverlays[1] : undefined}
-        hydrologyPoints={rightHydro && hydro && hydroDay ? {data:hydro,metric:otherField!.column as HydrologyMetricId,day:hydroDay,appearance:rightStyle.hydrology,selected:hydrologyRiver,onSelect:id=>inspectHydrology(id,true,false)} : undefined}
+        hydrologyPoints={rightHydro && hydro && hydroDay ? {data:hydro,metric:otherField!.column as HydrologyMetricId,day:hydroDay,appearance:rightStyle.hydrology,stationDay:stationDay??hydroDay,selectedStation:temperatureStation,onSelectStation:setTemperatureStation,selected:hydrologyRiver,onSelect:id=>inspectHydrology(id,true,false)} : undefined}
         colorScale={rightScale}
-        region="all"
         showGrid={!rightPoints && !rightHydro && !rightNative}
         outlines={rightHydro?false:rightStyle.outlines}
-        smoothing={rightNative || rightOrca || rightHydro || rightInfluence || otherField?.circular ? { ...rightStyle.smoothing, enabled: false } : rightStyle.smoothing}
+        smoothing={rightNative || rightOrca || rightHydro || rightInfluence || otherField?.dataset === "oceanography" || otherField?.circular ? { ...rightStyle.smoothing, enabled: false } : rightStyle.smoothing}
         opacity={rightStyle.opacity}
         selected={selected?.right === true ? selected.cell.id : undefined}
         popup={cellPopup(right.layer, true)}
@@ -722,7 +730,7 @@ export default function SeascapeMapPage({ headerHost, initialDomain }: { headerH
     <MapWarningsProvider><main
       id="features-explorer"
       aria-label="Features explorer"
-      className={`map-page ${viewshedActive ? "viewshed-open" : ""} reference-map seascape-map atlas-map colorbar-map drawer-map ${weatherActive || orcaActive || hydroActive || influenceActive ? "has-weather-timeline" : ""} ${hydroActive ? "has-hydrology-timeline" : ""} ${orcaActive ? "has-orca-timeline" : ""} ${legendSide ? "appearance-open" : ""} ${layers ? "layers-open" : ""} ${compare ? "comparing swipe-comparing" : ""} ${insightsOpen ? "insights-open" : ""}`}
+      className={`map-page ${viewshedActive ? "viewshed-open" : ""} reference-map seascape-map atlas-map colorbar-map drawer-map ${weatherActive || orcaActive || hydroActive || influenceActive || field?.dataset === "oceanography" ? "has-weather-timeline" : ""} ${hydroActive ? "has-hydrology-timeline" : ""} ${orcaActive ? "has-orca-timeline" : ""} ${legendSide ? "appearance-open" : ""} ${layers ? "layers-open" : ""} ${compare ? "comparing swipe-comparing" : ""} ${insightsOpen ? "insights-open" : ""}`}
     >
       <MapWarningsRegion />
       {catalog && <SourceWarning issues={sourceIssues} onRetry={() => setAttempt(value => value + 1)} />}
@@ -734,11 +742,11 @@ export default function SeascapeMapPage({ headerHost, initialDomain }: { headerH
           setLegendSide(undefined); setDialog(undefined);
           if (window.matchMedia?.('(min-width: 1100px)').matches === false) setLayers(false);
         }
-      }} dataset={describeLayer(insightsRight)} overviewContent={insightLayer?.riverInfluence?<RiverInfluenceInsights layer={insightLayer}/>:insightLayer?.categoryMemberships?<GovernanceOverview layer={(insightsRight?rightMapDisplay:leftMapDisplay)!} colors={(insightsRight?rightScale:leftScale)?.colors??[]}/>:insightOrcaFrame&&insightLayer?.field.dataset==="marine-mammals"?<OrcaOverview frame={insightOrcaFrame}/>:insightNative?<HumanGeometryOverview data={insightNative.data} filter={insightNative.filter}/>:hydro&&hydroDay&&insightLayer?.field.dataset==="hydrology"?<HydrologyOverview data={hydro} metric={insightLayer.field.column as HydrologyMetricId} day={hydroDay} onInspect={id=>inspectHydrology(id,insightsRight)}/>:undefined} selectedContent={insightLayer?.riverInfluence?<RiverInfluenceInsights layer={insightLayer} cell={selected?.right===insightsRight?selected.cell.id:undefined}/>:insightNative?<HumanGeometryInspector feature={insightNativeRecord} footprints={insightNative.data.footprints}/>:populationSupport(insightLayer?.field) && insightLayer ? <HumanPopulationInsights layer={insightLayer} cell={selected?.right===insightsRight?selected.cell.id:undefined} /> : hydro && hydroDay && insightLayer?.field.dataset==="hydrology" ? <HydrologyInsights appearance={insightHydrologyAppearance} riverId={hydrologyRiver} data={hydro} metric={insightLayer.field.column as HydrologyMetricId} day={hydroDay} cell={selected?.right===insightsRight?selected.cell.id:undefined} onDate={setHydrologyDay} onMetric={value=>{if(insightsRight)setOtherId(`HYDROLOGY__${value}`);else setId(`HYDROLOGY__${value}`);}} onRiver={river=>inspectHydrology(river,insightsRight)}/> : insightOrcaFrame && insightLayer?.field.dataset === "marine-mammals" ? <OrcaInspector data={orca!} records={insightOrcaFrame.records} eventId={selectedEvent?.right===insightsRight?selectedEvent.id:undefined} cell={selected?.right===insightsRight?selected.cell.id:undefined} /> : selected && insightLayer?.field.membershipColumn && selected.right === insightsRight && insightRow !== undefined ? <><dl className="insights-cell-details"><div><dt>H3 index</dt><dd><code>{selected.cell.id}</code></dd></div><div><dt>Latitude / longitude</dt><dd>{selected.cell.lat.toFixed(6)}, {selected.cell.lon.toFixed(6)}</dd></div></dl><GovernanceMembershipInspector
+      }} dataset={describeLayer(insightsRight)} overviewNote={insightLayer?.field.dataset === "human" ? <HumanPopulationCoverage layer={insightLayer}/> : undefined} overviewContent={insightLayer?.riverInfluence?<RiverInfluenceInsights layer={insightLayer}/>:insightLayer?.categoryMemberships?<GovernanceOverview layer={(insightsRight?rightMapDisplay:leftMapDisplay)!} colors={(insightsRight?rightScale:leftScale)?.colors??[]}/>:insightOrcaFrame&&insightLayer?.field.dataset==="marine-mammals"?<OrcaOverview frame={insightOrcaFrame}/>:insightNative?<HumanGeometryOverview data={insightNative.data} filter={insightNative.filter}/>:hydro&&hydroDay&&insightLayer?.field.dataset==="hydrology"?<HydrologyOverview data={hydro} metric={insightLayer.field.column as HydrologyMetricId} day={hydroDay} onInspect={id=>inspectHydrology(id,insightsRight)}/>:undefined} selectedContent={insightLayer?.tideEvents?<TideEventInsights layer={insightLayer} cell={selected?.right===insightsRight?selected.cell.id:undefined}/>:insightLayer?.riverInfluence?<RiverInfluenceInsights layer={insightLayer} cell={selected?.right===insightsRight?selected.cell.id:undefined}/>:insightNative?<HumanGeometryInspector feature={insightNativeRecord} footprints={insightNative.data.footprints}/>:populationSupport(insightLayer?.field) && insightLayer ? <HumanPopulationInsights layer={insightLayer} cell={selected?.right===insightsRight?selected.cell.id:undefined} /> : hydro && hydroDay && insightLayer?.field.dataset==="hydrology" ? <HydrologyInsights appearance={insightHydrologyAppearance} riverId={hydrologyRiver} data={hydro} metric={insightLayer.field.column as HydrologyMetricId} day={hydroDay} cell={selected?.right===insightsRight?selected.cell.id:undefined} onDate={setHydrologyDay} onMetric={value=>{if(insightsRight)setOtherId(`HYDROLOGY__${value}`);else setId(`HYDROLOGY__${value}`);}} onRiver={river=>inspectHydrology(river,insightsRight)}/> : insightOrcaFrame && insightLayer?.field.dataset === "marine-mammals" ? <OrcaInspector data={orca!} records={insightOrcaFrame.records} eventId={selectedEvent?.right===insightsRight?selectedEvent.id:undefined} cell={selected?.right===insightsRight?selected.cell.id:undefined} /> : selected && insightLayer?.field.membershipColumn && selected.right === insightsRight && insightRow !== undefined ? <><dl className="insights-cell-details"><div><dt>H3 index</dt><dd><code>{selected.cell.id}</code></dd></div><div><dt>Latitude / longitude</dt><dd>{selected.cell.lat.toFixed(6)}, {selected.cell.lon.toFixed(6)}</dd></div></dl><GovernanceMembershipInspector
         sourceContext={insightLayer.field.sourceContext} sourceRecordContext={insightLayer.field.sourceRecordContext}
         memberships={insightLayer.governanceMemberships?.cells[insightRow]}
         countLabel={insightLayer.field.assignmentSemantics === "conservation_status" ? "Assignment entries" : undefined}
-        count={insightLayer.governanceMemberships?.counts[insightRow]} status={insightLayer.governanceMemberships?.statuses[insightRow]} /></> : undefined} temporalContent={insightsOpen && insightLayer?.field.dataset === "marine-mammals" && orca ? <><OrcaDemography data={orca} state={insightOrcaState} /><OrcaSourceCoverage data={orca} /></> : insightsOpen && weather && insightLayer?.field.dataset === "meteorology" && <WeatherInsights
+        count={insightLayer.governanceMemberships?.counts[insightRow]} status={insightLayer.governanceMemberships?.statuses[insightRow]} /></> : undefined} temporalLabel={insightLayer?.field.dataset === "human" ? "Civil calendar" : "Time history"} temporalContent={insightsOpen && insightLayer?.field.tideEvents ? <p>Choose a UTC event day on the timeline. Select a cell for every high and low event with its local offset.</p> : insightsOpen && insightLayer?.field.dataset === "oceanography" ? <OceanHistory catalog={catalog!} field={insightLayer.field} day={insightLayer.slice!.value} cell={selected?.right===insightsRight?selected.cell.id:undefined} onDate={insightsRight?setOtherSlice:setSlice}/> : insightsOpen && insightLayer?.field.dataset === "human" ? <HumanCalendar product={catalog?.products?.["human-population-r7"]}/> : insightsOpen && insightLayer?.field.dataset === "marine-mammals" && orca ? <><OrcaDemography data={orca} state={insightOrcaState} /><OrcaSourceCoverage data={orca} /></> : insightsOpen && weather && insightLayer?.field.dataset === "meteorology" && <WeatherInsights
         catalog={weather} metric={insightLayer.field.column!} day={insightLayer.slice!.value}
         cell={selected && selected.right === insightsRight ? selected.cell.id : undefined} />} cell={insightNativeRecord?{id:insightNativeRecord.properties.record_id,value:insightNativeRecord.properties.category,coordinates:[insightNativeRecord.properties.label_point[1],insightNativeRecord.properties.label_point[0]],details:[],qualifiers:[]}:selectedEvent && selectedEvent.right===insightsRight && insightOrcaFrame?.points.find(r=>r.event_id===selectedEvent.id) ? (()=>{const r=insightOrcaFrame.points.find(r=>r.event_id===selectedEvent.id)!;return{id:r.event_id,value:1,coordinates:[r.latitude!,r.longitude!] as [number,number],details:[],qualifiers:[]};})() : selected && insightLayer && selected.right === insightsRight ? {
         id: selected.cell.id, value: originalValue(insightLayer, selected.cell.id), coordinates: [selected.cell.lat, selected.cell.lon],
@@ -793,6 +801,7 @@ export default function SeascapeMapPage({ headerHost, initialDomain }: { headerH
                 <div className="layer-body">
                   <FamilyFeaturePicker
                     showFeature={!leftOrca}
+                    allowNativeSwitch={!compare}
                     label="Feature"
                     catalog={catalog}
                     resolution={resolution}
@@ -800,10 +809,14 @@ export default function SeascapeMapPage({ headerHost, initialDomain }: { headerH
                     value={field?.id ?? ""}
                     onChange={changeField}
                   />
+                  {leftHydro&&hydro&&<div className="station-temperature-control"><strong>Independent water-temperature stations</strong>{hydro.stationTemperatureUnavailable&&<p role="alert">{hydro.stationTemperatureUnavailable}</p>}{hydro.stationTemperature&&Object.values(hydro.stationTemperature.stations).map(s=><button key={s.station_id} onClick={()=>{setTemperatureStation(s.station_id);cameraLink.publish({setCamera:()=>{},finishMove:()=>{}},{...cameraLink.getCamera(),center:[s.longitude,s.latitude],zoom:8.8},false);}}>Orange station · {s.provider_station_name} · daily mean °C</button>)}<p>Actual measured locations, separate from river-mouth markers. Hollow orange = unavailable on selected date.</p></div>}
                   {leftInfluence&&influence&&influenceLeft&&<RiverInfluenceSettings data={influence} value={influenceLeft} onChange={setInfluenceLeft}/>}
                   {leftOrca && orca && <OrcaControls data={orca} state={orcaState} onChange={changeOrca} />}
                   {sliceSelect(field, slice, setSlice)}
-                  {new Set(catalog.features.filter(f => (f.dataset ?? "seascape") === dataset).map(f => f.resolution)).size > 1 ? (
+                  {field?.seasonalContext&&<p role="note">Regional three-month ENSO context; repeated across the study area, not local daily measurements. Period end is not publication date. {field.seasonalContext.publicationLag}. Historical issue dates unknown; retrospective only, not forecast eligible.</p>}
+                  {field?.tideEvents&&<p role="note">Map color marks station prediction support, not tide height or phase. Select a cell for all high/low UTC and local event times. Unsupported cells remain unavailable.</p>}
+                  {field?.dataset === "oceanography" && selectionNotice.startsWith("Date switched") && <p role="status">{selectionNotice}</p>}
+                  {dataset !== "oceanography" && new Set(catalog.features.filter(f => (f.dataset ?? "seascape") === dataset).map(f => f.resolution)).size > 1 ? (
                   <label className="field">
                     Native H3 resolution
                     <select
@@ -835,12 +848,14 @@ export default function SeascapeMapPage({ headerHost, initialDomain }: { headerH
         </DataDomainDock>
       </div>}
       </>}
+      {temperatureStation&&hydro?.stationTemperature?.stations[temperatureStation]&&<StationTemperaturePanel data={hydro.stationTemperature} stationId={temperatureStation} day={stationDay??hydroDay!} onDate={setStationDay} onClose={()=>setTemperatureStation(undefined)}/> }
       {!viewshedActive && catalog && <>
       <div className="map-bottom-controls">
       {compare && (leftOrca && rightOrca || leftHydro && rightHydro || leftInfluence && rightInfluence) && <label className="timeline-side-control panel">Timeline map<select aria-label="Timeline map" value={timelineSide} onChange={e=>setTimelineSide(e.target.value as "left"|"right")}><option value="left">Left map</option><option value="right">Right map</option></select></label>}
       {hydroActive && hydro && hydroDay && <HydrologyHistory appearance={timelineRight?rightStyle.hydrology:hydrologyAppearance} data={hydro} metric={(timelineRight?otherField:field)!.column as HydrologyMetricId} day={hydroDay} onDate={setHydrologyDay}/>}
       {!hydroActive && orcaActive && activeOrcaFrame && <OrcaTimeline state={timelineRight?rightOrcaState:orcaState} periods={timelineRight?rightPeriods:periods} frame={activeOrcaFrame} onChange={value=>changeOrca(value,timelineRight)} />}
       {influenceActive&&!weatherActive&&!hydroActive&&!orcaActive&&influence&&<TimelineControls startDate={influence.recipe.dates[0]} endDate={influence.recipe.dates.at(-1)!} increment={{unit:"day"}} values={influence.recipe.dates} value={(rightInfluence&&(!leftInfluence||timelineSide==="right")?influenceRight:influenceLeft)!.date} onChange={date=>rightInfluence&&(!leftInfluence||timelineSide==="right")?setInfluenceRight({...influenceRight!,date}):setInfluenceLeft({...influenceLeft!,date})} format={value=>value} basisLabel="provider date" label="River influence timeline" rangeLabel="River influence provider date" stepLabel="river influence day" playbackLabel="river influence playback" caption="Provider dates · exploratory lag scenarios"/>}
+      {field?.dataset === "oceanography" && field.productId && (() => { const p = catalog.products?.[field.productId]; if (!p || !("slices" in p)) return null; const days = Object.keys(p.slices); return <TimelineControls startDate={days[0]} endDate={days.at(-1)!} increment={{unit:field.seasonalContext?"month":"day"}} values={days} value={slice ?? p.defaultSlice} onChange={setSlice} format={v=>field.seasonalContext?`${field.seasonalContext.periods[v]?.season} · ends ${v}`:v} basisLabel={field.seasonalContext?"season end":field.tideEvents?"UTC event day":"source date"} label="Oceanography timeline" rangeLabel="Oceanography date" stepLabel={field.seasonalContext?"ENSO period":"oceanography day"} playbackLabel="oceanography playback" caption={field.seasonalContext?"Season end ≠ issue date · historical availability unknown · retrospective context only":field.tideEvents?"UTC event day · local events can fall on the previous date · station timing proxy":!left.loading && left.layer?.slice?.value === (slice ?? p.defaultSlice) && [...left.layer.values.values()].every(v=>v===null) ? "No qualified values on this date · unavailable, not zero · no date substitution" : "Native daily source date · no app gap filling"}/>; })()}
       {weatherActive && weather && weatherDay && <WeatherTimeSlider onPrefetch={prefetchWeather} dates={weather.dates} value={weatherDay} onChange={changeWeatherDate}
         busy={Boolean((field?.dataset === "meteorology" && left.loading) || (otherField?.dataset === "meteorology" && right.loading))}
         error={left.error ?? right.error} />}
@@ -912,7 +927,16 @@ export default function SeascapeMapPage({ headerHost, initialDomain }: { headerH
             {productSelect(rightSide)}
             <FamilyFeaturePicker showFeature={!(rightSide ? rightOrca : leftOrca)} label={`${rightSide ? "Right" : "Left"} map feature`} familyLabel={`${rightSide ? "Right" : "Left"} map family`} catalog={catalog} resolution={resolution}
               dataset={rightSide ? otherDataset : dataset} value={(rightSide ? otherField : field)?.id ?? ""}
-              onChange={value => { if (rightSide) setOtherId(value); else setId(value); setSelectedLocation(undefined); setSelected(undefined); setSelectionNotice(""); }} />
+              onChange={value => {
+                if (!rightSide) { changeField(value); return; }
+                setOtherId(value); setSelectedLocation(undefined); setSelected(undefined); setSelectionNotice("");
+                const next = catalog.features.find(f=>f.id===value);
+                const product = catalog.products?.[next?.productId??""];
+                if (next?.dataset==="oceanography" && otherSlice && product && "slices" in product && !product.slices[otherSlice]) {
+                  setOtherSlice(product.defaultSlice);
+                  setSelectionNotice(`Right map date switched to ${product.defaultSlice}; the previous date is outside this product's range.`);
+                }
+              }} />
             {(rightSide?rightInfluence:leftInfluence)&&influence&&<RiverInfluenceSettings data={influence} value={(rightSide?influenceRight:influenceLeft)!} onChange={rightSide?setInfluenceRight:setInfluenceLeft}/>}
             {(rightSide ? rightOrca : leftOrca) && orca && <OrcaControls data={orca} state={rightSide?rightOrcaState:orcaState} onChange={value=>changeOrca(value,rightSide)} />}
             {sliceSelect(rightSide ? otherField : field, rightSide ? otherSlice : slice, rightSide ? setOtherSlice : setSlice, rightSide)}

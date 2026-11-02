@@ -29,6 +29,7 @@ export function hydrologyRiverColor(id: string, appearance?: HydrologyAppearance
 }
 export interface HydrologyPoints {
   data: HydrologyData; metric: HydrologyMetricId; day: string;
+  stationDay?:string; selectedStation?:string; onSelectStation?:(station:string)=>void;
   appearance?: HydrologyAppearance; selected?: string; onSelect: (river: string) => void;
 }
 export const hydrologyPointSource = "hydrology-river-nodes";
@@ -36,14 +37,17 @@ export const hydrologyPointLayer = "hydrology-river-bubbles";
 export function hydrologyPointGeoJSON(view?: HydrologyPoints): FeatureCollection<Point> {
   const index = view?.data.dates.indexOf(view.day) ?? -1;
   const nodes = view?.data.rivers.flatMap(river => river.mouths.map(mouth => ({ river, mouth }))) ?? [];
-  return { type: "FeatureCollection", features: nodes.map(({ river, mouth }, i) => {
+  return { type: "FeatureCollection", features: [...nodes.map(({ river, mouth }, i) => {
     const remaining = nodes.slice(i + 1).filter(n => n.mouth.latitude === mouth.latitude && n.mouth.longitude === mouth.longitude).length;
-    return { type: "Feature", id: `${river.id}:${mouth.mouth_id}`, geometry: { type: "Point", coordinates: [mouth.longitude, mouth.latitude] },
+    return { type: "Feature" as const, id: `${river.id}:${mouth.mouth_id}`, geometry: { type: "Point" as const, coordinates: [mouth.longitude, mouth.latitude] },
       properties: { river: river.id, name: river.name, cell: mouth.cell, color: hydrologyRiverColor(river.id, view?.appearance),
         missing: index < 0 || river.series[view!.metric].values[index] == null,
         value: index < 0 ? null : river.series[view!.metric].values[index],
         selected: view?.selected === river.id, radius: (view?.appearance?.radius ?? 8) + remaining * 4 } };
-  }) };
+  }), ...(view?.onSelectStation && view.data.stationTemperature ? Object.values(view.data.stationTemperature.stations).map(station=>{
+    const row=view.data.stationTemperature!.rows.find(r=>r.station_id===station.station_id&&r.statistic==="daily_mean"&&r.date===(view.stationDay??view.day));
+    return {type:"Feature" as const,id:station.station_id,geometry:{type:"Point" as const,coordinates:[station.longitude,station.latitude]},properties:{station:station.station_id,river:station.river_id,name:station.provider_station_name,color:"#bf6127",missing:!row,value:row?.value??null,selected:view.selectedStation===station.station_id,radius:7}};
+  }):[])] };
 }
 export function installHydrologyOverlay(map: LibreMap) {
   map.addSource(hydrologyPointSource, { type: "geojson", data: hydrologyPointGeoJSON() });
@@ -64,5 +68,6 @@ export function updateHydrologyOverlay(map: LibreMap, view?: HydrologyPoints) {
 export function pickHydrologyPoint(map: LibreMap, view: HydrologyPoints, point: { x: number; y: number }) {
   const hits = map.queryRenderedFeatures([point.x, point.y], { layers: [hydrologyPointLayer] });
   const hit = hits.find(f => f.properties?.river !== view.selected) ?? hits[0];
+  if (typeof hit?.properties?.station === "string") {view.onSelectStation?.(hit.properties.station);return;}
   if (typeof hit?.properties?.river === "string") view.onSelect(hit.properties.river);
 }

@@ -6,36 +6,30 @@ Map header, dock, family picker, type, color and theme controls.
 
 ## Start locally
 
-From `Applications/applications-data-explorer`, keep the existing Vite data bridge
-for Features and start the additional service in a second terminal. Use Python
-3.11+ with the scientific dependencies in `requirements-relationships.txt`.
+From `Applications/applications-data-explorer`, use Python 3.11+ with the
+scientific dependencies in `requirements-relationships.txt`. Set
+`MARINECAST_DATA_PYTHON` in `.env.local` to that interpreter, or activate its
+environment (`METEOROLOGY_PYTHON` remains the fallback setting).
 
 ```sh
-python3 -m venv .venv-relationships
-.venv-relationships/bin/python -m pip install -r requirements-relationships.txt
-.venv-relationships/bin/python scripts/relationships_api.py
-```
-
-Then, in the other terminal:
-
-```sh
+python -m pip install -r requirements-relationships.txt
 npm ci
 npm run dev
 ```
 
-Open Vite's printed URL with `/#relationships`. `npm run backend` also starts the
-service when the desired Python environment is activated. Backend binds only
-`127.0.0.1:8001`; Vite proxies only `/api/relationships`. Stop each process with
-Ctrl+C. No daemon, credentials, database, persistent access or deployment is created.
-The existing Features endpoints continue through `scripts/localDataPlugin.ts`;
-Relationships does not replace that reader or change Data products.
+Open Vite's printed URL with `/#relationships`. The launcher starts one localhost
+FastAPI service for both Relationships and Features. For a backend that stays
+warm across frontend restarts, use `npm run backend` in one terminal and
+`npm run dev:frontend` in another. Each command reads `.env.local`; the API binds
+only `127.0.0.1:8001`. `MARINECAST_API_PORT` changes the listener and proxy
+together, with `MARINECAST_RELATIONSHIPS_PORT` as a fallback. Stop owned processes
+with Ctrl+C. An existing matching backend is reused and remains running when
+the frontend exits. No deployment or persistent system service is created.
 
-`MARINECAST_DATA_ROOT` optionally sets the server's allowlisted final Data root
-(default `../../Data`). Export it in the backend terminal; `.env.local` is loaded
-by Vite only. Port 8001 is used by the supplied proxy. `MARINECAST_RELATIONSHIPS_PORT`
-can change the Python listener, but the Vite proxy must then be changed to match.
-The existing Map Python setting (`MARINECAST_DATA_PYTHON` / `METEOROLOGY_PYTHON`)
-continues independently. No `VITE_` variable contains a local filesystem path.
+`MARINECAST_DATA_ROOT` optionally selects another final Data directory (default
+`../../Data`). No `VITE_` variable contains a local filesystem path. Layer routes
+and Relationships retain their existing independent validation/analysis readers;
+they share the HTTP service. See [layer service QA](qa/fastapi-layers.md).
 
 First source validation can take about 45–60 seconds on this machine. The UI
 reports validation and remains interactive. A process caches current source

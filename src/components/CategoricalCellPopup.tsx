@@ -1,7 +1,8 @@
+import TideEventInsights from "./TideEventInsights";
 import { internationalBoundaryColumn, normalizeWaterCountry } from "../data/waterAssignments";
 import { conservationReferenceStatus } from "../data/governanceMemberships";
 import { X } from "lucide-react";
-import type { Cell } from "../data/demo";
+import type { Cell } from "../data/map";
 import type { SeascapeLayer } from "../data/seascape";
 import { sourceValue } from "../data/seascape";
 import "./CategoricalCellPopup.css";
@@ -17,6 +18,10 @@ export default function CategoricalCellPopup({ layer, cell, onClose }: {
   const boundary = layer.field.column === internationalBoundaryColumn;
   const conservation = layer.field.assignmentSemantics === "conservation_status";
   const geographic = layer.field.assignmentSemantics === "geographic";
+  if(layer.tideEvents)return <section className="categorical-cell-popup" role="dialog" aria-label="Cell information" onKeyDown={event=>{if(event.key==="Escape"){event.stopPropagation();onClose();}}}>
+    <header><strong>{layer.name}</strong><button aria-label="Close cell information" onClick={onClose}><X size={17}/></button></header>
+    <div className="categorical-cell-popup-body"><TideEventInsights layer={layer} cell={cell.id}/></div>
+  </section>;
   return <section className="categorical-cell-popup" role="dialog" aria-label="Cell information"
     onKeyDown={event => { if (event.key === "Escape") { event.stopPropagation(); onClose(); } }}>
     <header><strong>{layer.name}</strong><button aria-label="Close cell information" onClick={onClose}><X size={17}/></button></header>

@@ -8,11 +8,11 @@ import { membershipStyles, stripeImage } from "../data/governancePatterns";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import * as maplibregl from "maplibre-gl";
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import type { ExpressionSpecification, GeoJSONSource, Map as LibreMap } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Plus, Minus } from "lucide-react";
 import { getResolution, latLngToCell } from "h3-js";
-import { cells } from "../data/demo";
 import { cellGeoJSON, mapTilerStyleURL } from "../data/map";
 import type { MapBounds, MapCanvasProps } from "../data/map";
 import type { MapCameraPeer } from "../data/mapCamera";
@@ -23,6 +23,9 @@ import { coordinatePopupPosition } from "../data/mapCoordinates";
 import { scaleLabelSize } from "../data/basemapLabels";
 import useSmoothSurface from "./useSmoothSurface";
 import { viewshedSurfaceLayer } from "../data/viewshedMap";
+// Vite hashes the emitted worker; MapLibre's relative default URL is not preserved.
+maplibregl.setWorkerUrl(workerUrl);
+
 const center: [number, number] = [-123.5, 48.45];
 export default function MapTilerCanvas({
   apiKey,
@@ -47,7 +50,6 @@ export default function MapTilerCanvas({
   useEffect(() => { orca.current = props.orcaPoints; });
   const view = useRef(props.viewshed);
   useEffect(() => { view.current = props.viewshed; });
-  const nativeLayer = props.nativeData ?? Boolean(props.layer);
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<LibreMap | null>(null);
   const membershipImages = useRef(new Set<string>());
@@ -72,14 +74,14 @@ export default function MapTilerCanvas({
   const popupBody = props.humanGeometry?.popup ?? props.popup;
   const popupId = props.humanGeometry?.selected ?? props.selected;
   const hasPopup = Boolean(popupBody);
-  const sourceCells = useRef(props.layer?.cells ?? (nativeLayer ? [] : cells));
+  const sourceCells = useRef(props.layer?.cells ?? []);
   const select = useRef(props.onSelect);
   const boundsChange = useRef(props.onBoundsChange);
   useEffect(() => {
     select.current = props.onSelect;
     boundsChange.current = props.onBoundsChange;
-    sourceCells.current = props.layer?.cells ?? (nativeLayer ? [] : cells);
-  }, [props.onSelect, props.layer, props.onBoundsChange, nativeLayer]);
+    sourceCells.current = props.layer?.cells ?? [];
+  }, [props.onSelect, props.layer, props.onBoundsChange]);
   useEffect(() => {
     if (!container.current) return;
     let instance: LibreMap;
@@ -110,7 +112,6 @@ export default function MapTilerCanvas({
       setViewport([b.getWest(), b.getSouth(), b.getEast(), b.getNorth()]);
       boundsChange.current?.([b.getWest(), b.getSouth(), b.getEast(), b.getNorth()]);
     };
-    // Demo tests/renderers do not need viewport filtering; native cells do.
     let disconnectCamera: (() => void) | undefined;
     if (props.cameraLink) {
       const link = props.cameraLink;
@@ -131,11 +132,11 @@ export default function MapTilerCanvas({
       disconnectCamera = link.connect(peer);
       instance.on("move", () => { publish(true); placeCoordinates(); });
       instance.on("moveend", () => { publish(false); placeCoordinates(); });
-    } else if (nativeLayer) instance.on("moveend", () => { updateViewport(); placeCoordinates(); });
+    } else instance.on("moveend", () => { updateViewport(); placeCoordinates(); });
     instance.on("load", () => {
-      if (nativeLayer) updateViewport();
+      updateViewport();
       window.clearTimeout(timer);
-      instance.addSource("demo-h3", {
+      instance.addSource("native-h3", {
         type: "geojson",
         data: { type: "FeatureCollection", features: [] },
         promoteId: "id",
@@ -204,9 +205,9 @@ export default function MapTilerCanvas({
       applyBasemapTheme(instance, basemapLayers, themeRef.current);
       // Paint data above all terrain/water, then restore labels above the data.
       instance.addLayer({
-        id: "demo-h3-fill",
+        id: "native-h3-fill",
         type: "fill",
-        source: "demo-h3",
+        source: "native-h3",
         paint: { "fill-color": ["get", "color"], "fill-opacity": 0.8 },
       });
       instance.addSource("smooth-surface", { type: "image", coordinates: [[-126, 51], [-121, 51], [-121, 46], [-126, 46]] });
@@ -218,14 +219,14 @@ export default function MapTilerCanvas({
         paint: { "raster-opacity": 0.8, "raster-fade-duration": 0, "raster-resampling": "linear" },
       });
       instance.addLayer({
-        id: "demo-h3-memberships", type: "fill", source: "demo-h3",
+        id: "native-h3-memberships", type: "fill", source: "native-h3",
         filter: ["!=", ["get", "membershipPattern"], ""],
         paint: { "fill-pattern": ["get", "membershipPattern"], "fill-opacity": 0.8 },
       });
       instance.addLayer({
-        id: "demo-h3-outline",
+        id: "native-h3-outline",
         type: "line",
-        source: "demo-h3",
+        source: "native-h3",
         paint: {
           "line-color": [
             "case",
@@ -257,7 +258,7 @@ export default function MapTilerCanvas({
       const cell = sourceCells.current.find((c) => c.id === id);
       if (cell) select.current?.(cell);
     };
-    if (nativeLayer) {
+    {
       // Geographic H3 picking works for both the native fill and the smooth image,
       // independently of transparent fill hit testing or raster resolution.
       instance.on("click", event => {
@@ -280,11 +281,11 @@ export default function MapTilerCanvas({
           pickCell(id);
         }
       });
-    } else instance.on("click", "demo-h3-fill", event => pickCell(event.features?.[0]?.properties?.id));
-    instance.on("mouseenter", "demo-h3-fill", () => {
+    }
+    instance.on("mouseenter", "native-h3-fill", () => {
       instance.getCanvas().style.cursor = "pointer";
     });
-    instance.on("mouseleave", "demo-h3-fill", () => {
+    instance.on("mouseleave", "native-h3-fill", () => {
       instance.getCanvas().style.cursor = "";
     });
     const placeCoordinates = () => {
@@ -321,7 +322,7 @@ export default function MapTilerCanvas({
       images.clear();
       map.current = null;
     };
-  }, [apiKey, onUnavailable, nativeLayer, props.cameraLink, keyboardHint]);
+  }, [apiKey, onUnavailable, props.cameraLink, keyboardHint]);
   useEffect(() => {
     if (ready && map.current) updateHumanGeometry(map.current, props.humanGeometry);
   }, [ready, props.humanGeometry]);
@@ -340,7 +341,7 @@ export default function MapTilerCanvas({
   useEffect(() => {
     const instance = map.current;
     if (!ready || !instance || (props.layer && !viewport)) return;
-    const source = instance.getSource("demo-h3") as GeoJSONSource | undefined;
+    const source = instance.getSource("native-h3") as GeoJSONSource | undefined;
     if (!source) return; // A replacement style/map may still be loading.
     const patterns = membershipStyles(props.layer, props.colorScale);
     const currentImages = new Set(patterns?.patterns.map(pattern => pattern.id) ?? []);
@@ -349,24 +350,21 @@ export default function MapTilerCanvas({
       membershipImages.current.add(pattern.id);
     }
     source.setData(
-      props.hydrologyPoints || nativeLayer && !props.layer
+      props.hydrologyPoints || !props.layer
         ? { type: "FeatureCollection", features: [] }
         : cellGeoJSON(
-            props.feature,
-            props.month,
-            props.region,
             props.layer,
             viewport,
             props.colorScale,
           ),
     );
     for (const id of membershipImages.current) if (!currentImages.has(id)) { instance.removeImage(id); membershipImages.current.delete(id); }
-  }, [ready, viewport, nativeLayer, props.layer, props.colorScale, props.feature, props.month, props.region, props.hydrologyPoints]);
+  }, [ready, viewport, props.layer, props.colorScale, props.hydrologyPoints]);
   useEffect(() => {
     const instance = map.current;
-    if (!ready || !instance?.getSource("demo-h3")) return;
-    instance.setPaintProperty("demo-h3-fill", "fill-opacity", surface.active ? 0 : props.layer?.cellAppearance ? ["*",props.opacity ?? 0.8,["coalesce",["get","opacity"],1]] : props.opacity ?? 0.8);
-    instance.setPaintProperty("demo-h3-memberships", "fill-opacity", props.opacity ?? 0.8);
+    if (!ready || !instance?.getSource("native-h3")) return;
+    instance.setPaintProperty("native-h3-fill", "fill-opacity", surface.active ? 0 : props.layer?.cellAppearance ? ["*",props.opacity ?? 0.8,["coalesce",["get","opacity"],1]] : props.opacity ?? 0.8);
+    instance.setPaintProperty("native-h3-memberships", "fill-opacity", props.opacity ?? 0.8);
     instance.setPaintProperty("smooth-surface", "raster-opacity", props.viewshed?.opacity ?? props.opacity ?? 0.8);
     instance.setLayoutProperty("smooth-surface", "visibility", surface.active && (props.viewshed || props.showGrid !== false) ? "visible" : "none");
     // Fine native cells need thinner outlines at overview scales so their
@@ -378,7 +376,7 @@ export default function MapTilerCanvas({
       props.outlines === false || surface.active ? 0 : width,
     ];
     instance.setPaintProperty(
-      "demo-h3-outline",
+      "native-h3-outline",
       "line-width",
       props.layer?.resolution === 8
         ? [
@@ -389,9 +387,9 @@ export default function MapTilerCanvas({
           ]
         : ["interpolate", ["linear"], ["zoom"], 5, outlineWidth(0.06), 9, outlineWidth(0.35), 12, outlineWidth(0.75)],
     );
-    instance.setPaintProperty("demo-h3-outline", "line-color", ["case", ["boolean", ["feature-state", "selected"], false], "#D68D63", "#315f7c"]);
-    instance.setPaintProperty("demo-h3-outline", "line-opacity", ["case", ["boolean", ["feature-state", "selected"], false], 1, 0.22]);
-    for (const layer of ["demo-h3-fill", "demo-h3-memberships", "demo-h3-outline"])
+    instance.setPaintProperty("native-h3-outline", "line-color", ["case", ["boolean", ["feature-state", "selected"], false], "#D68D63", "#315f7c"]);
+    instance.setPaintProperty("native-h3-outline", "line-opacity", ["case", ["boolean", ["feature-state", "selected"], false], 1, 0.22]);
+    for (const layer of ["native-h3-fill", "native-h3-memberships", "native-h3-outline"])
       instance.setLayoutProperty(
         layer,
         "visibility",
@@ -400,9 +398,9 @@ export default function MapTilerCanvas({
   }, [ready, props.layer?.resolution, props.layer?.cellAppearance, props.opacity, props.showGrid, props.outlines, props.viewshed, surface.active]);
   useEffect(() => {
     const instance = map.current;
-    if (!ready || !instance?.getSource("demo-h3")) return;
-    instance.removeFeatureState({ source: "demo-h3" });
-    if (props.selected) instance.setFeatureState({ source: "demo-h3", id: props.selected }, { selected: true });
+    if (!ready || !instance?.getSource("native-h3")) return;
+    instance.removeFeatureState({ source: "native-h3" });
+    if (props.selected) instance.setFeatureState({ source: "native-h3", id: props.selected }, { selected: true });
   }, [ready, props.selected]);
   useEffect(() => {
     const instance = map.current;
@@ -467,33 +465,7 @@ export default function MapTilerCanvas({
             {popupBody}
           </div>
         )}
-      {!nativeLayer && (
-        <label className="map-cell-picker">
-          Inspect H3 cell
-          <select
-            aria-label="Inspect H3 cell"
-            value={props.selected ?? ""}
-            onChange={(e) => {
-              const cell = cells.find((c) => c.id === e.target.value);
-              if (cell) props.onSelect?.(cell);
-            }}
-          >
-            <option value="">Select a cell</option>
-            {cells
-              .filter(
-                (c) =>
-                  props.region === undefined ||
-                  props.region === "all" ||
-                  c.zone === props.region,
-              )
-              .map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.id}
-                </option>
-              ))}
-          </select>
-        </label>
-      )}
+
       {props.showControls !== false && <div className="map-tools">
         <button aria-label="Zoom in" onClick={() => map.current?.zoomIn()}>
           <Plus size={17} />
@@ -510,7 +482,7 @@ export default function MapTilerCanvas({
         className="maplibre-container"
         onPointerDown={event => { if (event.button === 0) showCoordinates(null); }}
         onKeyDown={event => {
-          if (!nativeLayer || !map.current || event.altKey || event.ctrlKey || event.metaKey) return;
+          if (!map.current || event.altKey || event.ctrlKey || event.metaKey) return;
           if (event.key === "Escape" && human.current) { human.current.onBackground(); return; }
           if (event.key === "Escape" && view.current) { view.current.onBackground(); return; }
           if (event.key !== "Enter") return;
@@ -535,19 +507,18 @@ export default function MapTilerCanvas({
           }
         }}
         aria-label={
-          props.humanGeometry ? "Human source locations and classifications · original points, lines and source areas · partial inventory" : props.hydrologyPoints ? "River bubbles at approximate mouth references · colors identify rivers · upstream gauge values" : props.orcaPoints ? "Reported Orca sighting points · clustered source records" : props.viewshed ? "MapTiler basemap with Viewshed weights" : props.layer
+          props.humanGeometry ? "Human source locations and classifications · original points, lines and source areas · partial inventory" : props.hydrologyPoints ? "River mouth references and distinct orange measured temperature stations · native source locations" : props.orcaPoints ? "Reported Orca sighting points · clustered source records" : props.viewshed ? "MapTiler basemap with Viewshed weights" : props.layer
             ? `MapTiler basemap with native H3 R${props.layer.resolution} layer · ${props.layer.sourceLabel}`
-            : nativeLayer ? "MapTiler basemap awaiting native layer values"
-              : "MapTiler Pacific Northwest basemap with synthetic H3 layer"
+            : "MapTiler basemap awaiting native layer values"
         }
       />
       {coordinates && !props.viewshed && <CoordinatePopup key={`${coordinates.lat}:${coordinates.lon}`} coordinates={coordinates} onClose={() => { showCoordinates(null); map.current?.getCanvas().focus(); }} />}
-      {nativeLayer && <>
+      <>
         <span id={keyboardHint} className="sr-only">Use arrow keys to pan the map. Press Enter to inspect the cell at the center. In Viewshed, press Enter again or Escape to return to the overview.</span>
         <span className="map-keyboard-target" aria-hidden="true" />
         <span className="map-keyboard-hint" aria-hidden="true">Arrow keys to pan · Enter to inspect center</span>
         <span className="sr-only" role="status">{keyboardStatus}</span>
-      </>}
+      </>
       {surface.error && <WarningNotice title="Smoothing unavailable" message={surface.error} />}
       {surface.pending && !surface.error && <span className="map-smoothing-status" role="status">Blending data…</span>}
       {surface.active && <span className="sr-only" role="status">Smooth surface ready in {Math.round(surface.elapsedMs ?? 0)} ms</span>}
@@ -557,11 +528,7 @@ export default function MapTilerCanvas({
         </span>
       )}
       {props.overlayHost ? createPortal(overlays, props.overlayHost) : overlays}
-      {!nativeLayer && (
-        <span className="map-source-label">
-          MapTiler basemap · Synthetic H3 values
-        </span>
-      )}
+
     </div>
   );
 }

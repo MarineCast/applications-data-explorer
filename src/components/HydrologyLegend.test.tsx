@@ -32,7 +32,7 @@ it("keeps missingness notes and river inspection available alongside appearance 
  const inspect=vi.fn(),changed=vi.fn<(v:HydrologyAppearance)=>void>(),user=userEvent.setup();
  render(<HydrologyLegend data={data} metric="temperature_mean" day="2026-09-25" onInspect={inspect} appearance={defaultHydrologyAppearance} onAppearanceChange={changed}/>);
  expect(screen.getByRole("region",{name:"River legend"})).toHaveTextContent("CowichanUnavailable");
- await user.hover(screen.getByRole("button",{name:"Legend information"}));expect(screen.getByRole("tooltip")).toHaveTextContent("A measured zero remains a filled bubble");
+ await user.hover(screen.getByRole("button",{name:"Legend information"}));expect(screen.getByRole("tooltip")).toHaveTextContent("A supported zero remains a filled bubble");
  await user.unhover(screen.getByRole("button",{name:"Legend information"}));
  await user.click(screen.getByRole("button",{name:"Color options"}));await user.click(screen.getByText("Advanced",{exact:true}));
  await user.click(screen.getByRole("button",{name:"Inspect Fraser river"}));expect(inspect).toHaveBeenCalledWith("fraser");

@@ -12,6 +12,8 @@ import json
 import sys
 import signal
 import tempfile
+import threading
+from collections import OrderedDict
 from pathlib import Path
 
 
@@ -44,6 +46,34 @@ class Sources:
         self.weather = Path(weather) if weather else self.data/'Meteorology'
         self.pilot = Path(pilot) if pilot else None
         self.components = Path(components) if components else None
+        self.inspections = OrderedDict()
+        self.inspection_lock = threading.Lock()
+
+    def inspect_metadata(self, path, kind, inspect):
+        """Reuse footer metadata only while the complete file identity matches.
+
+        External audits/receipts still enter dependencies and are stat-checked on
+        every version read. This avoids repeatedly decoding large Arrow footers.
+        """
+        def identity():
+            stat = path.stat()
+            return (str(path.resolve()), stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns)
+        key = str(path), kind
+        token = identity()
+        with self.inspection_lock:
+            cached = self.inspections.get(key)
+            if cached and cached[0] == token:
+                self.inspections.move_to_end(key)
+                return cached[1]
+        value = inspect(path)
+        if identity() != token:
+            raise ValueError('Source metadata changed during read')
+        with self.inspection_lock:
+            self.inspections[key] = token, value
+            self.inspections.move_to_end(key)
+            while len(self.inspections) > 256:
+                self.inspections.popitem(last=False)
+        return value
 
     def live_pilot(self):
         # A completed pilot delivered into Data/viewshed needs no app configuration.
@@ -57,7 +87,7 @@ class Sources:
                 raise ValueError('Missing or unsafe Hydrology influence catalog entry')
             return self.data/'Hydrology'/entry['path']
         return {'seascape': self.data/'Seascape', 'governance': self.data/'Governance',
-                'human': self.data/'Human', 'meteorology': self.weather,
+                'oceanography': self.data/'Oceanography', 'human': self.data/'Human', 'meteorology': self.weather,
                 'orca': self.data/'MarineMammals/Orca/Sightings',
                 'hydrology': self.data/'Hydrology',
                 'viewshed': self.live_pilot() or self.public/'viewshed'}[domain]
@@ -68,10 +98,28 @@ class Sources:
         # Delivery roots only: raw acquisition stores and producer work trees are not watched.
         members = () if domain == 'river-influence' else root.rglob('*') if domain in {'hydrology', 'viewshed'} else root.iterdir()
         paths += sorted(p for p in members if p.is_file() and p.suffix in {'.json', '.parquet', '.txt', '.geojson'} and not (domain == 'hydrology' and p.name == 'influence.parquet'))
+        if domain == 'oceanography':
+            study = read(root/'catalog.json')['study']
+            paths += [Path(study['study_path']), *[Path(m['path']) for m in study['memberships'].values()]]
         if domain == 'human' and (root/'static.parquet').exists():
             import pyarrow.parquet as pq
-            receipt = json.loads(pq.read_schema(root/'static.parquet').metadata[b'human_delivery'])['receipt_path']
+            metadata = self.inspect_metadata(root/'static.parquet', 'human', lambda path: pq.read_schema(path).metadata)
+            receipt = json.loads(metadata[b'human_delivery'])['receipt_path']
             paths.append(Path(receipt))
+            info=json.loads(metadata[b'human_study'])
+            if info.get('static_audit'):
+                paths.append(Path(info['static_audit']['artifact']['path']))
+        if domain == 'governance':
+            audit_data = read(root/'catalog.json').get('audit_data', {})
+            paths += [Path(binding['path']) for variants in audit_data.values() for binding in variants.values()]
+        if domain == 'seascape':
+            from seascape_support import audit_binding
+            names = [name for record in read(root/'catalog.json').values()
+                     for kind in ('static', 'dynamic') for name in record.get(kind, {}).values()]
+            for path in (root/name for name in names):
+                binding = self.inspect_metadata(path, 'seascape', audit_binding)
+                if binding:
+                    paths.append(Path(binding['audit_path']))
         if domain == 'orca':
             paths += sorted(p for p in root.parent.rglob('*') if p.is_file() and p.suffix in {'.json', '.parquet'})
             study = read(root/'catalog.json').get('study', {})
@@ -104,7 +152,7 @@ class Sources:
             return 'unavailable:' + str(error)
 
     def versions(self):
-        return {d: self.version(d) for d in ('seascape', 'governance', 'human', 'meteorology', 'orca', 'hydrology', 'river-influence', 'viewshed')}
+        return {d: self.version(d) for d in ('seascape', 'governance', 'human', 'oceanography', 'meteorology', 'orca', 'hydrology', 'river-influence', 'viewshed')}
 
 
 class Reader:
@@ -122,12 +170,12 @@ class Reader:
 
     def seed_base(self, domain):
         """Validate the existing encoding against the complete current product bindings."""
-        from human_input import bindings as human_bindings
         from governance_input import bindings as governance_bindings
         seed = read(self.sources.public/'seascape/catalog.json')
         root = self.sources.root(domain)
         if domain == 'human':
-            expected = human_bindings(root)['catalog']['sha256']
+            # Older seeds omit per-cell audit support and the civil calendar.
+            raise ValueError('Human requires current evidence encoding')
         elif domain == 'governance':
             expected = governance_bindings(root)['catalog.json']['sha256']
         else:
@@ -147,6 +195,12 @@ class Reader:
             from governance_input import tribal_features, wildlife_refuge_features, regional_features, water_features, administrative_features, management_features, conservation_features, vessel_routing_features, critical_habitat_features
             features = critical_habitat_features(vessel_routing_features(conservation_features(coast_guard_features(management_features(administrative_features(regional_features(water_features(tribal_features(wildlife_refuge_features(features))))))))))
         if domain == 'seascape':
+            from seascape_support import audit_bindings, read_table
+            for area, record in read(root/'catalog.json').items():
+                for name in record.get('static', {}).values():
+                    read_table(root/name, area=area)
+            audit_bindings(root/name for record in read(root/'catalog.json').values()
+                           for kind in ('static', 'dynamic') for name in record.get(kind, {}).values())
             from biogenic_input import biogenic_features
             features = biogenic_features(features)
         ids = {f['productId'] for f in features}
@@ -192,7 +246,7 @@ class Reader:
         if domain == 'seascape':
             from prepare_flat_map import prepare_flat
             prepare_flat(root, None, output)
-        elif domain in {'human', 'governance'}:
+        elif domain in {'human', 'governance', 'oceanography'}:
             from prepare_map import Exporter
             module = __import__(domain+'_input')
             token = hashlib.sha256((self.sources.version(domain)+str(self.serial)).encode()).hexdigest()
@@ -232,6 +286,15 @@ class Reader:
             return existing
         if version.startswith('unavailable:'):
             raise ValueError(version)
+        if domain == 'oceanography':
+            from oceanography_store import Store
+            store = Store(self.sources.root(domain))
+            if version != self.sources.version(domain):
+                raise ValueError('Oceanography changed during validation; retry after publication')
+            result = {'version': version, 'catalog': store.catalog, 'assets': {}, 'store': store}
+            # No historical value assets or previous source generation retained.
+            self.current[domain] = result
+            return result
         self.serial += 1
         output = self.directory/f'{domain}-{self.serial}'
         output.mkdir()
@@ -252,7 +315,7 @@ class Reader:
             except (OSError, ValueError, KeyError, TypeError):
                 with contextlib.redirect_stdout(sys.stderr):
                     catalog, folder = self.build(domain, output)
-            prefix = '/local-data/'+('seascape' if domain in {'seascape', 'governance', 'human'} else domain)+'/'
+            prefix = '/local-data/'+('seascape' if domain in {'seascape', 'governance', 'human', 'oceanography'} else domain)+'/'
             assets = {}
             for url in asset_urls(catalog):
                 if not url.startswith(prefix) or '..' in url.split('/') or '?' in url or '#' in url:
@@ -284,7 +347,7 @@ class Reader:
     def base(self):
         base = copy.deepcopy(self.get('seascape')['catalog'])
         errors = []
-        for domain in ('governance', 'human'):
+        for domain in ('governance', 'human', 'oceanography'):
             try:
                 component = self.get(domain)['catalog']
                 base['products'].update(component['products'])
@@ -312,13 +375,15 @@ class Reader:
             raise ValueError('Unknown data domain')
         if path == f'/local-data/{domain}/catalog.json':
             return {'json': self.base() if domain == 'seascape' else self.get(domain)['catalog']}
-        domains = ('seascape', 'governance', 'human') if domain == 'seascape' else (domain,)
+        domains = ('seascape', 'governance', 'human', 'oceanography') if domain == 'seascape' else (domain,)
         for item in domains:
             try:
                 current = self.get(item)
             except Exception:
                 # A broken updated domain must not fall back to its old values.
                 continue
+            if item == 'oceanography' and path in current['store'].routes:
+                return current['store'].request(path)
             for generation in (current, self.previous.get(item, {})):
                 if path in generation.get('assets', {}):
                     return {'file': str(generation['assets'][path])}

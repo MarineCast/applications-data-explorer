@@ -15,7 +15,7 @@ type Catalogs = { base: Awaited<ReturnType<typeof loadSeascapeCatalog>>;
   riverInfluence: Awaited<ReturnType<typeof loadRiverInfluence>> };
 /** Optional sources load independently; a slow or failed adapter cannot block the base map. */
 export default function useFeatureCatalog(attempt: number) {
-  const revision = useDataRevision(["seascape", "governance", "human", "meteorology", "orca", "hydrology", "river-influence"]);
+  const revision = useDataRevision(["seascape", "governance", "human", "oceanography", "meteorology", "orca", "hydrology", "river-influence"]);
   const [data, setData] = useState<Partial<Catalogs>>({});
   const [errors, setErrors] = useState<Partial<Record<Domain, string>>>({});
   useEffect(() => {

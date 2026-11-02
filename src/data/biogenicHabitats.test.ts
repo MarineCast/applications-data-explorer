@@ -1,8 +1,26 @@
 import { describe, expect, it } from "vitest";
 import { biogenicHabitatFeatures, anthropogenicPublicValues } from "./biogenicHabitats";
 import type { SeascapeFeature } from "./seascape";
+
+it("presents the compact reef metric as boolean categories and preserves source values", () => {
+  const field = { id: "anthropogenic_static__has_mapped_artificial_reef", column: "has_mapped_artificial_reef", family: "Anthropogenic", dataset: "seascape", kind: "numeric", arrowType: "int64", qualifiers: ["reef_records"], definition: "False is not absence" } as SeascapeFeature;
+  const [actual] = biogenicHabitatFeatures([field]);
+  expect(actual.kind).toBe("categorical");
+  expect(actual.categories).toEqual([0, 1]);
+  expect(actual.qualifiers).toBe(field.qualifiers);
+  expect(actual.definition).toBe(field.definition);
+  expect(anthropogenicPublicValues(actual, [0, 1])).toEqual([0, 1]);
+  expect(biogenicHabitatFeatures([{...field,dataset:"governance"}])).toEqual([{...field,dataset:"governance"}]);
+});
 const f = (column: string, family = "Bivalve") => ({ id: column, column, family, dataset: "seascape", unit: "m2", qualifiers: ["SOURCE_MAP_DATES_JSON"], productId: column, resolution: 6 } as SeascapeFeature);
 describe("Biogenic Habitats presentation", () => {
+  it("retains the three delivered integer mapped-presence choices", () => {
+    const flags = ["SEAGRASS_EXTENT_BOOL", "BIVALVE_EXTENT_BOOL", "KELP_EXTENT_BOOL"].map(column => ({ ...f(column, "Biogenic Habitats"), kind: "numeric" as const, arrowType: "int64", unit: "1" }));
+    const actual = biogenicHabitatFeatures(flags);
+    expect(actual).toHaveLength(3);
+    expect(actual.map(x => x.column)).toEqual(flags.map(x => x.column));
+    expect(actual.every(x => x.kind === "numeric" && x.arrowType === "int64")).toBe(true);
+  });
   it("keeps exactly four scientific choices and all native identities", () => {
     const original = [f("ANNUAL_KELP_EXTENT_M2", "Kelp"), f("KELP_EXTENT_ALL_TIME_M2", "Kelp"), f("SEAGRASS_EXTENT_ALL_TIME_M2", "Seagrass"), f("BIVALVE_EXTENT_ALL_TIME_M2")];
     const result = biogenicHabitatFeatures([...original, f("BIVALVE__OLD_AREA"), f("ANNUAL_SEAGRASS_EXTENT_M2", "Seagrass")]);

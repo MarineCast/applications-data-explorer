@@ -1,6 +1,36 @@
-# Current follow-up: final-only Human files — 2026-10-17
+# Integer presence indicators — 2026-10-25
 
-`Data/Human` now contains only `static.parquet`, `dynamic-calendar.parquet` and `static-native.parquet`. The producer stages work and writes checksum receipts outside that directory, under toolkit-managed ignored storage. Source values/types/nulls, calendar jurisdiction/local dates/DST boundaries and all native source geometry/properties are preserved exactly. The adapter validates embedded metadata plus the external receipt and all three source hashes. The calendar remains a distinct source product without a map layer. Existing adapter exclusions for retired access-state summaries still apply on cache refresh. Older filenames/evidence paths in the dated sections below are historical; the relocation ledger is in `Toolkits/toolkit-human/data/provenance/final-layout-20261017`.
+Current Human static v6/final-only v7 has 14 columns. Three new fields (`has_boat_launch`, `has_shore_access_site`, `has_place`) are positive-count indicators; `has_port` is now the same int64 0/1 representation. All four are nonnull and read as numeric layers with unit `0/1`, with no true/false values in their browser encodings. The retained count/population arrays and their feature IDs are unchanged. Prior Boolean-port static v5 remains readable.
+
+The current reader exports thirteen value columns plus H3 identity and twelve selectable features. Producer validation recomputes each presence value from retained totals or original audited port counts, preserving the existing unknown-as-zero qualification and source masks externally. The [producer contract](../../../../Toolkits/toolkit-human/docs/final-delivery.md#compact-static) owns exact types and derivations. Dated sections below describe previous versions.
+
+# Consolidated static — 2026-10-24
+
+Current Human static v5/final-only v6 has 11 columns. Five population estimates lose `_collected` in their source names but retain the same values, units, allocation method and missing-contributions-as-zero assumption. The adapter recognizes current unsuffixed estimates only through current producer schema/metadata; retired historical strict fields remain excluded. Existing quantity feature IDs remain stable.
+
+Boat launches and shore access expose one total each. Integer total columns and place counts fill source nulls as zero by user instruction; `has_port` is a Boolean/categorical layer derived from positive source count. Its distinct ID is `HUMAN__has_port`. Original counts/null masks and port multiplicities remain in the verified/watched external audit. Zero/false does not certify physical absence. Human shoreline length and access-category/evidence choices are removed; no alternative shoreline dataset is silently substituted.
+
+The current reader exports ten value columns plus H3 identity and nine selectable features. Population inspection/classification uses unchanged stored estimates; detailed row support stays external. [The producer contract](../../../../Toolkits/toolkit-human/docs/final-delivery.md#compact-static) defines the transformations and original-data reconstruction. Dated sections below describe preceding versions.
+
+# Quantities-only static — 2026-10-24
+
+Current static v4/final-only v5 contains 18 columns. The user removed full-cell area and all eight population coverage/geographic-support columns from the preceding 27-column table. The external audit retains them losslessly by H3. The adapter still verifies and watches that receipt, but exports no removed support arrays; current Coverage is no longer selectable. Five population quantities and eleven infrastructure quantities/evidence fields remain selectable, with unchanged quantity feature IDs.
+
+Population values and density are read directly. Density still means persons per full native cell km²; the denominator is audit evidence. Insights retains the scalar method, census vintages and missing-contributions-as-zero assumption, and directs row-specific support to the external receipt. It never treats absence of a public coverage column as complete support or supported zero. Earlier static schemas keep their qualified reader behavior. The [producer contract](../../../../Toolkits/toolkit-human/docs/final-delivery.md#compact-static) owns exact fields and reconstruction.
+
+The dated checks below describe the preceding 27-column version; they are historical evidence.
+
+# Compact static follow-up — 2026-10-24
+
+Preceding Human static schema v3/final-only v4 retains exactly 27 columns. The adapter verifies the external static audit checksum, row count, column binding and H3 membership without reintroducing its removed columns as map variables. The watcher includes the external audit path, so audit-only corruption invalidates cached reads. Missing/corrupt audit evidence fails explicitly. Source count/density/25/50/100 km values, row-level coverage/support, infrastructure nulls, census vintages and research-only qualifications survive.
+
+Population scales now use retained collected values when audit subtotal arrays are absent. Insights derives imputation qualification from retained coverage, distinguishes unavailable from supported zero, and directs detailed missing-source evidence to the external audit receipt. Metadata supplies the unchanged method. Count Coverage binds the retained count quantity even with the compact base coverage column name. Historical full-width inputs retain their existing reader path.
+
+Regression coverage includes compact reader audit validation/watch invalidation, omitted browser audit columns, retained coverage bindings, zero/null classification and both unavailable/supported-zero inspection. Historical evidence below predates this compact projection.
+
+# Current follow-up: two-file Human delivery — 2026-10-24
+
+As of the 2026-10-24 Human review, `Data/Human` delivers only `static.parquet` and `dynamic-calendar.parquet`, plus the preserved user review note. The adapter accepts final-only v2 and historical v1 receipts, verifies every referenced product hash and retains exact static values/types/nulls. Current v2 files supply no native geometry overlays. Static port provenance comes from the static dictionary. Calendar v2 combines regional holidays per country/reference timezone and is not a map layer. The new regression covers the two-file receipt, omitted native overlays and calendar tamper rejection. Earlier three-file/native-geometry evidence below is historical; it does not describe the current output set.
 
 # Human layer selectors — 2026-10-17
 
@@ -127,3 +157,64 @@ domains are unchanged. All 27 columns and 1,473 referenced assets were rechecked
 this cache refresh. Toolkit evidence is under
 `Data/Human/provenance/radius-aware-collection/`; the original app implementation test
 counts above describe that implementation check, not a rerun of unrelated app code.
+
+## Static column names (2026-10-24)
+
+The reader accepts static v3 / final-only v4 with 27 single-underscore `lower_snake_case` columns and keeps historical v1/v2 static support. Source names such as `port_record_count`, `boat_launch_record_count` and `population_count_coverage_status` replace mixed-case/double-underscore names. Units, values, nulls and native H3 identity are unchanged. The producer dictionary supplies explicit coverage/geographic-support references; external audit arrays stay outside the browser payload. Existing feature IDs and saved selections remain stable through the producer column mapping, including Coverage. Partial/unavailable population zeros retain their missing-as-zero qualification. See the [producer mapping](../../../../Toolkits/toolkit-human/docs/final-delivery.md#column-names).
+
+Verified on 2026-10-24: 11 Human adapter tests, 10 automatic-reader tests, 500 frontend tests, type checking, lint and production build passed. The actual read-only Reader integration matched all 26 encoded value columns and H3 identities for 13,461 rows against renamed static v3; all 17 selectable feature IDs stayed stable and all five population support bindings survived. Interactive browser QA was not rerun.
+
+Current 18-column verification (2026-10-24): 12 Human adapter tests, 10 automatic-reader tests, 502 frontend tests, type checking, lint and build passed. Actual Reader output matched H3 identities and all 17 encoded value columns for 13,461 rows; all nine removed fields were absent from assets and qualifiers, Coverage was absent, and all 16 remaining feature IDs were unchanged. Audit-only metadata retained the per-field scientific method. Interactive browser QA was not rerun.
+
+Current consolidated verification (2026-10-24): 13 Human adapter tests, 10 automatic-reader tests, 509 frontend tests, type checking, lint and production build passed. Actual Reader output matched H3 identity and every one of ten encoded value columns for 13,461 rows. All three count fields were non-null int64; port presence was Boolean/categorical with 70 true cells. Five renamed population estimates retained the allocation method/assumption and their stable feature IDs; nine choices remain selectable. Interactive browser QA was not rerun.
+
+Current presence verification (2026-10-25): 14 Human adapter tests, 10 automatic-reader tests, 509 frontend tests, type checking, lint and production build passed. Actual Reader output matched native H3 identity and all thirteen encoded value columns for 13,461 rows. The four presence assets contained only integer 0/1, with numeric layers and unit `0/1`. Counts/population values and retained feature IDs were preserved; twelve choices remained selectable. Interactive browser QA was not rerun.
+
+
+## Coverage and civil calendar — 2026-10-26
+
+This section supersedes earlier statements that per-cell evidence stays hidden in
+an external receipt. The two delivered Human Parquets are unchanged. The reader
+checks the bound static audit checksum and unique matching H3 keys, reorders audit
+rows by H3, and adds only population evidence as nonselectable qualifiers. Public
+quantities win over any companion column; current map classification continues to
+use delivered values. Old prepared Human seeds are bypassed; no other domain seed
+policy changed. Calendar data is a checksum-verified product asset, not a map
+feature or analytical join. The reader checks embedded metadata, unique civil-date
+× country × timezone keys, date bounds and configured country/reference zones.
+
+Usage: Human → Population → Insights. Overview explains the partial-estimate
+share. Selected cell shows population, radius/full-cell support, census vintages,
+coverage, zero-imputation and unverified geography; Source qualifiers exposes
+missing census IDs. Civil calendar has independent country/date controls and
+source-rule qualifications. No nationwide observance, activity, effort or model
+eligibility is inferred. No 250 km feature or new source collection was added.
+
+Current-source validation: 13,461 rows, 12 selectable Human features and 40 value/
+support columns passed exact exporter readback. Default 100 km: 13,023 partial of
+13,461 (96.7% of estimates, not people). Calendar: 13,148 rows, 2009-01-01 through
+2026-12-31 inclusive, rules 0.100, timezone rules 2026.3, as of 2026-10-16. Human
+browser encoding was 4,808,134 bytes. The read-only validation retained identical
+source/receipt/audit bindings before and after. Hashes:
+
+- static: `a7ee7fff3c49490f4b9de89114d37eb1221c9464e0b433e33505e416ef6b8cee`
+- calendar: `7b074434809f49fdb29317deee145606d04675e01bf43f789edc916b12b7ce3a`
+- audit: `59d035500cc84b1df8bb9b3dbb950440050d7de854db0030996588254b4a4770`
+
+Validation includes reversed audit row order, duplicate-key rejection, preservation
+of public values, distinct radius support, selected-cell changes, supported and
+imputed zeros, calendar country switches, date bounds, leap day, DST dates and
+checksum tampering. Local reader and API regression suites passed. TypeScript,
+ESLint, map/Insights tests and production build passed; Vite retains its existing
+large-chunk advisory. No full census allocation, original-source qualification or
+scientific model validation was rerun.
+
+Actual browser QA used isolated task-owned ports 5183/8013. Human’s default 100 km
+layer rendered with the 96.7% contextual explanation. Cell `8728d13a6ffffff`
+showed 4,299,548.02 persons, partial coverage, imputation Yes, geographic support
+unverified Yes, and source `CA2021:2021S051259153732`. July 1, 2026 showed Canada
+Day / America/Vancouver and switched to no named holiday / America/Los_Angeles
+without a date shift. Desktop and narrow layouts remained readable and scrollable.
+The normal cold-start app also validated its other domain caches; no Data files
+were written. Preview processes were stopped after QA. Screenshot evidence is
+retained in the Codex task-3 workspace, not duplicated with datasets.

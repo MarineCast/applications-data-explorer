@@ -21,7 +21,7 @@ import type { OrcaData } from "./orca";
 import { decodeGovernanceMemberships, governanceIdentityView } from "./governanceMemberships";
 import type { GovernanceMembershipData, MembershipBinding } from "./governanceMemberships";
 import { cellToLatLng, getResolution, isValidCell } from "h3-js";
-import type { Cell } from "./demo";
+import type { Cell } from "./map";
 import type { MapLayer } from "./map";
 import type { MeteorologyCatalog } from "./meteorology";
 export type NativeResolution = 5 | 6 | 7 | 8;
@@ -52,7 +52,10 @@ export interface SeascapeFeature {
   dataset?: string;
   kind?: "numeric" | "categorical";
   circular?: boolean;
-  categories?: (string | boolean)[];
+  signed?: boolean;
+  seasonalContext?: {periods:Record<string,{season:string;period_start:string;period_end:string;issue_date:null}>;publicationLag:string};
+  tideEvents?: {stations:Record<string,{id:string;name:string;provider:string;timezone:string}>;mapping:Record<string,{station:string;distance_km:number;water_target_r8:string}>};
+  categories?: (string | boolean | number)[];
   membershipColumn?: string;
   supportLimitation?: string;
   supportMembershipColumn?: string;
@@ -60,9 +63,11 @@ export interface SeascapeFeature {
   sourceRecordContext?: Record<string, Record<string, string | null>>;
   sourceContext?: Record<string, {country: string; agency: string; boundary_type: string; classification?: string; scope?: string}>;
   geometryGroup?: string;
+  populationEvidence?: { method: string; auditReceipt: boolean; supportInAudit?: boolean; supportAvailable?: boolean; auditFields?: Record<string, string> };
   measurement?: { quantity: "depth"; statistic: "mean"; positiveDirection: "down" };
 }
 export interface NativeProduct {
+  calendar?: Asset;
   nativeFeatures?: Asset;
   nativeGroups?: Record<string, {records:number;context_features:number}>;
   rows: number;
@@ -120,6 +125,7 @@ export interface SeascapeLayer extends MapLayer {
   catalog: SeascapeCatalog;
   qualifiers: Record<string, SourceValue[]>;
   index: Map<string, number>;
+  tideEvents?: Record<string,Record<string,string[]|null>>;
   rawValues?: ReadonlyMap<string, SourceValue>;
   governanceMemberships?: GovernanceMembershipData;
   governanceSourceContext?: SeascapeFeature["sourceContext"];
@@ -128,7 +134,7 @@ export interface SeascapeLayer extends MapLayer {
   slice?: { axis: string; value: string; label: string };
 }
 const assets = new Map<string, Promise<unknown>>();
-async function checkedAsset(asset: Asset): Promise<unknown> {
+export async function checkedAsset(asset: Asset): Promise<unknown> {
   const key = `${asset.url}:${asset.sha256}`;
   let pending = assets.get(key);
   if (!pending) {
@@ -148,6 +154,11 @@ async function checkedAsset(asset: Asset): Promise<unknown> {
       return JSON.parse(new TextDecoder().decode(bytes));
     })();
     assets.set(key, pending);
+    // Daily Oceanography playback must not accumulate the full value history.
+    if (asset.url.startsWith("/local-data/seascape/ocean-")) {
+      const oceanKeys = [...assets.keys()].filter(k => k.startsWith("/local-data/seascape/ocean-"));
+      for (const old of oceanKeys.slice(0, Math.max(0, oceanKeys.length - 12))) assets.delete(old);
+    }
     pending.catch(() => assets.delete(key));
   }
   return pending;
@@ -206,7 +217,7 @@ export async function loadSeascapeCatalog(): Promise<SeascapeCatalog> {
     for (const field of catalog.features) {
       const base = catalog.products![field.productId!];
       const products = "slices" in base ? Object.values(base.slices ?? {}) : [base];
-      if (!(field.dataset === "human" ? [7] : [6, 8]).includes(field.resolution) || !Array.isArray(field.qualifiers) ||
+      if (!(field.dataset === "human" ? [7] : field.dataset === "oceanography" ? [5, 6] : [6, 8]).includes(field.resolution) || !Array.isArray(field.qualifiers) ||
         !products.length || ("slices" in base && !base.slices?.[base.defaultSlice]) ||
         products.some(product => !product || !Number.isInteger(product.rows) || product.rows < 1 ||
           !product.cells?.url || !product.cells?.sha256 || !product.sourceSha256 ||
@@ -277,7 +288,7 @@ async function loadCells(
 }
 /** Original source column only, for temporal summaries; same checked native support. */
 export async function loadSeascapeValues(catalog: SeascapeCatalog, field: SeascapeFeature, selectedSlice?: string): Promise<ReadonlyMap<string, SourceValue>> {
-  if (field.membershipColumn || field.geometryGroup) {
+  if (field.membershipColumn || field.geometryGroup || field.tideEvents) {
     const layer = await loadSeascapeLayer(catalog, field, selectedSlice);
     return layer.rawValues!;
   }
@@ -289,7 +300,7 @@ export async function loadSeascapeValues(catalog: SeascapeCatalog, field: Seasca
   if (!asset) throw new Error("Missing source column binding.");
   const [cells, payload] = await Promise.all([loadCells(product, field.resolution), checkedAsset(asset)]);
   const raw = anthropogenicPublicValues(field, decodeColumn(payload as Packed, product.rows));
-  if (field.kind === "categorical" ? raw.some(v => v !== null && !field.categories?.includes(v as string | boolean))
+  if (field.kind === "categorical" ? raw.some(v => v !== null && !field.categories?.includes(v as string | boolean | number))
     : raw.some(v => v !== null && typeof v !== "number")) throw new Error("Invalid source metric values.");
   return new Map(cells.map((cell, i) => [cell.id, raw[i]]));
 }
@@ -313,6 +324,25 @@ export async function loadSeascapeLayer(
   }
   if (field.membershipColumn) return loadGovernanceIdentity(catalog, field, product,
     "slices" in base ? { axis: base.axis, value: sliceValue!, label: product.label ?? sliceValue! } : undefined);
+  if (field.tideEvents) {
+    const columns=["high_tide_times_utc","low_tide_times_utc","high_tide_local_times","low_tide_local_times"];
+    const [cells,payloads]=await Promise.all([loadCells(product,field.resolution),Promise.all(columns.map(m=>checkedAsset(product.columns[m])))]);
+    const tideEvents:Record<string,Record<string,string[]|null>>={};
+    columns.forEach((m,j)=>{
+      const values=(payloads[j] as {values:unknown[]}).values;
+      if(!Array.isArray(values)||values.length!==cells.length||values.some(v=>v!==null&&(!Array.isArray(v)||v.some(t=>typeof t!=="string"||!Number.isFinite(Date.parse(t))))))throw new Error("Invalid tide event lists");
+      cells.forEach((c,i)=>{(tideEvents[c.id]??={})[m]=values[i] as string[]|null;});
+    });
+    cells.forEach(c=>{const row=tideEvents[c.id];const mapped=field.tideEvents!.mapping[c.id];
+      if(mapped?columns.some(m=>row[m]===null):columns.some(m=>row[m]!==null))throw new Error("Tide mapping/list mismatch");
+      for(const [u,l] of [[columns[0],columns[2]],[columns[1],columns[3]]])if(row[u]&&row[l]&&(row[u]!.length!==row[l]!.length||row[u]!.some((t,i)=>Date.parse(t)!==Date.parse(row[l]![i])||t.slice(0,10)!==sliceValue)))throw new Error("Tide event pairing mismatch");
+    });
+    const available=(id:string)=>tideEvents[id].high_tide_times_utc!==null;
+    return {id:field.id,name:field.name,unit:field.unit,range:[0,1],resolution:field.resolution,cells,
+      values:new Map(cells.map(c=>[c.id,available(c.id)?0:null])),rawValues:new Map(cells.map(c=>[c.id,available(c.id)?"Station predictions available":null])),
+      categories:["Station predictions available"],sourceLabel:field.sourceRelease,field,catalog,index:new Map(cells.map((c,i)=>[c.id,i])),qualifiers:{},tideEvents,
+      slice:{axis:"UTC event day",value:sliceValue!,label:product.label??sliceValue!}};
+  }
   const column = field.column ?? field.id;
   const columns = [column, ...field.qualifiers.filter((q) => q !== column)];
   if (columns.some((q) => !product.columns[q])) throw new Error("Missing source column binding.");
@@ -329,13 +359,13 @@ export async function loadSeascapeLayer(
   const raw = anthropogenicPublicValues(field, decoded[column]);
   const categorical = field.kind === "categorical";
   const categories = field.categories ?? [];
-  if (categorical && raw.some((v) => v !== null && !categories.includes(v as string | boolean)))
+  if (categorical && raw.some((v) => v !== null && !categories.includes(v as string | boolean | number)))
     throw new Error("Unregistered source category.");
   if (!categorical && raw.some((v) => v !== null && typeof v !== "number"))
     throw new Error("Non-numeric map metric.");
   const percent = isPercentCoverage(field);
   const values = new Map(cells.map((c, i) => [c.id,
-    raw[i] === null ? null : categorical ? categories.indexOf(raw[i] as string | boolean) : (raw[i] as number) * (percent ? 100 : 1)]));
+    raw[i] === null ? null : categorical ? categories.indexOf(raw[i] as string | boolean | number) : (raw[i] as number) * (percent ? 100 : 1)]));
   const dataset = catalog.datasets?.[field.dataset ?? "seascape"];
   const assignment = field.dataset === "governance" && column === tribalAreaColumn
     ? catalog.features.find(candidate => candidate.productId === field.productId && candidate.resolution === field.resolution && candidate.column === tribalAssignmentColumn)

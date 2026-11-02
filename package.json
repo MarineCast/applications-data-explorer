@@ -4,8 +4,10 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 127.0.0.1",
-    "backend": "python3 scripts/relationships_api.py",
+    "dev": "node scripts/serve.mjs dev",
+    "dev:frontend": "vite --host 127.0.0.1",
+    "backend": "node scripts/serve.mjs backend",
+    "test:api": "python3 -m unittest discover -s scripts -p 'test_data_api.py'",
     "test:relationships": "python3 -m unittest discover -s scripts -p 'test_relationships*.py'",
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b",
@@ -13,11 +15,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@react-three/fiber": "^9.8.1",
     "h3-js": "4.3.0",
     "lucide-react": "0.468.0",
     "maplibre-gl": "6.12.0",
-    "pixi.js": "8.22.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "three": "0.186.1"

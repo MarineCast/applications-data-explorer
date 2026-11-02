@@ -4,14 +4,20 @@ import type { OrcaPoints } from "./orcaOverlay";
 import { membershipStyles } from "./governancePatterns";
 import { cellToBoundary } from "h3-js";
 import type { FeatureCollection, Polygon, MultiPolygon } from "geojson";
-import { cells, featureById, valueFor } from "./demo";
-import type { Cell, FeatureId, Region, Sighting } from "./demo";
 import { colorForScale } from "./colorScale";
 import type { ColorScale } from "./colorScale";
 import type { ReactNode } from "react";
 import type { ViewshedMapProps } from "./viewshedMap";
 import type { MapCameraLink } from "./mapCamera";
 import type { SurfaceSettings } from "./smoothSurface";
+export interface Cell {
+  id: string;
+  lat: number;
+  lon: number;
+  boundary: number[][];
+  zone: "north" | "south";
+}
+
 export interface MapLayer {
   /** Explicit per-cell support, independent of numeric zero/missing values. */
   cellAppearance?:ReadonlyMap<string,{color?:string;opacity:number;kind:string}>;
@@ -75,36 +81,22 @@ export interface MapCanvasProps {
   showControls?: boolean;
   popup?: ReactNode;
   colorScale?: ColorScale;
-  /** Keep the native-data map mounted even while its overlay is loading. */
-  nativeData?: boolean;
   layer?: MapLayer;
-  feature: FeatureId;
-  month: number;
-  region?: Region;
   selected?: string;
   onSelect?: (cell: Cell) => void;
   showGrid?: boolean;
   opacity?: number;
-  markers?: Sighting[];
-  basemap?: "local" | "maptiler";
 }
-export function colorFor(v: number | null, feature: FeatureId) {
-  return colorFromRange(v, featureById(feature).range);
-}
-
 export function cellGeoJSON(
-  feature: FeatureId,
-  month: number,
-  region: Region = "all",
   layer?: MapLayer,
   bounds?: MapBounds,
   colorScale?: ColorScale,
 ): FeatureCollection<Polygon> {
+  if (!layer) return { type: "FeatureCollection", features: [] };
   const memberships = membershipStyles(layer, colorScale);
   return {
     type: "FeatureCollection",
-    features: (layer ? visibleLayerCells(layer, bounds) : cells)
-      .filter((c) => region === "all" || c.zone === region)
+    features: visibleLayerCells(layer, bounds)
       .map((c) => {
         const coordinates = boundaryFor(c).map(([lat, lon]) => [lon, lat]);
         return {
@@ -113,16 +105,12 @@ export function cellGeoJSON(
           properties: {
             id: c.id,
             membershipPattern: memberships?.cells.get(c.id) ?? "",
-            value: layer
-              ? (layer.values.get(c.id) ?? null)
-              : valueFor(c, feature, month),
+            value: layer.values.get(c.id) ?? null,
             opacity: layer?.cellAppearance?.get(c.id)?.opacity ?? 1,
             support: layer?.cellAppearance?.get(c.id)?.kind ?? "native",
-            color: layer?.cellAppearance?.get(c.id)?.color ?? (layer
-              ? colorScale
-                ? colorForScale(layer.values.get(c.id) ?? null, colorScale)
-                : colorFromRange(layer.values.get(c.id) ?? null, layer.range)
-              : colorFor(valueFor(c, feature, month), feature)),
+            color: layer?.cellAppearance?.get(c.id)?.color ?? (colorScale
+              ? colorForScale(layer.values.get(c.id) ?? null, colorScale)
+              : colorFromRange(layer.values.get(c.id) ?? null, layer.range)),
           },
           geometry: {
             type: "Polygon",

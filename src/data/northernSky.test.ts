@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { horizontal, julianDate, northernSky, precess, siderealDegrees, skyLocation, sunAltitude } from './northernSky';
+import { horizontal, julianDate, precess, siderealDegrees, skyLocation } from './northernSky';
 
 describe('live northern sky coordinate transforms', () => {
   const epoch = new Date('2000-01-01T12:00:00Z');
@@ -23,20 +23,5 @@ describe('live northern sky coordinate transforms', () => {
     const transit=horizontal(lst,0,epoch);
     expect(transit.altitude).toBeCloseTo(90-skyLocation.latitude,8);
     expect(transit.azimuth).toBeCloseTo(180,8);
-  });
-  it('changes the Dipper with time while Polaris stays near north', () => {
-    const morning=northernSky(new Date('2026-10-17T04:00:00Z'));
-    const later=northernSky(new Date('2026-10-17T10:00:00Z'));
-    expect(Math.abs(morning[0].altitude-later[0].altitude)).toBeGreaterThan(5);
-    for (const sky of [morning,later]) {
-      const polaris=sky.find(s=>s.name==='Polaris')!;
-      expect(Math.abs(polaris.altitude-skyLocation.latitude)).toBeLessThan(1);
-      expect(polaris.visible).toBe(true);
-      expect(Math.min(polaris.azimuth,360-polaris.azimuth)).toBeLessThan(2);
-    }
-  });
-  it('distinguishes local summer daytime and night', () => {
-    expect(sunAltitude(new Date('2026-06-21T20:00:00Z'))).toBeGreaterThan(60);
-    expect(sunAltitude(new Date('2026-06-21T08:00:00Z'))).toBeLessThan(-10);
   });
 });

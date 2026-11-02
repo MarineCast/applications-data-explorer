@@ -52,10 +52,12 @@ function DistributionHistogram({ bins, name, unit, format, color }: {
   </svg>;
 }
 
-export default function DatasetInsights({ open, onOpenChange, dataset, cell, selectedContent, overviewContent, temporalContent, comparison, focusSelection = false, persistentTrigger = false, onSourceDetails, selectionToken, selectionName="cell" }: {
+export default function DatasetInsights({ open, onOpenChange, dataset, cell, selectedContent, overviewContent, overviewNote, temporalContent, comparison, focusSelection = false, persistentTrigger = false, onSourceDetails, selectionToken, selectionName="cell", temporalLabel="Time history" }: {
   open: boolean; onOpenChange: (open: boolean) => void; dataset: InsightDataset;
   cell?: InsightCell; selectedContent?: ReactNode; overviewContent?:ReactNode;
+  overviewNote?: ReactNode;
   temporalContent?: ReactNode;
+  temporalLabel?: string;
   selectionToken?: object;
   selectionName?: "cell"|"record";
   focusSelection?: boolean;
@@ -87,7 +89,7 @@ export default function DatasetInsights({ open, onOpenChange, dataset, cell, sel
     heading.current?.focus();
     const escape = (event: KeyboardEvent) => {
       // Let the topmost local popup close first when a selector/legend is open.
-      if (event.key === "Escape" && !document.querySelector('.colorbar-settings, .layer-panel, .viewshed-layers-panel, .tool-drawer-actions, .viewshed-controls, .atlas-dialog')) dismiss();
+      if (event.key === "Escape" && !document.querySelector('.colorbar-settings, .layer-panel, .viewshed-controls, .atlas-dialog')) dismiss();
     };
     document.addEventListener("keydown", escape);
     return () => document.removeEventListener("keydown", escape);
@@ -136,6 +138,7 @@ export default function DatasetInsights({ open, onOpenChange, dataset, cell, sel
         </div>
         {viewTabs}
         <div id={`${id}-overview`} role={focusSelection ? "tabpanel" : undefined} aria-label="Overview" hidden={focusSelection && view !== "overview"}>
+        {overviewNote}
         {overviewContent ?? <>
         {dataset.visibleValues && <label className="insights-choice">Summary scope<select aria-label="Summary scope" value={scope} onChange={e => setScope(e.target.value)}><option value="full">Full dataset</option><option value="visible">Visible map</option></select></label>}
         <p className="insights-scope">{scope === "visible" && dataset.visibleValues ? "Cell centres within visible bounds · unweighted" : "Full dataset · cells count equally"}</p>
@@ -179,7 +182,7 @@ export default function DatasetInsights({ open, onOpenChange, dataset, cell, sel
           {onSourceDetails && <button className="insights-source-button" onClick={onSourceDetails}>Source &amp; quality</button>}
           </> : <p className="insights-empty">Select a cell on the map to inspect its source value.</p>)}
         </section>
-        {temporalContent && <details className="insights-history" open><summary>Time history</summary>{temporalContent}</details>}
+        {temporalContent && <details className="insights-history" open><summary>{temporalLabel}</summary>{temporalContent}</details>}
         <SourceSection className="insights-section insights-provenance" aria-label="Insights data source">{focusSelection ? <summary>Data source</summary> : <h3>Data source</h3>}
           <p className="insights-note">{dataset.scope}</p><dl className="insights-cell-details">{dataset.metadata.map(item => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}</dd></div>)}</dl>
         </SourceSection>

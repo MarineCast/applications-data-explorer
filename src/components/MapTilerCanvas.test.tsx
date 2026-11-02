@@ -5,7 +5,7 @@ import { createCategoryScale, createColorScale } from "../data/colorScale";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, afterEach, describe, it, expect, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { cells } from "../data/demo";
+import { cells } from "../test/demoFixture";
 const fake = vi.hoisted(() => ({
   instances: [] as Array<{
     camera: { center: [number, number]; zoom: number; bearing: number; pitch: number };
@@ -13,8 +13,10 @@ const fake = vi.hoisted(() => ({
     sourceData: ReturnType<typeof vi.fn>;
     sourcePayloads: Map<string, unknown>;
   }>,
+  workerUrl: undefined as string | undefined,
   zoom: 6.7,
   sourceReady: true,
+  styleLoaded: true,
   events: new Map<string, (event?: unknown) => void>(),
   data: vi.fn(),
   addLayer: vi.fn(),
@@ -31,7 +33,9 @@ const fake = vi.hoisted(() => ({
   addImage: vi.fn(),
   removeImage: vi.fn(),
 }));
+vi.mock("maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url", () => ({default: "/bundled-map-worker.js"}));
 vi.mock("maplibre-gl", () => ({
+  setWorkerUrl: (url: string) => { fake.workerUrl = url; },
   Map: class {
     camera = { center: [-123.5, 48.45] as [number, number], zoom: fake.zoom, bearing: 0, pitch: 0 };
     events = new Map<string, (event?: unknown) => void>();
@@ -52,7 +56,7 @@ vi.mock("maplibre-gl", () => ({
       return this;
     }
     isStyleLoaded() {
-      return true;
+      return fake.styleLoaded;
     }
     addSource() {}
     addLayer = fake.addLayer;
@@ -112,6 +116,7 @@ beforeEach(() => {
   fake.instances.length = 0;
   fake.zoom = 6.7;
   fake.sourceReady = true;
+  fake.styleLoaded = true;
   fake.query.mockReturnValue([]);
   vi.stubGlobal(
     "ResizeObserver",
@@ -122,10 +127,51 @@ beforeEach(() => {
   );
 });
 afterEach(() => {
+  vi.useRealTimers();
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
 });
 describe("MapTiler renderer lifecycle", () => {
+  it("reports geographic style timeout and authorization failure, and cancels its timer on removal", () => {
+    vi.useFakeTimers(); fake.styleLoaded = false;
+    const onUnavailable = vi.fn();
+    const mounted = render(<MapTilerCanvas apiKey="test" onUnavailable={onUnavailable} />);
+    act(() => vi.advanceTimersByTime(15000));
+    expect(onUnavailable).toHaveBeenCalledOnce();
+    act(() => fake.events.get("error")?.({ error: { status: 403 } }));
+    expect(onUnavailable).toHaveBeenCalledTimes(2);
+    mounted.unmount();
+    act(() => vi.advanceTimersByTime(30000));
+    expect(onUnavailable).toHaveBeenCalledTimes(2);
+    expect(fake.remove).toHaveBeenCalledOnce();
+  });
+  it("uses fresh Viewshed callbacks for distinct roles and controlled coordinates on the existing map", () => {
+    const data = viewshedFixture(), onUnavailable = vi.fn();
+    const original: ViewshedMapProps = { data, scores: data.averages, source: sourceA, mode: "target", metric: "lower", allTargets: true,
+      selection: null, coordinates: null, onCoordinates: vi.fn(), onSource: vi.fn(), onTarget: vi.fn(), onBackground: vi.fn() };
+    const mounted = render(<MapTilerCanvas apiKey="test" viewshed={original} onUnavailable={onUnavailable} />);
+    const instance = fake.instances[0]; act(() => instance.events.get("load")?.());
+    const next = { ...original, onSource: vi.fn(), onTarget: vi.fn(), onCoordinates: vi.fn(), onBackground: vi.fn() };
+    mounted.rerender(<MapTilerCanvas apiKey="test" viewshed={next} onUnavailable={onUnavailable} />);
+    for (const source of ["viewshed-sources", "viewshed-targets"]) {
+      fake.query.mockReturnValue([{ source, properties: { id: sourceA } }]);
+      act(() => instance.events.get("click")?.({ point: { x: 1, y: 1 } }));
+    }
+    expect(next.onSource).toHaveBeenCalledWith(sourceA); expect(next.onTarget).toHaveBeenCalledWith(sourceA);
+    expect(original.onSource).not.toHaveBeenCalled(); expect(original.onTarget).not.toHaveBeenCalled();
+    const preventDefault = vi.fn();
+    act(() => instance.events.get("contextmenu")?.({ originalEvent: { preventDefault }, lngLat: { lat: 48.25, lng: -123.1 } }));
+    expect(preventDefault).toHaveBeenCalledOnce();
+    expect(next.onCoordinates).toHaveBeenCalledWith(expect.objectContaining({ lat: 48.25, lon: -123.1 }));
+    expect(original.onCoordinates).not.toHaveBeenCalled();
+    expect(fake.options).toHaveBeenCalledOnce(); expect(fake.jumpTo).not.toHaveBeenCalled();
+  });
+  it("configures the emitted worker URL for the geographic map", () => {
+    expect(fake.workerUrl).toBe("/bundled-map-worker.js");
+    render(<MapTilerCanvas apiKey="test" onUnavailable={vi.fn()} />);
+    expect(fake.options).toHaveBeenCalledOnce();
+  });
+
   it("smooths Viewshed water and reverse land weights on the existing map while retaining geometry picking and native fallback", () => {
     const jobs: { request?: SurfaceRequest; onmessage?: (event: { data: SurfaceResult }) => void; terminate: ReturnType<typeof vi.fn> }[] = [];
     vi.stubGlobal("Worker", class {
@@ -141,7 +187,7 @@ describe("MapTiler renderer lifecycle", () => {
       coordinates: null, onCoordinates: vi.fn(), onBackground: vi.fn(), onSource: vi.fn(), onTarget: vi.fn(),
       opacity: .4, colorScale: createViewshedScale(data.averages, "lower", "balance", "auto", [0, 1]),
       smoothing: { enabled: true, radius: .75, contours: true } };
-    const map = (view: ViewshedMapProps) => <MapTilerCanvas apiKey="test" nativeData feature="temperature" month={0} viewshed={view} onUnavailable={onUnavailable} />;
+    const map = (view: ViewshedMapProps) => <MapTilerCanvas apiKey="test" viewshed={view} onUnavailable={onUnavailable} />;
     const mounted = render(map(view)), instance = fake.instances[0];
     act(() => instance.events.get("load")?.());
     expect(jobs[0].request?.ids).toEqual([sourceA, targetB]);
@@ -178,8 +224,7 @@ describe("MapTiler renderer lifecycle", () => {
     const view: ViewshedMapProps = { data: viewshedFixture(), scores: [pair()], source: sourceA,
       mode: "source", metric: "lower", allTargets: true, selection: { role: "source", id: sourceA },
       coordinates: null, onCoordinates: vi.fn(), onBackground: vi.fn(), onSource: vi.fn(), onTarget: vi.fn() };
-    const renderMap = (overlay?: ViewshedMapProps) => <MapTilerCanvas apiKey="test" nativeData
-      feature="temperature" month={0} onUnavailable={onUnavailable} onSelect={onSelect} viewshed={overlay} />;
+    const renderMap = (overlay?: ViewshedMapProps) => <MapTilerCanvas apiKey="test" onUnavailable={onUnavailable} onSelect={onSelect} viewshed={overlay} />;
     const mounted = render(renderMap());
     const instance = fake.instances[0];
     act(() => instance.events.get("load")?.());
@@ -219,7 +264,7 @@ describe("MapTiler renderer lifecycle", () => {
     const { latLngToCell } = await import("h3-js");
     const onUnavailable = vi.fn(), onSelect = vi.fn();
     const renderLayer = (layer?: MapLayer) => <MapTilerCanvas
-      apiKey="test" nativeData feature="temperature" month={0}
+      apiKey="test"
       layer={layer} onUnavailable={onUnavailable} onSelect={onSelect}
     />;
     const view = render(renderLayer());
@@ -260,63 +305,25 @@ describe("MapTiler renderer lifecycle", () => {
     view.unmount();
     expect(fake.remove).toHaveBeenCalledTimes(1);
   });
-  it("adds local overlays, reacts to filters, selects cells, and releases the map", async () => {
-    const onSelect = vi.fn(),
-      onUnavailable = vi.fn();
-    const user = userEvent.setup();
-    const view = render(
-      <MapTilerCanvas
-        apiKey="synthetic-test-key"
-        feature="temperature"
-        month={6}
-        onSelect={onSelect}
-        onUnavailable={onUnavailable}
-      />,
-    );
-    act(() => fake.events.get("load")?.());
-    expect(fake.addLayer).toHaveBeenCalledWith(expect.objectContaining({ id: "demo-h3-fill" }));
+  it("updates exact native values and display settings, selects geographically and releases the map", async () => {
+    const { latLngToCell } = await import("h3-js");
+    const cells = [48.45,48.8].map(lat=>({id:latLngToCell(lat,-123.5,6),lat,lon:-123.5,boundary:[],zone:"north" as const}));
+    const layer: MapLayer = {id:"depth",name:"Depth",unit:"m",range:[0,10],resolution:6,cells,values:new Map([[cells[0].id,0],[cells[1].id,null]]),sourceLabel:"native fixture"};
+    const onSelect = vi.fn(), onUnavailable = vi.fn();
+    const mounted = render(<MapTilerCanvas apiKey="test" layer={layer} onSelect={onSelect} onUnavailable={onUnavailable} />);
+    const instance = fake.instances[0]; act(() => instance.events.get("load")?.());
+    expect(instance.sourcePayloads.get("native-h3")).toMatchObject({features:[{properties:{value:0}},{properties:{value:null}}]});
     expect(fake.moveLayer).toHaveBeenCalledWith("labels");
-    expect(fake.moveLayer.mock.invocationCallOrder[0]).toBeGreaterThan(fake.addLayer.mock.invocationCallOrder.at(-1)!);
-    expect(fake.data.mock.calls.at(-1)?.[0].features).toHaveLength(
-      cells.length,
-    );
-    view.rerender(
-      <MapTilerCanvas
-        apiKey="synthetic-test-key"
-        feature="traffic"
-        month={1}
-        region="north"
-        showGrid={false}
-        opacity={0.4}
-        selected={cells[0].id}
-        onSelect={onSelect}
-        onUnavailable={onUnavailable}
-      />,
-    );
-    expect(fake.setLayoutProperty).toHaveBeenCalledWith(
-      "demo-h3-fill",
-      "visibility",
-      "none",
-    );
-    expect(fake.setPaintProperty).toHaveBeenCalledWith(
-      "demo-h3-fill",
-      "fill-opacity",
-      0.4,
-    );
-    expect(fake.setFeatureState).toHaveBeenCalledWith(
-      { source: "demo-h3", id: cells[0].id },
-      { selected: true },
-    );
-    const north = cells.find((c) => c.zone === "north")!;
-    await user.selectOptions(
-      screen.getByLabelText("Inspect H3 cell"),
-      north.id,
-    );
-    expect(onSelect).toHaveBeenCalledWith(north);
-    act(() => fake.events.get("error")?.({ error: { status: 403 } }));
-    expect(onUnavailable).toHaveBeenCalled();
-    view.unmount();
-    expect(fake.remove).toHaveBeenCalled();
+    mounted.rerender(<MapTilerCanvas apiKey="test" layer={layer} showGrid={false} opacity={.4} selected={cells[0].id} onSelect={onSelect} onUnavailable={onUnavailable} />);
+    expect(fake.setLayoutProperty).toHaveBeenCalledWith("native-h3-fill", "visibility", "none");
+    expect(fake.setPaintProperty).toHaveBeenCalledWith("native-h3-fill", "fill-opacity", .4);
+    expect(fake.setFeatureState).toHaveBeenCalledWith({source:"native-h3",id:cells[0].id},{selected:true});
+    expect(screen.queryByLabelText("Inspect H3 cell")).not.toBeInTheDocument();
+    act(() => instance.events.get("click")?.({lngLat:{lat:48.45,lng:-123.5}}));
+    expect(onSelect).toHaveBeenCalledWith(cells[0]);
+    expect(fake.options).toHaveBeenCalledOnce();
+    expect(layer.values.get(cells[0].id)).toBe(0); expect(layer.values.get(cells[1].id)).toBeNull();
+    mounted.unmount(); expect(fake.remove).toHaveBeenCalledOnce();
   });
   it("renders native R8 values at overview zoom, filters the viewport, and selects without zooming", async () => {
     const { latLngToCell } = await import("h3-js");
@@ -343,8 +350,6 @@ describe("MapTiler renderer lifecycle", () => {
     const view = render(
       <MapTilerCanvas
         apiKey="test"
-        feature="temperature"
-        month={0}
         layer={layer}
         onUnavailable={onUnavailable}
         onSelect={onSelect}
@@ -374,8 +379,6 @@ describe("MapTiler renderer lifecycle", () => {
     view.rerender(
       <MapTilerCanvas
         apiKey="test"
-        feature="temperature"
-        month={0}
         layer={layer}
         selected={id}
         popup={<section aria-label="R8 preview">Native depth</section>}
@@ -394,8 +397,6 @@ describe("MapTiler renderer lifecycle", () => {
     const view = render(
       <MapTilerCanvas
         apiKey="first"
-        feature="temperature"
-        month={0}
         onUnavailable={onUnavailable}
       />,
     );
@@ -404,8 +405,6 @@ describe("MapTiler renderer lifecycle", () => {
     view.rerender(
       <MapTilerCanvas
         apiKey="replacement"
-        feature="temperature"
-        month={0}
         onUnavailable={onUnavailable}
       />,
     );
@@ -413,8 +412,6 @@ describe("MapTiler renderer lifecycle", () => {
     view.rerender(
       <MapTilerCanvas
         apiKey="replacement"
-        feature="temperature"
-        month={1}
         onUnavailable={onUnavailable}
         viewshed={overlay}
       />,
@@ -422,7 +419,7 @@ describe("MapTiler renderer lifecycle", () => {
     expect(fake.data).toHaveBeenCalledTimes(calls);
     // A stale ready counter must not write Viewshed paint/layout to a new, unloaded style.
     const writes = fake.setLayoutProperty.mock.calls.length;
-    view.rerender(<MapTilerCanvas apiKey="replacement" feature="temperature" month={1}
+    view.rerender(<MapTilerCanvas apiKey="replacement"
       onUnavailable={onUnavailable} viewshed={{ ...overlay, metric: "upper" }} />);
     expect(fake.setLayoutProperty).toHaveBeenCalledTimes(writes);
     fake.sourceReady = true;
@@ -443,8 +440,6 @@ describe("MapTiler renderer lifecycle", () => {
     const view = render(
       <MapTilerCanvas
         apiKey="test"
-        feature="temperature"
-        month={0}
         layer={layer}
         selected={cells[0].id}
         popup={
@@ -470,9 +465,9 @@ describe("MapTiler renderer lifecycle", () => {
     const link = createMapCameraLink();
     const unavailable = vi.fn();
     const view = render(<>
-      <MapTilerCanvas apiKey="test" feature="temperature" month={0} cameraLink={link}
+      <MapTilerCanvas apiKey="test" cameraLink={link}
         layer={{ ...base, values: new Map([[id, 0]]) }} onUnavailable={unavailable} />
-      <MapTilerCanvas apiKey="test" feature="temperature" month={0} cameraLink={link}
+      <MapTilerCanvas apiKey="test" cameraLink={link}
         layer={{ ...base, values: new Map([[id, 105]]) }} showControls={false} onUnavailable={unavailable} />
     </>);
     const [left, right] = fake.instances;
@@ -509,9 +504,9 @@ describe("MapTiler renderer lifecycle", () => {
   });
   it("does not create a network map when the key is absent", () => {
     vi.stubEnv("VITE_MAPTILER_KEY", "");
-    render(<MapCanvas basemap="maptiler" feature="temperature" month={6} />);
-    expect(screen.getByRole("status")).toHaveTextContent(
-      "MapTiler key not configured",
+    render(<MapCanvas />);
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Basemap key not configured",
     );
     expect(fake.options).not.toHaveBeenCalled();
   });
@@ -524,7 +519,7 @@ it("inspects native cells at the keyboard crosshair and keeps Viewshed selection
   const cell = {id, lat:48.45, lon:-123.5, boundary:[], zone:"north" as const};
   const select = vi.fn();
   const onSource = vi.fn(), onTarget = vi.fn(), onBackground = vi.fn();
-  const props = {apiKey:"test",feature:"temperature" as const,month:0,nativeData:true,onUnavailable:vi.fn()};
+  const props = {apiKey:"test",onUnavailable:vi.fn()};
   const layer = {id:"depth",name:"Depth",unit:"m",range:[0,10] as [number,number],resolution:6,cells:[cell],values:new Map([[id,0]]),sourceLabel:"native"};
   const view = render(<MapTilerCanvas {...props} layer={layer} onSelect={select} />);
   act(() => fake.events.get("load")?.());
@@ -552,11 +547,11 @@ it("registers bounded overlap images and clears them when returning to numeric d
   const layer = { id:"areas",name:"Areas",unit:"membership",range:[0,2] as [number,number],resolution:6,cells:[cell],values:new Map([[cell.id,2]]),sourceLabel:"test",categories:["A","B","Multiple"],categoryKeys:["feature:a","feature:b","multiple"],categoryMemberships:new Map([[cell.id,[0,1]]]) };
   const scale=createCategoryScale(layer.values,layer.categories,"ocean");
   const select=vi.fn();
-  const props={onSelect:select,apiKey:"test",nativeData:true,feature:"temperature" as const,month:0,onUnavailable:vi.fn()};
+  const props={onSelect:select,apiKey:"test",onUnavailable:vi.fn()};
   const view=render(<MapTilerCanvas {...props} layer={layer} colorScale={scale} />);
   act(() => fake.instances[0].events.get("load")?.());
   expect(fake.addImage).toHaveBeenCalledOnce();
-  const payload=fake.instances[0].sourcePayloads.get("demo-h3") as { features:{properties:{membershipPattern:string}}[] };
+  const payload=fake.instances[0].sourcePayloads.get("native-h3") as { features:{properties:{membershipPattern:string}}[] };
   expect(payload.features[0].properties.membershipPattern).toMatch(/^membership-set-/);
   // The striped fill shares geographic picking with the native H3 cell; no
   // dominant membership or arbitrary rendered source feature becomes its ID.
@@ -570,7 +565,7 @@ it("registers bounded overlap images and clears them when returning to numeric d
 
 it("updates theme paint on the existing provider map without rebuilding its camera or overlays", () => {
   act(()=>setAppTheme('light'));
-  const view=render(<MapTilerCanvas apiKey="test" nativeData feature="temperature" month={0} onUnavailable={vi.fn()} />);
+  const view=render(<MapTilerCanvas apiKey="test" onUnavailable={vi.fn()} />);
   act(()=>fake.instances[0].events.get('load')?.());
   const camera={...fake.instances[0].camera};
   const layerCount=fake.addLayer.mock.calls.length;
@@ -587,13 +582,13 @@ it("updates theme paint on the existing provider map without rebuilding its came
 it("renders Hydrology as exact river bubbles, picks river identity, and clears nodes on domain change", () => {
  const data=hydrologyFixture(), onSelect=vi.fn(), onUnavailable=vi.fn();
  const nodes={data,metric:"discharge_mean" as const,day:"2026-09-25",onSelect};
- const mounted=render(<MapTilerCanvas apiKey="test" nativeData feature="temperature" month={0} hydrologyPoints={nodes} showGrid={false} onUnavailable={onUnavailable}/>);
+ const mounted=render(<MapTilerCanvas apiKey="test" hydrologyPoints={nodes} showGrid={false} onUnavailable={onUnavailable}/>);
  const instance=fake.instances[0]; act(()=>instance.events.get("load")?.());
- expect(instance.sourcePayloads.get("demo-h3")).toEqual({type:"FeatureCollection",features:[]});
+ expect(instance.sourcePayloads.get("native-h3")).toEqual({type:"FeatureCollection",features:[]});
  expect(instance.sourcePayloads.get(hydrologyPointSource)).toMatchObject({features:[{properties:{river:"fraser",value:0,missing:false}},{properties:{river:"cowichan",value:0,missing:false}}]});
  fake.query.mockReturnValue([{properties:{river:"fraser"}}]);
  act(()=>instance.events.get("click")?.({point:{x:1,y:2}})); expect(onSelect).toHaveBeenCalledWith("fraser");
- mounted.rerender(<MapTilerCanvas apiKey="test" nativeData feature="temperature" month={0} onUnavailable={onUnavailable}/>);
+ mounted.rerender(<MapTilerCanvas apiKey="test" onUnavailable={onUnavailable}/>);
  expect(fake.instances).toHaveLength(1);
  expect(instance.sourcePayloads.get(hydrologyPointSource)).toEqual({type:"FeatureCollection",features:[]});
 });
@@ -601,7 +596,7 @@ it("renders Hydrology as exact river bubbles, picks river identity, and clears n
 
 it("opens coordinate copying on a native map without a Viewshed layer", async () => {
   const user = userEvent.setup();
-  render(<MapTilerCanvas apiKey="test" onUnavailable={vi.fn()} nativeData feature="temperature" month={0} />);
+  render(<MapTilerCanvas apiKey="test" onUnavailable={vi.fn()} />);
   const preventDefault = vi.fn();
   act(() => fake.events.get("contextmenu")?.({ originalEvent: { preventDefault }, lngLat: { lat: 48.5, lng: -123.25 } }));
   expect(preventDefault).toHaveBeenCalled();

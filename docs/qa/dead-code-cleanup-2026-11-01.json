@@ -1,0 +1,661 @@
+{
+  "owner": "applications-data-explorer",
+  "task": "approved dead-code cleanup",
+  "reviewDate": "2026-11-01",
+  "status": "complete",
+  "authorization": "User explicitly approved the identified cleanup, test migration before renderer removal, preservation of existing work/data and validation.",
+  "baseCommit": "b570ace8b05068482ed81868245c634fc1574278",
+  "baseline": "pre-existing modified working tree, backed up before edits; no checkout reset or commit",
+  "changes": [
+    {
+      "path": "src/styles.css",
+      "action": "modified",
+      "beforeBytes": 44014,
+      "afterBytes": 30893,
+      "beforeSha256": "3375801214a7c37c1ba078533db6685b7555823ffe90cec16a61284ae2e64a0b",
+      "afterSha256": "6494f0be6753be50a18a906a0d0c50cd7527d2836d83f8102e5a785a57fff9b0"
+    },
+    {
+      "path": "src/atlas.css",
+      "action": "modified",
+      "beforeBytes": 48227,
+      "afterBytes": 44286,
+      "beforeSha256": "5fa8342bab862624602c993d1c5feec7685d4250865e8c40bb9a4ecd001f8c83",
+      "afterSha256": "60ff0fb2d1b1c767beaa914d9064f6d09a93835896f4fc1222820af9f3d89b7a"
+    },
+    {
+      "path": "src/components/ViewshedLayer.tsx",
+      "action": "modified",
+      "beforeBytes": 30067,
+      "afterBytes": 26348,
+      "beforeSha256": "16a034d39a656943ab24bf28bf68a9599718749c6c77d8bfd488b976ff8b1df4",
+      "afterSha256": "e8040ef0547523901b96978cd29feff093494e93c046fe5e0d1c101bd439d3ca"
+    },
+    {
+      "path": "src/components/ViewshedLocalMap.tsx",
+      "action": "removed",
+      "beforeBytes": 7652,
+      "afterBytes": 0,
+      "beforeSha256": "52726b9ba9864c43672d17a1589e4161ab6aa2ac413f64f2a852e8c0cb467990",
+      "afterSha256": null
+    },
+    {
+      "path": "src/components/ViewshedBasemap.test.tsx",
+      "action": "removed",
+      "beforeBytes": 11913,
+      "afterBytes": 0,
+      "beforeSha256": "e87d4015a88b1233dbdb90488d308c4c0ba9bc8d197ffff42113a5ac03ec2d77",
+      "afterSha256": null
+    },
+    {
+      "path": "src/components/ViewshedZoomControls.tsx",
+      "action": "removed",
+      "beforeBytes": 668,
+      "afterBytes": 0,
+      "beforeSha256": "13d54e01c40524cac9c6f5a89e6434057a874919357a245d72324dc4a7f287ae",
+      "afterSha256": null
+    },
+    {
+      "path": "src/components/MapCanvas.test.tsx",
+      "action": "modified",
+      "beforeBytes": 3289,
+      "afterBytes": 3242,
+      "beforeSha256": "84eb8c4415e4998a7a7fb7abb6a1a2ae8d53f1ab066d3ccde167c9a728847424",
+      "afterSha256": "5e5f5003792a4d0ec6caa5769fd7bccc6175068a8300700ce1ab32d781b2bc66"
+    },
+    {
+      "path": "src/components/MapTilerCanvas.test.tsx",
+      "action": "modified",
+      "beforeBytes": 30900,
+      "afterBytes": 32504,
+      "beforeSha256": "816fea1b3ec62c4ce6844e4969d52442c2b5d4de4014ccc038ea3fa1289e6706",
+      "afterSha256": "fbc76863a013d1855658635f9c014d9c131dc5a5867e12760cd88d43028f0240"
+    },
+    {
+      "path": "src/components/MapToolDrawer.tsx",
+      "action": "removed",
+      "beforeBytes": 2964,
+      "afterBytes": 0,
+      "beforeSha256": "6fee22fc1ffa75541633a925ef9381e6f84dd3fe4c9233c07db4adcc66962a7b",
+      "afterSha256": null
+    },
+    {
+      "path": "src/components/MapTilerCanvas.tsx",
+      "action": "modified",
+      "beforeBytes": 29815,
+      "afterBytes": 28210,
+      "beforeSha256": "54d8510147104cf803d260ed86ce3e781e554691f72df988230aeb32de7ce3e4",
+      "afterSha256": "e29fcf98f6e7d64c5d37ddc94697732f323aaa64bf96b308581dd14f36033d18"
+    },
+    {
+      "path": "src/components/ViewshedMap.tsx",
+      "action": "removed",
+      "beforeBytes": 1018,
+      "afterBytes": 0,
+      "beforeSha256": "ff3c8d2a64dcfe98ddf58a5cecb9fa5efc34055a2f81f31bf806df14d029ebcc",
+      "afterSha256": null
+    },
+    {
+      "path": "src/components/MapCanvas.tsx",
+      "action": "modified",
+      "beforeBytes": 20685,
+      "afterBytes": 1140,
+      "beforeSha256": "7dccb1c8551a0e24f5487466eb6880d809984135810ded1905ce42579a32a2fd",
+      "afterSha256": "37c14852121eb73f2e8a5bcf3ccd3bbbdf58b1962438ea2dede6778a83af736c"
+    },
+    {
+      "path": "src/components/ViewshedBasemap.tsx",
+      "action": "removed",
+      "beforeBytes": 7915,
+      "afterBytes": 0,
+      "beforeSha256": "c57f60c074051bb1832582a26fc1741336da944cd613626d80c98524eb50b812",
+      "afterSha256": null
+    },
+    {
+      "path": "src/components/ViewshedLayer.test.tsx",
+      "action": "modified",
+      "beforeBytes": 35974,
+      "afterBytes": 17693,
+      "beforeSha256": "a54a3373d0518cfe04ba82d65ca1591f238c10d3c085560c2a2b1e71bdcd7321",
+      "afterSha256": "31f013e585b53f606d3ddc3fcea134d592f24ace102d144c82eb260897dd23b3"
+    },
+    {
+      "path": "src/components/DatasetInsights.tsx",
+      "action": "modified",
+      "beforeBytes": 16470,
+      "afterBytes": 16424,
+      "beforeSha256": "81c700f9248ef510f57f9e8ce615528ea262868e728f1b4f6761b3ab6af2a8fb",
+      "afterSha256": "21aecf0a35a56b6298ab80d8821271a1446ede413d13b10ae5f0d32cda21b1de"
+    },
+    {
+      "path": "src/components/Controls.tsx",
+      "action": "modified",
+      "beforeBytes": 2024,
+      "afterBytes": 481,
+      "beforeSha256": "c41a907dc1e06de601b7eb199a4ee5ee1c1c79a31ef1bdeb61dfc4b496011bb4",
+      "afterSha256": "b1bc8c89eea18332128361bb850fdd42a185a8fff7827643ad47cd74a9a4fb98"
+    },
+    {
+      "path": "src/components/CategoricalCellPopup.tsx",
+      "action": "modified",
+      "beforeBytes": 5976,
+      "afterBytes": 5975,
+      "beforeSha256": "ab7ea9b38c76f169daf8f7025ef672911d081ddcb67f1f05bda50b7e38262621",
+      "afterSha256": "6e343aef8dce878ff0087662a8af13090e7caa31d8ccd63943b6b94a2eadf79b"
+    },
+    {
+      "path": "src/data/demo.ts",
+      "action": "modified",
+      "beforeBytes": 5906,
+      "afterBytes": 1773,
+      "beforeSha256": "4772d72811fb8597544ea90ffb1dba92c83c5cad1583624f96816176457cc889",
+      "afterSha256": "5c750f0cec15a05d092be6b4c2f6337ae4396f92d66412dbf1954c6aba2ef451"
+    },
+    {
+      "path": "src/data/northernSky.ts",
+      "action": "modified",
+      "beforeBytes": 3664,
+      "afterBytes": 2000,
+      "beforeSha256": "f3aad483058766cacc8aff07ebcb408665ec7556e3ab753b399508de64b19a1f",
+      "afterSha256": "c10679f0f3c0e7c9c4750407d09e8a473f841605a42ed4f94a43a56d620bead0"
+    },
+    {
+      "path": "src/data/hydrology.test.ts",
+      "action": "modified",
+      "beforeBytes": 6942,
+      "afterBytes": 6920,
+      "beforeSha256": "5368951fa7de8a0f1018b3cf3454c0495611a53b0040acda5ec0a830cc7ceb06",
+      "afterSha256": "eae8a9b5b50381bb7f93fe2bf30ff50a36fd00775b20cd4d1ad5c0be39518e12"
+    },
+    {
+      "path": "src/data/demo.test.ts",
+      "action": "modified",
+      "beforeBytes": 1766,
+      "afterBytes": 1086,
+      "beforeSha256": "9055122247753a21863e56250c5e21e8eaec697e36aab13bb4364a9eb3696f46",
+      "afterSha256": "9bf49180fb294d75501c655006d0de09dc626c54183649369d01ceaa924d3cf3"
+    },
+    {
+      "path": "src/data/viewshedMap.test.ts",
+      "action": "modified",
+      "beforeBytes": 1312,
+      "afterBytes": 2578,
+      "beforeSha256": "b39737b97234157c00053441931e9a137c3c1c5a309914602024f8e3692b4592",
+      "afterSha256": "025c67f30efff47130d7b0240fb900d5e8428d1d0d9fd9a96a39d40df9594a57"
+    },
+    {
+      "path": "src/data/viewshedMap.ts",
+      "action": "modified",
+      "beforeBytes": 4073,
+      "afterBytes": 3893,
+      "beforeSha256": "f06692c137fe911178499a03aa78f8c3056ff81397b6ed4f97622aa93c00f144",
+      "afterSha256": "8b93254a28dcf48e4e8b3822dea2a9d67e2f9ed91283882f6338c275bd3703c6"
+    },
+    {
+      "path": "src/data/map.ts",
+      "action": "modified",
+      "beforeBytes": 5065,
+      "afterBytes": 4492,
+      "beforeSha256": "95d56891ce8fe5012c499d07df358186603e47fb9d935a961dfdfcdd5e4a507e",
+      "afterSha256": "e1c19d800a4b170f67177bf502069fafcfe58be772464604f31722129af0cbb4"
+    },
+    {
+      "path": "src/data/northernSky.test.ts",
+      "action": "modified",
+      "beforeBytes": 2113,
+      "afterBytes": 1275,
+      "beforeSha256": "c6c87781f735f5739a2e5900c9f47e8b1c12b90869dddd7a44eafbdd9a26bac0",
+      "afterSha256": "5b00862e42481733b97b0b4b0782b55f21ef6809ced5b17a7926661b0b6a321b"
+    },
+    {
+      "path": "src/data/governancePatterns.ts",
+      "action": "modified",
+      "beforeBytes": 4851,
+      "afterBytes": 4651,
+      "beforeSha256": "b0fb9d8dbf97098f70ae9ab92ad6b9235ed02b502ac8219653f1ad0a52e3d675",
+      "afterSha256": "684f8c9726165e4cf9f527eeec840592a3e794963885c17f8b3a5ce614e8bc21"
+    },
+    {
+      "path": "src/data/colorScale.test.ts",
+      "action": "modified",
+      "beforeBytes": 4103,
+      "afterBytes": 4091,
+      "beforeSha256": "7335e915a485a7e115a1934fa73ec0e674dd127c8ac34d5d7c9d5de3072987e1",
+      "afterSha256": "c2e8e62fc0fc3aff551f80e98519c14f941ef39946bb81c65809998b113ad48d"
+    },
+    {
+      "path": "src/data/map.test.ts",
+      "action": "modified",
+      "beforeBytes": 1051,
+      "afterBytes": 1386,
+      "beforeSha256": "4aa30cd77e063abf7138eb06f470847b155afc9976f1bf4977e467a868c71a07",
+      "afterSha256": "340de9539cbb3fdc213f6512c76aee99fbe9fac6b10855d901e105476c4cf746"
+    },
+    {
+      "path": "src/data/seascape.test.ts",
+      "action": "modified",
+      "beforeBytes": 23664,
+      "afterBytes": 23638,
+      "beforeSha256": "d48cef5f20ca855751068bc0b5d7f3cd4597972536ac1ca4da732bf90d8197d8",
+      "afterSha256": "f87fffa1c37dd0dd1b6c1f95e0175ffe6e01f9178d0aa4848c8719f6c62b9cf9"
+    },
+    {
+      "path": "src/data/seascape.ts",
+      "action": "modified",
+      "beforeBytes": 23149,
+      "afterBytes": 23148,
+      "beforeSha256": "429ab0dcd94a5347809c1289255dff70754b24226e0b4496da5787a4305c638b",
+      "afterSha256": "d2c6f584a980050bdd784faaa38bb4ee281830a91c9f819e884501881228ba7a"
+    },
+    {
+      "path": "src/pages/SeascapeMapPage.test.tsx",
+      "action": "modified",
+      "beforeBytes": 94291,
+      "afterBytes": 93132,
+      "beforeSha256": "937a50cc2d9d6ae72441a78b327b31d6148682f445f70bda702703a44e6d9f0f",
+      "afterSha256": "cc0cfbc0710533fa400ac0deead3652a83b3d4a67f725888a424aac437b833aa"
+    },
+    {
+      "path": "src/pages/SeascapeMapPage.tsx",
+      "action": "modified",
+      "beforeBytes": 96025,
+      "afterBytes": 95794,
+      "beforeSha256": "9aaff20d345a6774700816734941d415a0abf0b0cfec3b513bba4307de0e741e",
+      "afterSha256": "7599301f82e3f6e675df8b7ac918f7e81120823403c46a326b310bf72cc59a03"
+    },
+    {
+      "path": "README.md",
+      "action": "modified",
+      "beforeBytes": 88630,
+      "afterBytes": 88765,
+      "beforeSha256": "8288401519c9448da12ed16495511ec19f8a2f611d5e191582567476eaf82678",
+      "afterSha256": "5aca9ab0958c9ec274392fae1c2b155d1f3b59e3152bc49a47898b39db900322"
+    },
+    {
+      "path": "scripts/test_biogenic_input.py",
+      "action": "modified",
+      "beforeBytes": 7909,
+      "afterBytes": 7919,
+      "beforeSha256": "a841dd840b12bf042631569c4e8c7e3fc61c1de01f4c20ffcad86e8fc4aa9585",
+      "afterSha256": "e839b9549b9b6799fa43cc235c906308afb96639871c3a7a36d1881403c0d8f3"
+    },
+    {
+      "path": "docs/dead-code-review.md",
+      "action": "modified",
+      "beforeBytes": 11429,
+      "afterBytes": 17738,
+      "beforeSha256": "8289915e598c051552fcce3f3f6a54920e8f07da8f68b0b5b6abfc72b22f9ee0",
+      "afterSha256": "57ad12e2205d7b47a1ab5bf6e89d9d709c9dfcd4aa363ba7b92bf376dae99a36"
+    },
+    {
+      "path": "../../Knowledge/Validation.md",
+      "action": "modified",
+      "beforeBytes": 16465,
+      "afterBytes": 17938,
+      "beforeSha256": "5138bd8443c1d8272d28d4b8a40f7428b71da449d888ff1206cc484103caabc5",
+      "afterSha256": "208931b2fa5dd042178c658f64db79aae611c658af59566bf7825ccc428ee466"
+    },
+    {
+      "path": ".env.example",
+      "action": "modified",
+      "beforeBytes": 1658,
+      "afterBytes": 1435,
+      "beforeSha256": "a5836ba282cb22da91993b7ae0a9e577455cc2068a3babd76424268749dec012",
+      "afterSha256": "d1b9bafc1b7a0f2bbf0d090522bb760de20091eac5738d29dbbcb8090761a229"
+    },
+    {
+      "path": "docs/qa/viewshed-map.md",
+      "action": "modified",
+      "beforeBytes": 21326,
+      "afterBytes": 21754,
+      "beforeSha256": "d907237394208c3016d6b77f1ed9b02f42baeddb7baae47c84bd79353e5b9c33",
+      "afterSha256": "72a32e16bb26bcafd444448d83f38f4ab988e322370cee126eea025e9c2e4bd8"
+    },
+    {
+      "path": "src/test/MapInteractionDriver.tsx",
+      "action": "added",
+      "beforeBytes": 0,
+      "afterBytes": 2456,
+      "beforeSha256": null,
+      "afterSha256": "c36d0f245f973283287b84cf5d9dde08dca1c448d2840c35f536876352b1eb31"
+    },
+    {
+      "path": "src/test/demoFixture.ts",
+      "action": "added",
+      "beforeBytes": 0,
+      "afterBytes": 1357,
+      "beforeSha256": null,
+      "afterSha256": "a4304cd422d3cfdaf76fb673323ec5196ab7d36044254f937155c93d2cafbb44"
+    }
+  ],
+  "reviewedDeclarationsRemoved": 16,
+  "reviewedCssRulesRemoved": 184,
+  "newlyOrphanedDrawerCssRules": [
+    {
+      "path": "src/atlas.css",
+      "line": 1153,
+      "selector": ".map-tool-drawer",
+      "bytes": 70
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1154,
+      "selector": ".map-tool-drawer .tool-drawer-trigger",
+      "bytes": 186
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1164,
+      "selector": ".map-tool-drawer .tool-drawer-trigger[aria-expanded=\"true\"]",
+      "bytes": 84
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1165,
+      "selector": ".map-tool-drawer .tool-drawer-actions",
+      "bytes": 266
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1177,
+      "selector": ".tool-drawer-actions button",
+      "bytes": 188
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1187,
+      "selector": ".tool-drawer-actions button:hover:not(:disabled),\n.tool-drawer-actions button[aria-pressed=\"true\"]",
+      "bytes": 123
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1189,
+      "selector": ".tool-drawer-actions button:disabled",
+      "bytes": 54
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1190,
+      "selector": ".tool-drawer-actions .tool-help-label",
+      "bytes": 56
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1216,
+      "selector": ".map-tool-drawer .tool-drawer-actions",
+      "bytes": 58
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1219,
+      "selector": ".atlas-map.drawer-map.comparing .tool-drawer-actions",
+      "bytes": 101
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1223,
+      "selector": ".drawer-map.comparing .tool-drawer-actions button",
+      "bytes": 78
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1224,
+      "selector": ".drawer-map.comparing .tool-drawer-actions span",
+      "bytes": 66
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1228,
+      "selector": ".map-tool-drawer .tool-drawer-actions",
+      "bytes": 86
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1232,
+      "selector": ".tool-drawer-actions button",
+      "bytes": 56
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1233,
+      "selector": ".tool-drawer-actions span",
+      "bytes": 44
+    }
+  ],
+  "cssRulesRemovedTotal": 199,
+  "removedFileCount": 6,
+  "removedFileLogicalBytes": 32130,
+  "netSourceTestCssByteReduction": 96680,
+  "migrationBeforeRemoval": {
+    "pageHostAndProductionRenderer": 78,
+    "geometryAndProductionRenderer": 19,
+    "mapAdapterFixtures": 28,
+    "logs": "staging logs; all passed before renderer retirement"
+  },
+  "validation": {
+    "typecheck": "passed via npm run build and standalone typecheck",
+    "lint": "passed",
+    "frontend": {
+      "files": 91,
+      "tests": 521,
+      "status": "passed",
+      "command": "npm test -- --reporter=dot"
+    },
+    "python": {
+      "tests": 185,
+      "subtests": 60,
+      "status": "passed",
+      "command": "configured orcacast314 Python -m pytest scripts -q",
+      "warning": "existing Starlette/httpx deprecation"
+    },
+    "build": {
+      "status": "passed",
+      "command": "npm run build",
+      "destination": "dist/ reused",
+      "localDataCopied": false,
+      "retiredViewshedChunkPresent": false,
+      "retiredDemoGeneratorPresent": false,
+      "warning": "existing Vite chunks above 500 kB advisory"
+    },
+    "finalProseChecks": "JSON, affected links/anchors, Knowledge properties and git diff --check",
+    "remainingImportUnreachableFiles": [
+      {
+        "path": "src/data/governanceMemberships.fixture.json",
+        "reason": "used by tests; retained"
+      }
+    ]
+  },
+  "browser": {
+    "status": "passed for scoped acceptance",
+    "delivery": "localhost production preview and development baseline",
+    "desktopViewport": [
+      1280,
+      800
+    ],
+    "narrowViewport": [
+      375,
+      812
+    ],
+    "checked": [
+      "native R6 bathymetry and Insights",
+      "linked comparison and keyboard divider edit 50 to 52",
+      "integrated Viewshed weight map, legend, controls and Insights",
+      "Home light/dark themes",
+      "narrow Home/Health/Viewshed layouts",
+      "Health error/retry",
+      "Relationships native R6 density plot"
+    ],
+    "relationships": {
+      "completePairs": 2365,
+      "eligibleCells": 2445,
+      "excluded": 80,
+      "spearmanDisplayed": -0.07
+    },
+    "runtimeErrorsAfterFreshReload": 0,
+    "viewportOverrideReset": true,
+    "limitations": [
+      "No exhaustive physical mouse-cell picking",
+      "Human remains unavailable because its retained catalog reference is missing",
+      "Not scientific completeness, provider freshness or independent accuracy qualification"
+    ]
+  },
+  "preservation": {
+    "adapterAndArtworkHashes": "matched",
+    "preparedCacheFileIdentity": "matched",
+    "preparedCacheFiles": 1795,
+    "preparedCacheLogicalBytes": 591632433,
+    "scientificSources": "No source acquisitions, source rewrites or producer publications executed; no full Data scan performed."
+  },
+  "environment": {
+    "node": "25.6.1",
+    "typescript": "5.9.3",
+    "vite": "7.2.2",
+    "vitest": "4.0.14",
+    "python": "3.14.6",
+    "pythonEnvironment": "app-configured orcacast314",
+    "fastapi": "0.150.0",
+    "pyarrow": "24.0.0",
+    "h3": "4.4.1"
+  },
+  "sourceRootsRetained": [
+    "../../Data",
+    "public/local-data",
+    "public/assets",
+    "all scientific adapter modules",
+    "package dependencies",
+    "source CLIs and stdin compatibility bridge"
+  ],
+  "knownSourceGap": {
+    "path": "../../Toolkits/toolkit-human/data/delivery/presence-20261025/catalog.json",
+    "status": "missing; observed before CSS removal; qualification preserved"
+  },
+  "outputs": [
+    {
+      "path": "docs/dead-code-review.md",
+      "bytes": 17738,
+      "sha256": "57ad12e2205d7b47a1ab5bf6e89d9d709c9dfcd4aa363ba7b92bf376dae99a36"
+    },
+    {
+      "path": "docs/qa/dead-code-cleanup/relationships.png",
+      "bytes": 104902,
+      "sha256": "e6ddb4105dd429552ff85fdbfc9bcd3aaebcf9e856c6e286664445b75d126ba2"
+    },
+    {
+      "path": "docs/qa/dead-code-cleanup/features.png",
+      "bytes": 94570,
+      "sha256": "90b8f13a08c2673e0eecf7d4a9a56b22fa80cca90411479d44d02c50963c1729"
+    },
+    {
+      "path": "docs/qa/dead-code-cleanup/viewshed.png",
+      "bytes": 137347,
+      "sha256": "308f72fa13ed428182c61fe86258c659c9991f31330299a9fc60f1fe25325a6b"
+    }
+  ],
+  "staging": {
+    "path": "/private/tmp/explorer-cleanup-2026-11-01",
+    "purpose": "small source rollback backups, task-only diff, audit scripts and bounded logs; no bulk datasets",
+    "backupLogicalBytes": 1839202,
+    "expectedStagingPeakBytes": 10000000,
+    "diskAvailableBeforeGiB": 84,
+    "lowestObservedDiskAvailableGiB": 80,
+    "cleanup": "API/frontend/preview stopped, API shutdown completed reader cleanup; small rollback backups/logs retained to protect existing uncommitted work",
+    "files": [
+      {
+        "path": "/private/tmp/explorer-cleanup-2026-11-01/build.log",
+        "bytes": 1146,
+        "sha256": "60488f287e1e2dbc17b4a43b5cd4d5ca91fe4c0118e427cc9b0a656a5106c5d5"
+      },
+      {
+        "path": "/private/tmp/explorer-cleanup-2026-11-01/drawer-css.json",
+        "bytes": 2014,
+        "sha256": "a4cea456aabeea8749e8f5151d8a66363f211cdfb628687c708cc0862188d4ab"
+      },
+      {
+        "path": "/private/tmp/explorer-cleanup-2026-11-01/frontend.log",
+        "bytes": 2304,
+        "sha256": "4cebdbf7e79815c9bfc71d44e16c43859179783841a4d9f1ff2d5820c8a0a645"
+      },
+      {
+        "path": "/private/tmp/explorer-cleanup-2026-11-01/hosted-layer.log",
+        "bytes": 583,
+        "sha256": "45de99d43ceef868d4eee6fc465fbfd65246adc63bf46a5022dd863e5292e834"
+      },
+      {
+        "path": "/private/tmp/explorer-cleanup-2026-11-01/lint.log",
+        "bytes": 51,
+        "sha256": "1be9caa93506e38e2d001d406ed66f3c112d39f1df03238f0dc2da2a9ccd2aa9"
+      },
+      {
+        "path": "/private/tmp/explorer-cleanup-2026-11-01/local-map-migration.log",
+        "bytes": 704,
+        "sha256": "0243cf812b65568ddfdbe3fcc56f61b55d13e70bbe79737515d333d691fdfacb"
+      },
+      {
+        "path": "/private/tmp/explorer-cleanup-2026-11-01/migration.log",
+        "bytes": 923,
+        "sha256": "bf0192e46f666ef0bb03e9297fea46330aeb8817fe2d5a6deb6616873b68472a"
+      },
+      {
+        "path": "/private/tmp/explorer-cleanup-2026-11-01/preview.log",
+        "bytes": 39,
+        "sha256": "ecbd7eb35ac4acd913ff89a5390ee30069b6e910709e5626dc3f8fc34eadb53f"
+      },
+      {
+        "path": "/private/tmp/explorer-cleanup-2026-11-01/python.log",
+        "bytes": 842,
+        "sha256": "1831f70815fbd3bbde85647d129988ce795a061c65a2d1de9f3d120b6d2d534b"
+      },
+      {
+        "path": "/private/tmp/explorer-cleanup-2026-11-01/reachability.json",
+        "bytes": 18337,
+        "sha256": "afeadb3727d5ef6ef23dbef311beb2b98b19be0a39a2c458a0e94fdc70d98c74"
+      },
+      {
+        "path": "/private/tmp/explorer-cleanup-2026-11-01/remove-css.cjs",
+        "bytes": 1016,
+        "sha256": "61bc038012c3890b11e2dc2b9559de18696cd521ccdd6beb4846b77b9639d394"
+      },
+      {
+        "path": "/private/tmp/explorer-cleanup-2026-11-01/remove-declarations.cjs",
+        "bytes": 935,
+        "sha256": "f2ba50443e677c6fe075b646f1d726ce2a20a9fe2ad245ea6c074e31467384cc"
+      },
+      {
+        "path": "/private/tmp/explorer-cleanup-2026-11-01/remove-drawer-css.cjs",
+        "bytes": 1389,
+        "sha256": "488f527aa8e4c5a8e2bc5dd10c827fde5891ac302849f15d9bcd61f28e82b674"
+      },
+      {
+        "path": "/private/tmp/explorer-cleanup-2026-11-01/renderer-migration.log",
+        "bytes": 609,
+        "sha256": "226e06adcc63bc7261d5b887e55d3f4a67e2b204a5ccb0212338449d9b60cf83"
+      },
+      {
+        "path": "/private/tmp/explorer-cleanup-2026-11-01/server.log",
+        "bytes": 104786,
+        "sha256": "029fb6abaa84923d56f756092251fa1c7140a33928bda7005869f89ea61a7b9c"
+      },
+      {
+        "path": "/private/tmp/explorer-cleanup-2026-11-01/simplify-map.cjs",
+        "bytes": 1670,
+        "sha256": "5357527b84268a963c927d76739cfe70fe90b509660b670f3de266e6d56cf685"
+      },
+      {
+        "path": "/private/tmp/explorer-cleanup-2026-11-01/task-changes.patch",
+        "bytes": 248133,
+        "sha256": "2200cae47ad7bbf1684898feabe25ba5c533977110539f708b5cfa794443a086"
+      },
+      {
+        "path": "/private/tmp/explorer-cleanup-2026-11-01/types.log",
+        "bytes": 54,
+        "sha256": "c200f8d95f4b6e2db76f3bc9c5ad576cc8f4c8eceb19f104764ccc7f8bdb2e49"
+      }
+    ]
+  },
+  "publication": {
+    "committed": false,
+    "pushed": false,
+    "deployed": false,
+    "dataPublished": false
+  }
+}

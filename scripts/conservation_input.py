@@ -72,8 +72,8 @@ def combine_conservation(table, metadata):
                  else table.append_column(column, value))
     fields[ASSIGNMENT] = {'definition': DEFINITION, 'units': None, 'membership_schema_version': 1,
         'coverage_reference': GROUP, 'count_field': COUNT, 'missing_reason_field': ASSIGNMENT + '_status',
-        'source_record_context': context, 'derivation': 'Browser-only union of designated and status-qualified reference memberships'}
-    fields[COUNT] = {'definition': 'Browser support count of displayed site/status entries; not designated site Count or unique physical sites',
+        'source_record_context': context, 'derivation': 'Display union of designated and status-qualified reference memberships'}
+    fields[COUNT] = {'definition': 'Display support count of displayed site/status entries; not designated site Count or unique physical sites',
                      'units': 'count', 'missing_reason_field': COUNT + '_status'}
     for column in (ASSIGNMENT, COUNT):
         fields[column + '_status'] = {'definition': 'Combined assignment support; unresolved component absence remains unknown', 'units': None}

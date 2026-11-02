@@ -27,7 +27,7 @@ afterEach(() => vi.unstubAllEnvs());
 
 it("shows a neutral loading state until the geographic renderer loads, without illustrative geometry", async () => {
   vi.stubEnv("VITE_MAPTILER_KEY", "synthetic-test-key");
-  const view = render(<MapCanvas basemap="maptiler" layer={layer} feature="temperature" month={0} />);
+  const view = render(<MapCanvas layer={layer} />);
   expect(screen.getByRole("status")).toHaveTextContent("Loading map");
   expect(view.container.querySelector("svg.map-canvas")).toBeNull();
   expect(screen.queryByText(/VANCOUVER ISLAND|Synthetic|Illustrative/)).not.toBeInTheDocument();
@@ -38,10 +38,10 @@ it("shows a neutral loading state until the geographic renderer loads, without i
 
 it("shows an honest missing-key state for native data rather than an illustrated substitute", () => {
   vi.stubEnv("VITE_MAPTILER_KEY", "");
-  const view = render(<MapCanvas basemap="maptiler" layer={layer} feature="temperature" month={0} />);
+  const view = render(<MapCanvas layer={layer} />);
   expect(screen.getByRole("alert")).toHaveTextContent("Basemap key not configured");
   expect(view.container.querySelector("svg.map-canvas")).toBeNull();
-  view.rerender(<MapCanvas basemap="maptiler" nativeData feature="temperature" month={0} />);
+  view.rerender(<MapCanvas />);
   expect(screen.getByRole("alert")).toHaveTextContent("Basemap key not configured");
   expect(view.container.querySelector("svg.map-canvas")).toBeNull();
 });
@@ -49,7 +49,7 @@ it("shows an honest missing-key state for native data rather than an illustrated
 it("retries a failed geographic renderer without switching to an illustrative map", async () => {
   vi.stubEnv("VITE_MAPTILER_KEY", "synthetic-test-key");
   const user = userEvent.setup();
-  const view = render(<MapCanvas basemap="maptiler" layer={layer} feature="temperature" month={0} />);
+  const view = render(<MapCanvas layer={layer} />);
   await user.click(await screen.findByRole("button", { name: "Simulate basemap failure" }));
   expect(screen.getByRole("alert")).toHaveTextContent("Basemap unavailable");
   expect(view.container.querySelector("svg.map-canvas")).toBeNull();
@@ -57,7 +57,10 @@ it("retries a failed geographic renderer without switching to an illustrative ma
   expect(await screen.findByRole("region", { name: "Geographic map" })).toBeInTheDocument();
 });
 
-it("retains the explicitly requested local demo renderer", () => {
-  render(<MapCanvas basemap="local" feature="temperature" month={0} />);
-  expect(screen.getByLabelText("Illustrative Pacific Northwest map with synthetic H3 values")).toBeInTheDocument();
+it("keeps an empty native map geographic while the first layer is pending", async () => {
+  vi.stubEnv("VITE_MAPTILER_KEY", "synthetic-test-key");
+  const view = render(<MapCanvas />);
+  expect(await screen.findByRole("region", {name:"Geographic map"})).toBeInTheDocument();
+  expect(view.container.querySelector("svg.map-canvas")).toBeNull();
+  expect(screen.queryByText(/Synthetic|Illustrative/)).not.toBeInTheDocument();
 });

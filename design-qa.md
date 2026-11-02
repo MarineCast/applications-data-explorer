@@ -1,5 +1,13 @@
 # Data atlas map redesign QA
 
+> Historical evidence status — 2026-10-24: the 37 screenshots formerly under
+> `docs/qa/coastal-world/` were removed in the approved deferred cleanup, after
+> their associated Home renderers had been retired. References to that directory
+> and its bare screenshot filenames below are historical names, not files still
+> shipped or current validation evidence. Their tracked history remains available
+> in Git. Current QA assets elsewhere are retained. See the
+> [cleanup and test-migration record](docs/cleanup.md).
+
 final result: passed
 
 ## Approved sources and final scope

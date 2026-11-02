@@ -10,6 +10,7 @@ import pyarrow.parquet as pq
 from prepare_seascape import digest
 from governance_memberships import extract_governance_memberships
 from coast_guard_input import combine_coast_guard, coast_guard_features
+from governance_support import restore_support
 from conservation_input import combine_conservation, ASSIGNMENT as CONSERVATION_ASSIGNMENT, GROUP as CONSERVATION_VIEW, CORE_ASSIGNMENT
 
 
@@ -234,6 +235,34 @@ def bindings(root):
             if binding['path'] != name:
                 raise ValueError('Invalid governance catalog path')
             files[name] = binding
+            if digest(root / name) != binding['sha256']:
+                raise ValueError('Governance source checksum mismatch')
+            context = json.loads(pq.read_schema(root / name).metadata[b'governance'])
+            embedded = context.get('embedded_support')
+            if context.get('application_contract', {}).get('version') == 5 and not isinstance(embedded, dict):
+                raise ValueError('Governance v5 requires embedded scientific support')
+            if embedded is not None:
+                if embedded != catalog.get('support_data', {}).get(str(res), {}).get(kind):
+                    raise ValueError('Governance catalog/embedded support binding mismatch')
+                # The product checksum already covers the embedded support bytes;
+                # verify their own binding without adding external dependencies.
+                from governance_support import SUPPORT_KEY, SUPPORT_SCHEMA
+                import hashlib
+                payload = (pq.read_schema(root / name).metadata or {}).get(SUPPORT_KEY)
+                if (context.get('app_only_audit') is not None
+                        or context.get('application_contract', {}).get('version') != 5
+                        or embedded.get('schema') != SUPPORT_SCHEMA
+                        or embedded.get('encoding') != 'zlib_parquet_v1'
+                        or payload is None or hashlib.sha256(payload).hexdigest() != embedded['sha256']):
+                    raise ValueError('Governance embedded support checksum/format mismatch')
+            support = context.get('app_only_audit')
+            if support is not None:
+                if support != catalog.get('audit_data', {}).get(str(res), {}).get(kind):
+                    raise ValueError('Governance catalog/audit binding mismatch')
+                audit = Path(support['path']).resolve()
+                if not Path(support['path']).is_absolute() or audit.is_relative_to(root) or digest(audit) != support['sha256']:
+                    raise ValueError('Governance external audit checksum/path mismatch')
+                files['catalog.json'].setdefault('audit_bindings', []).append(support)
     from prepare_map import verify_files
     verify_files(root, files)
     return files
@@ -263,6 +292,7 @@ def append_governance(exporter, catalog, root):
                 raise ValueError('Static governance has a date column')
             if kind == 'dynamic' and table['date'].null_count:
                 raise ValueError('Dynamic governance has null dates')
+            table, context = restore_support(table, context)
             entries = {n: {
                 'source_column': n, 'family': n.split('__')[0].replace('_', ' ').title(),
                 'unit': {'1': 'fraction', 'count': 'count', 'm': 'm'}.get(e.get('units'), 'source units'),
@@ -363,8 +393,8 @@ def append_governance(exporter, catalog, root):
             if slices:
                 catalog['products'][product_id] = {'axis': 'Date', 'defaultSlice': sorted(slices)[-1], 'slices': slices}
                 catalog['features'].extend(combined_features.values())
-    from prepare_map import verify_files
-    verify_files(root, files)  # Refuse an update overlapping this read.
+    if bindings(root) != files:
+        raise ValueError('Governance changed during read')
 
 
 def prepare_existing(root, output):

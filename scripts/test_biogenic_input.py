@@ -2,10 +2,21 @@ import pytest
 from biogenic_input import biogenic_features, NAMES
 
 
+def test_compact_reef_is_boolean_category_without_mutating_delivered_values():
+    from biogenic_input import anthropogenic_public_values
+    field = dict(id='anthropogenic_static__has_mapped_artificial_reef', column='has_mapped_artificial_reef', family='Anthropogenic', dataset='seascape', kind='numeric', arrowType='int64', qualifiers=['reef_records'], definition='Mapped evidence; false is not absence')
+    actual, = biogenic_features([field])
+    assert actual['kind'] == 'categorical' and actual['categories'] == [0, 1]
+    assert actual['definition'] == field['definition']
+    assert actual['qualifiers'] == ['reef_records']
+    assert anthropogenic_public_values(actual, [0, 1]) == [0, 1]
+    assert biogenic_features([dict(field, dataset='governance')]) == [dict(field, dataset='governance')]
+
+
 def test_family_normalization_preserves_native_identity_units_and_dates():
     fields = [dict(id=c, column=c, name=c, family='Bivalve', dataset='seascape', unit='m2', productId=c, qualifiers=['SOURCE_MAP_DATES_JSON']) for c in NAMES]
     result = biogenic_features(fields)
-    assert len(result) == 4
+    assert len(result) == len(fields)
     assert {f['family'] for f in result} == {'Biogenic Habitats'}
     for old, new in zip(fields, result):
         assert all(new[k] == old[k] for k in ['id','column','unit','productId','qualifiers'])

@@ -7,7 +7,7 @@ import {
   palettes,
 } from "./colorScale";
 import { cellGeoJSON } from "./map";
-import { cells } from "./demo";
+import { cells } from "../test/demoFixture";
 const values = (...numbers: (number | null)[]) =>
   new Map(numbers.map((value, i) => [String(i), value]));
 describe("full-area map scales", () => {
@@ -72,7 +72,7 @@ describe("full-area map scales", () => {
       values: source,
       sourceLabel: "local",
     };
-    const geo = cellGeoJSON("temperature", 0, "all", layer, undefined, scale);
+    const geo = cellGeoJSON(layer, undefined, scale);
     expect(geo.features[0].properties).toMatchObject({
       value: scalar,
       color: colorForScale(scalar, scale),

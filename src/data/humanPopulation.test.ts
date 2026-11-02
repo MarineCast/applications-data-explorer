@@ -58,3 +58,35 @@ it.each([25, 50, 100])("recognizes only the collected public %s km distance quan
 it.each(["population_count", "population_density_per_km2"])("rejects retired public %s", column => {
   expect(populationSupport({dataset: "human", column})).toBeUndefined();
 });
+
+it("classifies compact collected values without requiring removed audit columns", () => {
+  const input=layer();input.qualifiers={};
+  input.values=new Map([...input.values,["missing",null]]);
+  const values=populationScaleValues(input)!;
+  expect(values.get("scale-zero")).toBe(0);
+  expect(values.get("missing")).toBeNull();
+  expect(values.get("high-partial")).toBe(1000);
+  expect(populationSupport({dataset:"human",column:"population_count__coverage_status"})?.quantityColumn).toBe("population_count_collected");
+});
+
+
+it("recognizes renamed count coverage as the same quantity with separate support", () => {
+  const old=populationSupport({dataset:"human",column:"population_count__coverage_status"});
+  const renamed=populationSupport({dataset:"human",column:"population_count_coverage_status"});
+  expect(renamed).toEqual(old);
+  expect(renamed?.coverageIndicator).toBe(true);
+});
+
+
+it.each(["population_count","population_within_25km","population_within_50km","population_within_100km","population_density_per_km2"])("recognizes renamed %s only with producer allocation evidence", column=>{
+  const populationEvidence={method:"area_weighted_collected_sources_missing_as_zero.v1",auditReceipt:true,supportInAudit:true};
+  expect(populationSupport({dataset:"human",column,populationEvidence})?.collected).toBe(true);
+  expect(populationSupport({dataset:"human",column,populationEvidence})?.quantityColumn).toBe(column);
+  expect(populationSupport({dataset:"human",column})).toBeUndefined();
+});
+
+it("uses delivered values for classification when audit evidence is attached",()=>{
+ const input=layer();input.field.populationEvidence={method:"area_weighted_collected_sources_missing_as_zero.v1",auditReceipt:true,supportAvailable:true};
+ input.qualifiers={population_count__available_source_subtotal:[999,999,999]};
+ expect(populationScaleValues(input)).toEqual(new Map([["scale-zero",0],...input.values]));
+});

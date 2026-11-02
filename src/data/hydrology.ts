@@ -1,8 +1,16 @@
+import {decodeStationTemperature} from "./stationTemperature";
+import type {StationTemperature} from "./stationTemperature";
 import {cellToLatLng,getResolution,isValidCell,latLngToCell} from "h3-js";
 import type {Asset,SeascapeCatalog,SeascapeFeature,SeascapeLayer} from "./seascape";
 export const hydrologyMetricIds=["discharge_mean","discharge_mean_7d","discharge_mean_30d","discharge_change_7d","low_flow_duration","high_flow_duration","days_since_flow_pulse","temperature_mean","temperature_max","temperature_7dadm"] as const;
-export type HydrologyMetricId=typeof hydrologyMetricIds[number];
-export interface HydrologyMetric {id:HydrologyMetricId;name:string;family:string;unit:string;definition:string;range:[number,number];available:number;}
+export const causalMetricUnits={causal_discharge_seasonal_mean:"m3/s",causal_discharge_seasonal_p90:"m3/s",causal_discharge_seasonal_anomaly:"m3/s",causal_discharge_seasonal_percentile:"percent",causal_discharge_pulse:"1",causal_days_since_discharge_pulse:"day",causal_reference_samples:"day",causal_reference_years:"year"} as const;
+export type CausalMetricId=keyof typeof causalMetricUnits;
+export const causalMetricIds=Object.keys(causalMetricUnits) as CausalMetricId[];
+export type HydrologyMetricId=typeof hydrologyMetricIds[number]|CausalMetricId;
+export interface CausalDefinition {method:"causal-seasonal-lag1-v1"; identity:string; lag_days:1; window_days:number; min_samples:number; min_years:number; history_years:number; model_eligible:false; event_date_causal:true; operational_availability:string; temporal_support:string; leap_day:string; units:Record<CausalMetricId,string>;}
+export interface HydrologyCausal {definition:CausalDefinition;sha256:string;asOfDates:readonly string[];sourceConditionsSha256:Record<string,string>;dayDefinitions:Record<string,string[]>;}
+export const causalTiming="Output date t uses discharge through provider date t−1. Event-date causality only; historical operational availability is unknown. Research only; model-ineligible. No interpolation or zero filling.";
+export interface HydrologyMetric {id:HydrologyMetricId;name:string;family:string;unit:string;definition:string;range:[number,number];available:number;causal?:boolean;plot?:"line"|"step";}
 export interface HydrologyMouth {mouth_id:string;latitude:number;longitude:number;source:string;cell:string;inStudyGrid:boolean;geometry_role:string;accuracy:string;}
 export interface HydrologySeries {values:readonly(number|null)[];statuses:readonly string[];reasons:readonly(string|null)[];contributorSeries:readonly(string|null)[];dayDefinition?:readonly(string|null)[];flags?:readonly(string|null)[];retrievedAt?:readonly(string|null)[];sourceRelease?:readonly(string|null)[];coverage?:readonly(number|null)[];}
 export interface LowFlowDefinition {method:"historical-p10-linear-interior-v1";quantile:.1;threshold_m3_s:number|null;reference_start:string;reference_end:string;observed_days:number;interpolated_days:number;unfilled_days:number;retrospective:true;model_eligible:false;qualification:string;identity:string;}
@@ -10,7 +18,7 @@ export interface FlowPulseDefinition extends Omit<LowFlowDefinition,"method"|"qu
 export interface HighFlowDefinition extends Omit<LowFlowDefinition,"method"|"quantile"> {method:"historical-p90-high-duration-linear-interior-v1";quantile:.9;}
 export interface HydrologyRiver {id:string;name:string;stationId:string;stationName:string;provider:string;gaugeCoordinates:[number,number];gaugeRationale:string;mouths:readonly HydrologyMouth[];mouthStatus:string;representation:string;manifestSha256:string;metadataSha256:string;availability:string;temperatureMissingness:string;thresholds:{high_flow_threshold_m3_s?:number|null;low_flow_threshold_m3_s:number|null;pulse_threshold_m3_s:number|null;qualification:string};highFlowDefinition?:HighFlowDefinition;lowFlowDefinition?:LowFlowDefinition;flowPulseDefinition?:FlowPulseDefinition;sourceOutcomes:Record<string,string>;series:Record<HydrologyMetricId,HydrologySeries>;}
 export interface HydrologyCatalog {version:1;status:"qualified_local_product";snapshot:string;rows:number;data:Asset;source:{catalogSha256:string;studySha256:string;registrySha256:string;productIdentity:string;temporalBasis:"provider_daily";sourcePath:string;};}
-export interface HydrologyData {catalog:HydrologyCatalog;dates:readonly string[];grid:readonly string[];rivers:readonly HydrologyRiver[];metrics:readonly HydrologyMetric[];}
+export interface HydrologyData {stationTemperature?:StationTemperature;stationTemperatureUnavailable?:string;causal?:HydrologyCausal;causalUnavailable?:string;catalog:HydrologyCatalog;dates:readonly string[];grid:readonly string[];rivers:readonly HydrologyRiver[];metrics:readonly HydrologyMetric[];}
 export const hydrologyCaveat="Upstream gauge measurements associated with each river. Bubbles mark approximate mouth references, not measurements at the mouth or a spatial influence surface. Distributary allocation is unknown.";
 export const hydrologyBackground="#cbd4d6",hydrologyMissing="#b86c61",hydrologyShared="#626b8b";
 const object=(v:unknown):v is Record<string,unknown>=>v!==null&&typeof v==="object"&&!Array.isArray(v);
@@ -30,8 +38,17 @@ export function decodeHydrology(payload:unknown,catalog:HydrologyCatalog):Hydrol
  if(dates.some((d,i)=>i>0&&Date.parse(d)-Date.parse(dates[i-1])!==86400000))return fail("daily calendar gap/duplicate");
  if(!Array.isArray(payload.grid)||payload.grid.some(c=>!string(c)||!isValidCell(c)||getResolution(c)!==6)||new Set(payload.grid).size!==payload.grid.length)return fail("study R6 registry");
  const grid=payload.grid as string[],support=new Set(grid);
- if(!Array.isArray(payload.metrics)||!payload.metrics.length||payload.metrics.some(m=>!object(m)||!hydrologyMetricIds.includes(m.id as HydrologyMetricId)||!string(m.name)||!string(m.unit)||!string(m.family)||!string(m.definition)||!Number.isSafeInteger(m.available)||(m.available as number)<1||!Array.isArray(m.range)||m.range.length!==2||m.range.some(v=>typeof v!=="number"||!Number.isFinite(v))||m.range[0]>m.range[1]))return fail("available metric contract");
+ if(!Array.isArray(payload.metrics)||!payload.metrics.length||payload.metrics.some(m=>!object(m)||![...hydrologyMetricIds,...causalMetricIds].includes(m.id as HydrologyMetricId)||!string(m.name)||!string(m.unit)||!string(m.family)||!string(m.definition)||!Number.isSafeInteger(m.available)||(m.available as number)<(m.causal===true?0:1)||!Array.isArray(m.range)||m.range.length!==2||m.range.some(v=>typeof v!=="number"||!Number.isFinite(v))||m.range[0]>m.range[1]))return fail("available metric contract");
  if(new Set(payload.metrics.map(m=>(m as HydrologyMetric).id)).size!==payload.metrics.length)return fail("duplicate metric");
+ const causal=payload.causal;
+ const causalMetrics=payload.metrics.filter(m=>causalMetricIds.includes((m as HydrologyMetric).id as CausalMetricId)) as HydrologyMetric[];
+ if(causal){
+  if(!object(causal)||!sha(causal.sha256)||!object(causal.definition)||!object(causal.sourceConditionsSha256)||!object(causal.dayDefinitions)||!Array.isArray(causal.asOfDates)||causal.asOfDates.length!==dates.length||causal.asOfDates.some((d,i)=>!realDate(d)||Date.parse(dates[i])-Date.parse(d)!==86400000))return fail("causal dates/binding");
+  const d=causal.definition;
+  if(d.method!=="causal-seasonal-lag1-v1"||!sha(d.identity)||d.lag_days!==1||d.model_eligible!==false||d.event_date_causal!==true||!string(d.operational_availability)||!d.operational_availability.startsWith("unknown")||!string(d.temporal_support)||!string(d.leap_day)||!["window_days","min_samples","min_years","history_years"].every(k=>Number.isSafeInteger(d[k])&&(d[k] as number)>=0)||!object(d.units)||causalMetricIds.some(id=>(d.units as Record<string,unknown>)[id]!==causalMetricUnits[id]))return fail("causal method qualification");
+  if(causalMetrics.length!==8||causalMetrics.some(m=>m.causal!==true||m.unit!==causalMetricUnits[m.id as CausalMetricId]||!["line","step"].includes(m.plot??"")))return fail("causal metric contract");
+ }else if(causalMetrics.length)return fail("causal metrics without companion");
+ if(payload.causalUnavailable!=null&&!string(payload.causalUnavailable))return fail("causal availability message");
  if(!Array.isArray(payload.rivers)||!payload.rivers.length)return fail("river roster");
  const rivers=payload.rivers.map(raw=>{
   if(!object(raw)||!["id","name","stationId","stationName","provider","gaugeRationale","mouthStatus","representation","availability","temperatureMissingness"].every(k=>string(raw[k]))||!sha(raw.manifestSha256)||!sha(raw.metadataSha256)||!object(raw.series)||!object(raw.thresholds)||!object(raw.sourceOutcomes))return fail("river identity");
@@ -41,11 +58,15 @@ export function decodeHydrology(payload:unknown,catalog:HydrologyCatalog):Hydrol
   if(!Array.isArray(raw.mouths)||!raw.mouths.length||raw.mouths.some(m=>!object(m)||!["mouth_id","source","geometry_role","accuracy"].every(k=>string(m[k])&&Boolean(m[k]))||typeof m.latitude!=="number"||typeof m.longitude!=="number"||!Number.isFinite(m.latitude)||!Number.isFinite(m.longitude)||Math.abs(m.latitude)>90||Math.abs(m.longitude)>180||m.cell!==latLngToCell(m.latitude,m.longitude,6)||m.inStudyGrid!==support.has(m.cell as string)))return fail("exact unsnapped mouth reference");
   if(new Set(raw.mouths.map(m=>(m as HydrologyMouth).mouth_id)).size!==raw.mouths.length)return fail("duplicate mouth identity");
   const series={} as Record<HydrologyMetricId,HydrologySeries>;
-  for(const metric of hydrologyMetricIds){
+  for(const metric of [...hydrologyMetricIds,...(causal?causalMetricIds:[])]){
    const packed=raw.series[metric];if(!object(packed))return fail("missing metric calendar");
    const columns=Object.fromEntries(Object.entries(packed).map(([key,value])=>[key,unpack(value,dates.length)]));
    if(!columns.values||!columns.statuses||!columns.reasons||!columns.contributorSeries||columns.values.some(v=>v!==null&&(typeof v!=="number"||!Number.isFinite(v)))||columns.statuses.some(v=>!string(v))||["reasons","contributorSeries","flags","retrievedAt","sourceRelease","dayDefinition"].some(k=>columns[k]?.some(v=>v!==null&&!string(v)))||columns.coverage?.some(v=>v!==null&&(typeof v!=="number"||!Number.isFinite(v)||v<0||v>1)))return fail("metric values/status/provenance");
    if(columns.values.some((v,i)=>v!==null&&columns.statuses[i]!=="valid"))return fail("non-null unsupported value");
+   if(causalMetricIds.includes(metric as CausalMetricId)){
+    if(columns.values.some((v,i)=>v===null?columns.statuses[i]!=="unavailable"||!string(columns.reasons[i]):columns.reasons[i]!==null))return fail("causal support status");
+    if(columns.values.some(v=>typeof v==="number"&&((metric==="causal_discharge_pulse"&&v!==0&&v!==1)||(metric==="causal_discharge_seasonal_percentile"&&(v<0||v>100))||(["causal_days_since_discharge_pulse","causal_reference_samples","causal_reference_years"].includes(metric)&&(!Number.isSafeInteger(v)||v<0)))))return fail("causal flag/count range");
+   }
    series[metric]=columns as unknown as HydrologySeries;
   }
   return {...raw,series} as unknown as HydrologyRiver;
@@ -53,7 +74,12 @@ export function decodeHydrology(payload:unknown,catalog:HydrologyCatalog):Hydrol
  if(new Set(rivers.map(r=>r.id)).size!==rivers.length)return fail("duplicate river");
  if(rivers.some(r=>!r.highFlowDefinition))return fail("missing relative high-flow definition");
  for(const key of ["lowFlowDefinition","flowPulseDefinition","highFlowDefinition"] as const)if(rivers.some(r=>r[key])&&rivers.some(r=>!r[key]))return fail("mixed relative flow methods");
- return {catalog,dates,grid,rivers,metrics:payload.metrics as HydrologyMetric[]};
+ if(causal){
+  const evidence=causal as unknown as HydrologyCausal;
+  if(Object.keys(evidence.sourceConditionsSha256).length!==rivers.length||rivers.some(r=>!sha(evidence.sourceConditionsSha256[r.id])||!Array.isArray(evidence.dayDefinitions[r.id])||evidence.dayDefinitions[r.id].some(v=>!string(v))))return fail("causal source roster");
+  for(const metric of causalMetrics)if(rivers.reduce((n,r)=>n+r.series[metric.id].values.filter(v=>v!==null).length,0)!==metric.available)return fail("causal available count");
+ }
+ return {stationTemperature:decodeStationTemperature(payload.stationTemperature),stationTemperatureUnavailable:typeof payload.stationTemperatureUnavailable==="string"?payload.stationTemperatureUnavailable:undefined,catalog,dates,grid,rivers,metrics:payload.metrics as HydrologyMetric[],causal:causal?causal as unknown as HydrologyCausal:undefined,causalUnavailable:payload.causalUnavailable as string|undefined};
 }
 export async function loadHydrologyData():Promise<HydrologyData|undefined>{
  const response=await fetch("/local-data/hydrology/catalog.json",{cache:"no-store"});
@@ -66,10 +92,14 @@ export async function loadHydrologyData():Promise<HydrologyData|undefined>{
 }
 export function hydrologyRiversAtCell(data:HydrologyData,cell?:string){return cell?data.rivers.filter(r=>r.mouths.some(m=>m.cell===cell)):[];}
 export const hydrologyDateLabel=(day:string)=>new Intl.DateTimeFormat("en",{timeZone:"UTC",year:"numeric",month:"short",day:"numeric"}).format(new Date(day+"T00:00:00Z"));
-export const hydrologyUnit=(unit:string)=>unit==="m3/s"?"m³/s":unit==="degC"?"°C":unit==="day"?"days":unit;
-export function hydrologyReason(reason:string|null|undefined,status?:string){return reason==="not_requested"?"Not collected / no qualified source in this product":reason==="interpolated_flow_input"?"Estimated from linearly interpolated flow":reason==="streak_includes_interpolated_flow"?"Streak includes interpolated flow":reason==="pulse_history_includes_interpolated_flow"?"Pulse history includes interpolated flow":reason?.replaceAll("_"," ")??(status==="valid"?"Available":"Unavailable");}
+export const hydrologyUnit=(unit:string)=>unit==="m3/s"?"m³/s":unit==="degC"?"°C":unit==="day"?"days":unit==="year"?"years":unit==="percent"?"%":unit==="1"?"0/1":unit;
+export const hydrologyMetricUnit=(metric:HydrologyMetric)=>metric.id==="causal_reference_samples"?"samples (provider days)":hydrologyUnit(metric.unit);
+export function hydrologyReason(reason:string|null|undefined,status?:string){
+ const causalReasons:Record<string,string>={insufficient_reference_support:"Warmup / insufficient seasonal reference",as_of_discharge_unavailable:"As-of discharge unavailable",previous_day_unavailable:"Previous-day discharge unavailable; crossing unknown",pulse_history_unknown:"Pulse history unknown; no witnessed crossing since reset"};
+ if(reason&&causalReasons[reason])return causalReasons[reason];
+ return reason==="not_requested"?"Not collected / no qualified source in this product":reason==="interpolated_flow_input"?"Estimated from linearly interpolated flow":reason==="streak_includes_interpolated_flow"?"Streak includes interpolated flow":reason==="pulse_history_includes_interpolated_flow"?"Pulse history includes interpolated flow":reason?.replaceAll("_"," ")??(status==="valid"?"Available":"Unavailable");}
 export function withHydrology(catalog:SeascapeCatalog,data:HydrologyData):SeascapeCatalog{
- const features:SeascapeFeature[]=data.metrics.map(m=>({id:`HYDROLOGY__${m.id}`,column:m.id,dataset:"hydrology",resolution:6,family:m.family,name:m.name,unit:hydrologyUnit(m.unit),range:m.range,available:m.available,rows:data.rivers.length,kind:"numeric",role:"upstream_gauge_proxy_at_mouth_reference",qualifiers:[],sourceRelease:data.catalog.source.productIdentity,sourcePath:"Hydrology/*/conditions.parquet + features.parquet",sourceSha256:data.catalog.source.catalogSha256,definition:m.definition,modelingEligibility:"Research gauge proxy; mouth allocation and ecological thresholds unvalidated",arrowType:"double"}));
+ const features:SeascapeFeature[]=data.metrics.map(m=>({id:`HYDROLOGY__${m.id}`,column:m.id,dataset:"hydrology",resolution:6,family:m.family,name:m.name,unit:hydrologyMetricUnit(m),range:m.range,available:m.available,rows:data.rivers.length,kind:"numeric",role:"upstream_gauge_proxy_at_mouth_reference",qualifiers:[],sourceRelease:data.catalog.source.productIdentity,sourcePath:m.causal?"Hydrology/causal.parquet":"Hydrology/*/conditions.parquet + features.parquet",sourceSha256:m.causal?data.causal!.sha256:data.catalog.source.catalogSha256,definition:m.definition+(m.causal?" "+causalTiming:""),modelingEligibility:m.causal?"research_only; model_eligible=false; historical operational availability unknown":"Research gauge proxy; mouth allocation and ecological thresholds unvalidated",arrowType:"double"}));
  return {...catalog,hydrology:data,datasets:{...catalog.datasets,hydrology:{name:"Hydrology",release:"Native daily river gauges",status:"qualified per-river products",manifestSha256:data.catalog.source.catalogSha256,limitations:hydrologyCaveat}},features:[...catalog.features,...features]};
 }
 export function hydrologyLayer(catalog:SeascapeCatalog,field:SeascapeFeature,day:string):SeascapeLayer{
@@ -84,7 +114,7 @@ export function hydrologyLayer(catalog:SeascapeCatalog,field:SeascapeFeature,day
  return {id:field.id,name:field.name,unit:field.unit,resolution:6,range:field.range,cells,values,rawValues:values,missingColor:hydrologyMissing,cellAppearance:appearance,index:new Map(ids.map((id,i)=>[id,i])),field,catalog,qualifiers:{"Map support":support,"Source status":status,"Source reason":reason},sourceLabel:hydrologyCaveat,slice:{axis:"Native provider date",value:day,label:hydrologyDateLabel(day)}};
 }
 /** Paths explicitly restart after every missing day; no interpolation or gap bridge. */
-export function hydrologyChartPath(values:readonly(number|null)[],width=242,height=110,range?:readonly[number,number],baseline=132){
+export function hydrologyChartPath(values:readonly(number|null)[],width=242,height=110,range?:readonly[number,number],baseline=132,step=false){
  const available=values.filter((v):v is number=>v!==null);if(!available.length)return "";const [min,max]=range??[Math.min(...available),Math.max(...available)];
- return values.map((v,i)=>v===null?"":`${i>0&&values[i-1]!==null?"L":"M"}${(48+i/Math.max(1,values.length-1)*width).toFixed(2)},${(baseline-(max===min?.5:(v-min)/(max-min))*height).toFixed(2)}`).join(" ");
+ return values.map((v,i)=>v===null?"":`${i>0&&values[i-1]!==null?(step?"H":"L"):"M"}${(48+i/Math.max(1,values.length-1)*width).toFixed(2)}${i>0&&values[i-1]!==null&&step?"V":","}${(baseline-(max===min?.5:(v-min)/(max-min))*height).toFixed(2)}`).join(" ");
 }

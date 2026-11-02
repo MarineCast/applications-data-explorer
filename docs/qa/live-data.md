@@ -8,6 +8,15 @@ The current Seascape folder includes an independently retained `research/` direc
 
 `Data/viewshed/READINESS.json` still declares no completed pair product. Its retained qualified pilot remains available. A delivered `Data/viewshed/runtime.json` with the producer's source/model metadata and land/water/pair Parquets is detected automatically; matching `components/` weights are supported. Explicit server-only `VIEWSHED_PILOT` and `VIEWSHED_COMPONENTS` can select another completed output. An incomplete new delivery fails rather than reviving old weights. No visibility weights are inferred from land-source geometry alone.
 
+## HTTP service update — 2026-10-25
+
+The former Vite-managed Python bridge is superseded by the persistent FastAPI
+layer service. Source adapters, same-origin layer URLs, provenance, native support
+and zero/null semantics remain in place. Vite dev and built preview proxy that
+service; the single-command launcher starts both processes. The checks below are
+historical. Current transport, performance and source-parity evidence is recorded
+in [FastAPI layer QA](fastapi-layers.md).
+
 ## Verification
 
 - TypeScript and ESLint passed; 376 frontend tests passed in 72 files.
@@ -20,3 +29,12 @@ The current Seascape folder includes an independently retained `research/` direc
 Evidence, screenshots, source hashes and bounded test logs: `/Users/tylerstevenson/Documents/Codex/2026-10-16/task-7/live-source-work/`. The final actual map screenshot is `evidence/human-live-map.png`; numerical parity is `evidence/actual-data-parity.json`. Synthetic test/preview servers on 5187/5188 were stopped; the existing app on 5173 remains running.
 
 The first read of a changed domain waits for its existing exact-value validation/encoding; a changed multi-year product can take longer than the two-second detection interval. The map shell stays mounted while its layer loads. Unsupported toolkit domains remain unavailable until an app reader is integrated.
+
+## Review-note compatibility — 2026-10-24
+
+The read-only flat Seascape adapter now tolerates adjacent text/Markdown review
+notes while retaining catalog-bound product validation and naming unexpected
+scientific files. Current Features and Relationships were verified against the
+retained Parquets; exact scope, selected native-value readback, independently
+matched statistics and software checks are in the
+[reader fix record](seascape-reader.md).

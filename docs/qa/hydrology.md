@@ -160,3 +160,154 @@ and influence readback. Source catalog SHA-256:
 All 48 original river files remain byte-identical. The rebuilt influence product
 preserves all six original logical factor arrays and its retrospective/model-ineligible
 flags. Native-browser visual QA was not rerun for the roster/color additions.
+
+
+## Causal seasonal discharge — 2026-10-26
+
+Hydrology → Family → Causal discharge exposes seasonal mean/P90, anomaly,
+percentile, pulse, pulse age, reference samples and years. Select an approximate
+mouth marker or overview river for upstream-gauge history. Metric/date selection
+stays synchronized with the multi-river panel; pulse/count plots use steps.
+
+The reader holds the producer publication lock and validates catalog binding,
+checksum, source status/hashes, schema, river/station/date/as-of keys, definitions,
+units and support/status/null rules. Missing/stale companions disable causal
+choices with a notice while native features remain usable.
+
+Output date t uses discharge through t−1 in native provider dates. References use
+up to ten completed prior years, ±15 seasonal days, minimum 60 samples/three
+years. Warmup and gaps remain unavailable; support counts can be zero. Historical
+operational availability is unknown; these metrics remain model-ineligible.
+The app does no numerical recomputation, interpolation or H3 expansion.
+
+Validation: 55 targeted Python tests, 108 frontend tests, ESLint, TypeScript and
+production build passed (existing chunk-size warning). Actual API readback matched
+all 519,760 causal rows exactly across ten rivers/6,497 dates: values/nulls,
+statuses/reasons and dates/as-of keys. Rendered browser QA verified eight choices,
+Fraser/Columbia selection, pulse steps, first-day warmup and zero reference counts.
+Evidence: task-3/hydrology-app-validation.json and hydrology-causal.jpg under
+/Users/tylerstevenson/Documents/Codex/2026-10-26. No data edits or deployment.
+
+## Independent Qualark temperature station — 2026-10-26
+
+Hydrology's layer panel now lists **Independent water-temperature stations**.
+Choose **Fraser River at Qualark** to focus its actual published WGS84 location
+and open its inspector, or click the orange map node. This is DFO-QUALARK at
+49.5328138889, −121.4224083333, distinct from the WSC Hope discharge station and
+approximate Fraser mouth. Existing river-mouth markers remain unchanged.
+
+The inspector displays reported daily mean °C, a native-date input, an explicit
+latest-observation button, and a calendar-spaced dot chart. It never connects
+absent intervals or substitutes the latest observation for the selected date.
+All 217 retained observations and source provenance pass through unchanged.
+The extension preserves the original 101 rows and adds 116 dates: one each in
+2009–2011 and 113 across 2012–2017. These are sparse report samples, not full
+year histories; 2018–2022 remain absent. Latest is 2026-09-20,
+16.1°C; the default river date may have no station observation and says so.
+Native timezone/averaging boundaries and provider approval are unverified;
+historical operational availability is unknown. Model eligibility remains false.
+Published station coordinates are not a current sensor survey. Source attribution,
+report date, retrieval time, quality flags and rights remain available in details.
+
+The station companion is independently validated under the shared producer lock:
+checksum/size, exact schema, catalog/metadata identity, station/river/statistic/
+date keys, units and sparse support. Missing/stale companions disable only the
+station display, leaving native/causal river metrics intact. Interrupted station
+transactions block a mixed-generation read. No H3 coverage, grid relocation,
+interpolation, source acquisition or producer edits are performed. Only verified
+Qualark is shown; inaccessible Ecology candidates have no placeholder data nodes.
+
+Final regression: 524 frontend tests across 90 files; 38 relevant backend tests,
+including the four station tests rerun against the extended catalog. Lint, types
+and build pass. Exact API comparison covers all 217 rows and provenance fields.
+
+## Ecology station expansion — 2026-10-28
+
+Hydrology's independent temperature station controls enumerate the published
+station catalog. The current companion contains Qualark (217 observations),
+Puyallup ECOLOGY-10A040 (842 daily means, 2023-11-15–2026-03-22), and
+Snohomish ECOLOGY-07A089 (1,077 daily means, 2023-07-14–2026-10-27).
+Open an orange station control or its actual-location marker. The date input,
+latest-observation action, and observation dots retain provider dates; absent
+dates remain unavailable. Puyallup has 17 internal absent days and Snohomish 125.
+
+Ecology dates begin at midnight fixed PST (UTC−08:00), including summer; the app
+does not reinterpret them as daylight-saving Pacific local dates or UTC dates.
+Selected readings visibly disclose provisional, edited, or unchecked status.
+All Ecology values remain unapproved; `valid` means parser acceptance only.
+Snohomish has 27 unchecked readings. Raw flags and provenance remain available.
+
+Ecology station pages do not explicitly identify a coordinate datum or sensor
+relocation history. The consumer accepts this explicit qualification and displays
+published latitude/longitude without claiming WGS84. Qualark's documented datum
+and its unknown daily timezone remain unchanged. No station is moved to a river
+mouth, discharge gauge, or H3 cell; no station histories are mixed or interpolated.
+
+The 2,136-row product and checksum-bound HTTP response matched exactly. Tests
+cover the three actual station identities, native dates, quality flags, sparse
+dots, missing/stale companion fallback, and existing native/causal river views.
+
+
+## Elwha station acceptance — 2026-10-29
+
+Hydrology's independent orange station controls now include ECOLOGY-EIM-18B070,
+ELWHA RIVER NEAR PORT ANGELES, at its transformed WGS84 station coordinates
+48.065411269954744, -123.57773005525759. Open the control or actual-location
+marker and choose Daily mean, Daily minimum or Daily maximum. Each statistic
+has 303 native PST dates from 2009-06-19 through 2012-09-19: 909 observations,
+not 909 different days. Markers use daily mean. The panel preserves the source
+caveat “Starting to pool”, reviewed-not-model-ready qualification, coordinate
+transformation/accuracy and source provenance. Fixed PST is not DST Pacific time.
+
+The current 3,045-row product (SHA256
+`ec07d2b051e99a01ff0ba6b63937eaf94eaff5de22c10b7877244164388b454b`)
+and checksum-bound HTTP response matched every source row exactly. Counts are
+Qualark 217, Puyallup 842, Snohomish 1,077 and Elwha 909. The 27 unchecked
+Snohomish readings remain disclosed. No Skokomish temperature import is assumed.
+
+Rendered acceptance verified Elwha's actual marker, all three statistics on
+2009-06-19 (10.5979/10.3/10.9 °C mean/min/max), latest mean/max on 2012-09-19
+(11.712/13.449 °C), unavailable 2010-01-01 and 2026-10-29, and 303 chart dots
+with no connecting paths. The three earlier stations retained their separate
+identities, latest readings and qualifiers. Tests: 55 focused frontend and 20
+Hydrology backend tests passed, including missing/stale companion fallback;
+lint, type compilation and production build passed. A follow-up build checked
+the small statistic/date control spacing repair. No source data was changed.
+
+The unrelated Human source warning remains independent of Hydrology: its bound
+external catalog is unavailable. This acceptance neither repairs that producer
+binding nor claims current Human data validation.
+
+## Skokomish fifth-station acceptance — 2026-10-29
+
+The existing dynamic station reader and controls accept ECOLOGY-EIM-16A070,
+SKOKOMISH RIVER NEAR POTLATCH, without a runtime or schema change. Choose its
+orange Hydrology station control or actual-location marker, then Daily mean,
+Daily minimum or Daily maximum. Its WGS84 coordinates are 47.31000618128145,
+-123.17665889452056; source NAD83(HARN), ±30 m accuracy and transformation
+qualifications remain inspectable. Dates use fixed PST/GMT-8 and values use °C.
+
+The current product contains 5,301 observations and matches SHA256
+`0b53ab51df95498b222ecda883cc7a7514de689b386625f1f0d99283074520ec`.
+Every checksum-bound HTTP observation and station metadata entry matched the
+published source exactly. Skokomish adds 2,256 observations across 752 dates,
+2009-06-19–2017-09-13, with 752 values for each statistic. Its 2,257 absent dates
+remain absent. Reviewed daily records are not model certification. Skokomish's
+own quality and source flags are retained; Elwha's pooling caveat is not copied.
+All 3,045 earlier observations remain included, including Snohomish's 27 unchecked
+readings. The current station set is Qualark, Snohomish, Puyallup, Elwha and Skokomish.
+
+Focused regression: 56 frontend tests and 20 Hydrology backend tests passed,
+including actual source counts, coordinates, statistic selection, quality and
+missing/stale companion behavior. Lint, type compilation, production build and
+`git diff --check` passed. Only tests, their bounded first/last-date fixture and
+this QA note changed for Skokomish; producer data and runtime behavior were unchanged.
+
+Rendered acceptance passed for the fifth station control and actual orange map
+marker. On 2009-06-19, mean/minimum/maximum showed 11.01/9.69/13.2 °C;
+2017-09-13 showed latest mean 10.5004 °C and maximum 11.953 °C. A winter gap
+(2010-01-01) and current date (2026-10-29) stayed unavailable. The chart contained
+752 dots with no connecting paths. All five station controls remained present.
+The fresh preview required initial catalog warmup and one basemap retry; the
+successful marker check used the geographic basemap. Human's unrelated missing
+catalog warning remained visible. Owned preview and browser tab were closed.

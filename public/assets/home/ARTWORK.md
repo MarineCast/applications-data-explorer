@@ -1,8 +1,20 @@
 # Home artwork provenance
 
+## Current retained assets — 2026-10-24
+
+Home uses `salish-sea-preview.png` and `salish-sea-night-soft.png`. The original
+`salish-sea-static.webp` is retained for reverting. Three.js animates the current
+background; the HYG catalog and its attribution remain in `src/data`.
+
+The approved cleanup removed the unused original night PNG, historical map/wave
+images, Barlow font and its accompanying license, Blender files/generators, and
+retired scene assets. Their generation history below is historical provenance,
+not a list of files still shipped. Historical QA evidence remains unchanged.
+See the [cleanup record](../../../docs/qa/cleanup.md).
+
 ## Night background (2026-10-16)
 
-Dark mode uses `salish-sea-night.png`, generated with the built-in Image Gen tool
+Dark mode originally used `salish-sea-night.png` (removed 2026-10-24), generated with the built-in Image Gen tool
 from the approved daytime preview. Source output: `exec-de3fd34b-e5ca-4501-8bb9-4836bb9ae86f.png`.
 The edit changes lighting to moonlit night while retaining the framing and landscape
 layout. The same water, cloud, mist and restrained canopy animation is applied.
@@ -50,7 +62,7 @@ Source: the user-selected MarineCast home reference, Library `libfile_6b7470f253
 
 `marinecast-wave.png` is an Image Gen extraction of the supplied wave mark, reduced to 256 × 128 with transparent alpha. Original generation: `generated_images/exec-4feaddfe-78a4-4fb2-bd95-6c72b2132057.png` in the task workspace.
 
-The wordmark is editable HTML using self-hosted [Barlow Condensed](https://fonts.google.com/specimen/Barlow+Condensed), weight 600. The font is distributed under the adjacent `OFL.txt`, copied from the official Google Fonts repository. Navigation symbols use the existing Lucide icon library.
+The historical wordmark used self-hosted [Barlow Condensed](https://fonts.google.com/specimen/Barlow+Condensed), weight 600. The font was distributed with `OFL.txt` from the official Google Fonts repository; both unused files were removed together on 2026-10-24. Navigation symbols use the existing Lucide icon library.
 
 ## Exact background generation prompt
 
@@ -82,8 +94,8 @@ freezes the animation. Tree distortion has been removed.
 
 ## Live northern chart
 
-The decorative constellation shader is no longer enabled. `LiveNorthernSky`
-provides a separate, explicitly north-facing azimuth/altitude chart for a fixed
+The decorative constellation shader is no longer enabled. The retired `LiveNorthernSky` component
+provided a separate, explicitly north-facing azimuth/altitude chart for a fixed
 observer at 48.55 N, 123.08 W (San Juan Islands), using the current browser clock
 and refreshing every 15 seconds. Pacific local time is displayed. The chart
 includes 19 approximate bright-star J2000 positions, precessed to date using
@@ -101,7 +113,7 @@ The live chart panel is no longer mounted on Home. The night image now has an
 unlabeled star overlay with the Big Dipper and Polaris pattern, plus a sparse
 faint decorative star field. Cloud brightness and the sky mask limit visibility.
 Mouse proximity adds gentle twinkle. This is scenic composition, not a calibrated
-current-time sky; the unused chart implementation is retained separately.
+current-time sky; the unused chart implementation was removed on 2026-10-24; shared sky transforms remain in use.
 
 ## Catalog-based scenic sky (current)
 

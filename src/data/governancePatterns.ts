@@ -79,6 +79,3 @@ export function stripeImage(colors: readonly string[]) {
   }
   return {width,height,data};
 }
-export function stripeBackground(colors: readonly string[]) {
-  return `repeating-linear-gradient(135deg, ${colors.flatMap((color,i) => [`${color} ${i*8}px`,`${color} ${(i+1)*8}px`]).join(", ")})`;
-}

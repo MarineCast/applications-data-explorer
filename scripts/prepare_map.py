@@ -152,6 +152,8 @@ def prepare(seascape, governance, output, human=None):
         if digest(Path(binding['absolute_path'])) != binding['sha256']:
             raise ValueError('Sidecar checksum mismatch')
     source_bindings = {'seascape': manifest_hash, 'governance': governance_files, 'governance_reader': digest(Path(__file__).with_name('governance_input.py')), 'governance_memberships': digest(Path(__file__).with_name('governance_memberships.py')), 'sidecars': sidecars, 'exporter': digest(Path(__file__)), 'helpers': digest(Path(__file__).with_name('prepare_seascape.py'))}
+    source_bindings['governance_support'] = digest(Path(__file__).with_name('governance_support.py'))
+    source_bindings['governance_names'] = digest(Path(__file__).with_name('governance_names.py'))
     snapshot_id = hashlib.sha256(json.dumps(source_bindings, sort_keys=True).encode()).hexdigest()
     output.mkdir(parents=True, exist_ok=True)
     snapshot = output / snapshot_id

@@ -1,5 +1,12 @@
 # Viewshed app integration — 2026-10-11
 
+Historical standalone-renderer QA. The standalone geographic/SVG renderers and
+`VITE_BASEMAP_STYLE_URL` override were retired in the approved
+[2026-11-01 cleanup](../dead-code-review.md#completed-cleanup--2026-11-01). Current
+Viewshed uses the shared Features MapTiler map. Retained producer data, clipped
+roles and original weights are unchanged. The observations below describe the
+earlier interface, not current acceptance.
+
 The Viewshed page consumes the completed regional pilot, with a full-page map and a collapsed Settings toggle. Land source clicks load saved per-source target scores; Target view shows the equal mean of all source cells. A floating target inspector retains nullable complete scores, lower/upper bounds, uncertainty and spatial support. Settings contains mode, source, display metric, keyboard target selection and provenance; Escape closes the panel and returns focus to its toggle.
 
 ## Source and numerical evidence

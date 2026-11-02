@@ -7,6 +7,9 @@ const anthropogenicNames: Record<string, string> = {"AQUACULTURE_MAPPED_POSITIVE
 const anthropogenicDefinitions: Record<string, string> = {"AQUACULTURE_MAPPED_POSITIVE_EVIDENCE": "True means a qualified mapped aquaculture point intersects this native cell. This is mapped presence, not footprint area, activity or regulatory growing-area classification. False means no mapped positive evidence, including unknown values filled False by the requested public-display policy. False does not establish ecological or physical absence. Original nullable evidence and source coverage/QC are retained internally.", "ARTIFICIAL_REEF_MAPPED_POSITIVE_EVIDENCE": "True means mapped artificial-reef inventory evidence intersects this native cell. It does not establish present activity or comprehensive reef coverage. False means no mapped positive evidence, including unknown values filled False by the requested public-display policy. False does not establish ecological or physical absence. Original nullable evidence and source coverage/QC are retained internally.", "DISPOSAL_SITE_MAPPED_POSITIVE_EVIDENCE": "True means positive mapped disposal-site polygon area in this native cell, qualified by positive_mapped_polygon_inventory QC. It does not establish current disposal activity. False means no mapped positive evidence, including unknown values filled False by the requested public-display policy. False does not establish ecological or physical absence. Original nullable evidence and source coverage/QC are retained internally.", "DREDGED_CHANNEL_MAPPED_POSITIVE_EVIDENCE": "True means positive mapped dredged-channel polygon area in this native cell, qualified by positive_mapped_polygon_inventory QC. It does not establish current dredging activity. False means no mapped positive evidence, including unknown values filled False by the requested public-display policy. False does not establish ecological or physical absence. Original nullable evidence and source coverage/QC are retained internally."};
 
 const names: Record<string, string> = {
+  SEAGRASS_EXTENT_BOOL: "Seagrass Mapped Presence (All Time)",
+  BIVALVE_EXTENT_BOOL: "Bivalve Mapped Presence (All Time)",
+  KELP_EXTENT_BOOL: "Kelp Mapped Presence (All Time)",
   ANNUAL_KELP_EXTENT_M2: "Annual Kelp Extent",
   KELP_EXTENT_ALL_TIME_M2: "Kelp Extent (All Time)",
   SEAGRASS_EXTENT_ALL_TIME_M2: "Seagrass Extent (All Time)",
@@ -19,6 +22,7 @@ export function biogenicHabitatFeatures(features: SeascapeFeature[]): SeascapeFe
     if ((field.dataset ?? "seascape") !== "seascape") return [field];
     const native = (field.column ?? field.id).split("__").at(-1)!;
     if (field.family === "Anthropogenic") {
+      if (native === "has_mapped_artificial_reef") return [{ ...field, name: "Artificial Reef", kind: "categorical", categories: [0, 1], range: [0, 1], unit: "boolean" }];
       if (anthropogenicNames[native]) return [{ ...field, name: anthropogenicNames[native], definition: anthropogenicDefinitions[native], categories: [false, true], range: [0, 1], available: field.rows }];
       if (anthropogenicRetired.has(native) || ["AQUACULTURE", "ARTIFICIAL_REEF", "DISPOSAL_SITE", "DREDGED_CHANNEL"].some(group => native.includes(group))) return [];
     }

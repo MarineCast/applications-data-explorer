@@ -11,6 +11,7 @@ import pyarrow.compute as pc
 import pyarrow.parquet as pq
 
 from prepare_seascape import digest
+from seascape_support import audit_bindings, read_table
 
 
 def measurement_metadata(context, entry):
@@ -37,10 +38,19 @@ def prepare_flat(seascape, governance, output, human=None):
                 if name != f'{area}-r{resolution}-{kind}.parquet' or Path(name).name != name:
                     raise ValueError('Invalid flat catalog path')
                 files[name] = {'sha256': digest(seascape / name)}
-    if {path.name for path in seascape.iterdir() if path.is_file() and path.name != '.DS_Store'} != set(files):
-        raise ValueError('Unexpected files in flat Seascape output')
+    # Human review notes are not scientific products or source bindings. Keep the
+    # catalog roster strict for all other files, including unlisted data/metadata.
+    actual = {path.name for path in seascape.iterdir()
+              if path.is_file() and path.name != '.DS_Store' and path.suffix.lower() not in {'.txt', '.md'}}
+    unexpected = actual - set(files)
+    if unexpected:
+        raise ValueError('Unexpected files in flat Seascape output: ' + ', '.join(sorted(unexpected)))
     source_bindings = {'seascape': files, 'exporter': digest(Path(__file__)), 'helpers': digest(Path(__file__).with_name('prepare_map.py'))}
     source_bindings['biogenic_reader'] = digest(Path(__file__).with_name('biogenic_input.py'))
+    source_bindings['seascape_support'] = digest(Path(__file__).with_name('seascape_support.py'))
+    source_bindings['seascape_core_contract'] = digest(Path(__file__).with_name('seascape_core.json'))
+    audits = audit_bindings([seascape / name for name in files if name.endswith('.parquet')])
+    source_bindings['seascape_audits'] = audits
     if governance is not None:
         from governance_input import bindings
         governance = governance.resolve()
@@ -52,6 +62,8 @@ def prepare_flat(seascape, governance, output, human=None):
         human = human.resolve()
         source_bindings['human'] = human_bindings(human)
         source_bindings['human_reader'] = digest(Path(__file__).with_name('human_input.py'))
+    source_bindings['governance_support'] = digest(Path(__file__).with_name('governance_support.py'))
+    source_bindings['governance_names'] = digest(Path(__file__).with_name('governance_names.py'))
     snapshot_id = hashlib.sha256(json.dumps(source_bindings, sort_keys=True).encode()).hexdigest()
     output.mkdir(parents=True, exist_ok=True)
     snapshot = output / snapshot_id
@@ -70,16 +82,18 @@ def prepare_flat(seascape, governance, output, human=None):
                 for resolution, name in sorted(record.get(kind, {}).items(), key=lambda item: int(item[0])):
                     res = int(resolution)
                     path = seascape / name
-                    context = json.loads((pq.read_schema(path).metadata or {}).get(b'seascape_domain', b'{}'))
-                    actual = pc.unique(pq.read_table(path, columns=['H3_RESOLUTION'])['H3_RESOLUTION']).to_pylist()
+                    full_table = read_table(path, area=area) if kind == 'static' else None
+                    schema = full_table.schema if full_table is not None else pq.read_schema(path)
+                    context = json.loads((schema.metadata or {}).get(b'seascape_domain', b'{}'))
+                    identities = full_table if full_table is not None else pq.read_table(path, columns=['H3_RESOLUTION'])
+                    actual = pc.unique(identities['H3_RESOLUTION']).to_pylist()
                     if actual != [res]:
                         raise ValueError('Filename and native H3 resolution disagree')
                     dates = sorted(pc.unique(pq.read_table(path, columns=['date'])['date']).to_pylist()) if kind == 'dynamic' else [None]
                     product_id = f'seascape-{area}-{kind}-r{res}'
                     slices, combined_features = {}, {}
                     for value in dates:
-                        filters = [('H3_RESOLUTION', '=', res)] + ([('date', '=', value)] if value is not None else [])
-                        table = pq.read_table(path, filters=filters)
+                        table = pq.read_table(path, filters=[('date', '=', value), ('H3_RESOLUTION', '=', res)]) if value is not None else full_table
                         if not table.num_rows:
                             continue
                         if value is not None:
@@ -121,6 +135,8 @@ def prepare_flat(seascape, governance, output, human=None):
             from human_input import append_human
             append_human(exporter, catalog, human)
         verify_files(seascape, files)
+        if audit_bindings([seascape / name for name in files if name.endswith('.parquet')]) != audits:
+            raise ValueError('Seascape audit bindings changed during encoding')
         (staging / 'catalog.json').write_text(json.dumps(catalog, allow_nan=False, separators=(',', ':')))
         (staging / 'validation.json').write_text(json.dumps({'source_bindings': source_bindings, 'tables': exporter.report, 'status': 'every_exported_value_read_back_exactly'}, indent=2))
         (staging / 'consumption-guide.txt').write_text(limits)

@@ -1,8 +1,8 @@
 # MarineCast Data Explorer
 
-React + TypeScript data explorer. The Features page opens the latest prepared local Data catalog: native seascape, governance, annual kelp and directional coastal bounds. Its default layer is seascape bathymetry. It reads an ignored browser cache containing exact source values, nulls, native H3 keys, and linked qualifiers. No scientific variables are recomputed and no data acquisition or release promotion occurs.
+React + TypeScript data explorer. The Features page opens the latest prepared local Data catalog: native seascape, governance, annual kelp and directional coastal bounds. Its default layer is seascape bathymetry. A persistent localhost FastAPI service serves exact source values, nulls, native H3 keys and linked qualifiers through validated, process-owned browser encodings. No scientific variables are recomputed and no data acquisition or release promotion occurs.
 
-The Viewshed layer in Features reads the completed regional land-to-water research pilot through a separate, ignored local cache. Relationships calculates source-backed local exploratory associations through a localhost FastAPI service; Models and Forecasts show Coming soon pages; Data Health retains deterministic synthetic fixtures. The Features page uses source-backed local Data products. MapTiler supplies Features-page basemap cartography only; source values stay in the local app. Features mounts its map, product dock, Insights and actions immediately while source catalogs and selected layer assets load independently. The renderer is warmed in the background before navigation; geographic cartography retains its neutral loading state until it is ready and never substitutes an illustrative coastline for native data. Catalog and layer failures remain retryable over the same mounted map. Features uses one compact red warning style for source, basemap, layer, smoothing, comparison and Viewshed notices. Floating warnings share a bottom-left stack that moves above overlapping legends and timelines, retaining each retry/dismiss action and source Details. Notices inside dialogs and detail panels use the same card within their current focus context. Loading indicators remain separate. See [Features QA](docs/qa/features-review.md). Seascape overlays are full native H3 cells. Viewshed attaches its saved land/water geometry and weights to that same Features basemap instance. Switching domains preserves the map style and camera. The clipped land/water shapes retain their original roles; Viewshed does not create another map or substitute a coastline when geographic cartography is unavailable.
+The Viewshed layer in Features reads the completed regional land-to-water research pilot through a separate, ignored local cache. Relationships calculates source-backed local exploratory associations through the same localhost FastAPI service; Models and Forecasts show Coming soon pages; Data Health retains deterministic synthetic fixtures. The Features page uses source-backed local Data products. MapTiler supplies Features-page basemap cartography only; source values stay in the local app. Features mounts its map, product dock, Insights and actions immediately while source catalogs and selected layer assets load independently. The renderer is warmed in the background before navigation; geographic cartography retains its neutral loading state until it is ready and never substitutes an illustrative coastline for native data. Catalog and layer failures remain retryable over the same mounted map. Features uses one compact red warning style for source, basemap, layer, smoothing, comparison and Viewshed notices. Floating warnings share a bottom-left stack that moves above overlapping legends and timelines, retaining each retry/dismiss action and source Details. Notices inside dialogs and detail panels use the same card within their current focus context. Loading indicators remain separate. See [Features QA](docs/qa/features-review.md). Seascape overlays are full native H3 cells. Viewshed attaches its saved land/water geometry and weights to that same Features basemap instance. Switching domains preserves the map style and camera. The clipped land/water shapes retain their original roles; Viewshed does not create another map or substitute a coastline when geographic cartography is unavailable.
 
 ## Local development
 
@@ -10,12 +10,65 @@ Use Node 22.12+ (verified here with Node 25.6.1) and npm. From this repository:
 
 ```sh
 npm ci
+# Activate a Python 3.11+ environment with these dependencies, or set
+# MARINECAST_DATA_PYTHON in .env.local to its interpreter.
+python -m pip install -r requirements-relationships.txt
 npm run dev
 ```
 
+`npm run dev` starts FastAPI on `127.0.0.1:8001` and Vite together. It reuses an
+already-running matching API and stops only the processes it started. FastAPI
+serves Features layers, bounded weather queries, source-change events and
+Relationships; Vite proxies their existing same-origin URLs. Both launchers load
+server-only settings from `.env.local`. `MARINECAST_API_PORT` changes the listener
+and proxy together; `MARINECAST_RELATIONSHIPS_PORT` remains a fallback.
+
+To keep validated layers warm across frontend restarts, run `npm run backend` in
+one terminal and `npm run dev:frontend` in another. For a built app, keep that API
+running and use `npx vite preview --host 127.0.0.1`. Restart the backend after
+editing Python adapters or their JSON contracts. API startup itself does not scan
+all products: each domain validates on its first request. Independent domains
+have separate serial readers; catalogs cache their serialized response while
+source versions match, and large JSON responses use gzip. Source updates still
+invalidate the affected cache. A first or changed-source load can remain slow
+because checksum validation and exact-value encoding are preserved. See
+[FastAPI layer service and measured QA](docs/qa/fastapi-layers.md).
+
 Features reads the current final products in `../../Data` automatically. Replacing a valid product or updating its catalog refreshes variables, periods and map values in the open app without a manual preparation command, restart or page reload. Delivery files are checked every two seconds; new values appear after their source validation finishes. Existing selection, camera and display settings stay in place. Invalid replacements are reported instead of silently using old values. Publish related files and their integrity receipts together; partial writes remain unavailable until valid.
 
-Set server-only `MARINECAST_DATA_PYTHON` in `.env.local` to a Python environment with `pyarrow`, `numpy`, `h3`, `shapely` and `pyproj`. The existing `METEOROLOGY_PYTHON` setting remains supported. `MARINECAST_DATA_ROOT` optionally selects another Data directory. The reader uses existing source contracts and never acquires inputs, changes Data files or reruns their scientific calculations. Browser encodings are automatic, process-owned and bounded to the current and one previous generation per domain. Existing prepared assets are optional startup accelerators only when their source bindings still match. Weather values are queried directly from the current Parquets. `vite preview` uses the same reader; builds do not duplicate `public/local-data` into `dist`.
+The Seascape consumer tolerates adjacent `.txt` and `.md` review notes; notes are
+not data products, source bindings or instructions. Catalog-listed Parquets remain
+checksum-bound and must exist. Other unlisted files still fail validation with
+their names in the error. This is consumer-only tolerance; the producer's flat
+publication now also preserves these user notes. See [current-data validation](docs/qa/seascape-reader.md).
+
+Reviewed static Seagrass, Bivalve and Kelp contain H3, all-time area and int64
+0/1 mapped-presence flags. Area zero includes source unknowns filled by approved
+delivery policy; it does not establish surveyed absence. Bathymetry and Freshwater
+omit the redundant resolution column. The independent `scripts/seascape_support.py`
+verifies required external audit checksums and the public projection, restores
+native resolution/QC/source qualifiers for Details, and keeps delivered areas and
+flags as map values. Audit changes or loss invalidate cached reads. Annual Kelp
+is unchanged. `seascape_review` metadata records audit paths; no sibling toolkit
+import is needed.
+
+The twelve additional Seascape cores use lower_snake_case metric names and
+`h3_index`. Only their retained measures are selectable; original arrays/QC stay
+in the bound audit and Details. Nullable boolean core fields use int64 0/1,
+without new zero filling. The independent `seascape_core.json` contract validates
+units, source mappings and nearshore parameters. Retired field IDs may reset an
+existing selection. The five earlier static schemas and annual Kelp retain their
+names and values. See the producer's adopted compact-core column reference.
+
+Artificial Reef now presents `has_mapped_artificial_reef` as False/True categories,
+with source/export values retained as exact 0/1. The producer combines ARSBC,
+WDFW and NOAA reef locations with same-site reconciliation. False means no mapped
+positive evidence in partial inventories, not surveyed absence. Source dates and
+the explicit NOAA/WDFW coordinate conflict remain in retained producer evidence;
+points outside native cell support do not become invented map cells. See
+`toolkit-seascape/docs/artificial-reefs.md` for the owning contract.
+
+Set server-only `MARINECAST_DATA_PYTHON` in `.env.local` to a Python environment with `pyarrow`, `numpy`, `h3`, `shapely` and `pyproj`. The existing `METEOROLOGY_PYTHON` setting remains supported. `MARINECAST_DATA_ROOT` optionally selects another Data directory. The reader uses existing source contracts and never acquires inputs, changes Data files or reruns their scientific calculations. Browser encodings are automatic, process-owned and bounded to the current and one previous generation per domain. Existing prepared assets are optional startup accelerators only when their source bindings still match. Weather values are queried directly from the current Parquets. `vite preview` proxies the same FastAPI service; builds do not duplicate `public/local-data` into `dist`.
 
 Viewshed is currently a specific exception: `Data/viewshed/READINESS.json` declares no completed pair product. The qualified retained pilot remains available. A pilot delivered into `Data/viewshed` with `runtime.json`, its source/model metadata and land/water/pair Parquets is detected automatically. Matching `components/manifest.json` and weights are used when present. `VIEWSHED_PILOT` and `VIEWSHED_COMPONENTS` optionally select another completed producer output; land-source geometry alone cannot supply pair weights.
 
@@ -38,7 +91,7 @@ Every data page uses the shared `LegendDropdown` surface: a bottom-left legend a
 
 ## Pages
 
-- **Home:** the original generated Pacific Northwest coastal image with gently animated water, clouds and fog beside the ivory atlas sidebar. Navigation starts with a compact icon rail on every visit. In light mode, the icon rail has a subtle sage gradient beside the warmer ivory gradient of the expanded area. The waves sit in the upper-left 62 px brand row, matching the data-page header position and size. Sidebar navigation has no Explore section heading. Sidebar destinations start higher; the card group is centered horizontally and vertically in the available space beside the sidebar. Short screens keep the first card reachable by scrolling. Hovering anywhere on the sidebar—including empty space, waves and Help—temporarily expands it; leaving the sidebar restores the rail. Moving between its items keeps it open, and mouse clicks do not pin it. Touch and keyboard users can expand/collapse with the waves button; Escape, outside focus and the phone scrim dismiss it. Above 700 px, the photograph and cards resize together beside the current sidebar width. Cards stack at 1000 px and below; at 700 px and below, the touch drawer overlays the cards and artwork. The compact cards use translucent ivory/sea-green surfaces (62–66% opacity) in light mode and navy/mint surfaces (59–64%) in dark mode, with matching decorative motifs, icon tiles, status pills and visible action rows. See [Home layout QA](docs/qa/home-sidebar-layout.md). The current Home item and all destination icons remain usable in either mode; the upper-right Menu button and From the shore shortcut are removed. The image is a local 213 KB WebP with responsive cropping; A lazy-loaded WebGL effect moves pixels within masked water, sky and fog regions with subtle canopy sway while keeping rocks and mountains fixed; the original image remains the fallback. Water uses flowing texture motion with smaller traveling ripples, and cloud/fog drift fades continuously between phases. Rendering supports device pixel ratios up to 2, capped at approximately 4K framebuffer size; the source artwork itself remains 1672 × 941. Motion runs at up to 30 fps, pauses in hidden tabs, respects reduced-motion preferences, and has a small play/pause control. No React Three Fiber scene or GLB assets are loaded. The former boat, pan/zoom and reset controls remain removed. The image is evocative artwork, not source cartography. See [artwork and exact prompt](public/assets/home/ARTWORK.md#static-coastal-background-2026-10-16).
+- **Home:** the original generated Pacific Northwest coastal image with gently animated water, clouds and fog beside the ivory atlas sidebar. Navigation starts with a compact icon rail on every visit. In light mode, the icon rail has a subtle sage gradient beside the warmer ivory gradient of the expanded area. The waves sit in the upper-left 62 px brand row, matching the data-page header position and size. Sidebar navigation has no Explore section heading. Sidebar destinations start higher; the card group is centered horizontally and vertically in the available space beside the sidebar. Short screens keep the first card reachable by scrolling. Hovering anywhere on the sidebar—including empty space, waves and Help—temporarily expands it; leaving the sidebar restores the rail. Moving between its items keeps it open, and mouse clicks do not pin it. Touch and keyboard users can expand/collapse with the waves button; Escape, outside focus and the phone scrim dismiss it. Above 700 px, the photograph and cards resize together beside the current sidebar width. Cards stack at 1000 px and below; at 700 px and below, the touch drawer overlays the cards and artwork. The compact cards use translucent ivory/sea-green surfaces (62–66% opacity) in light mode and navy/mint surfaces (59–64%) in dark mode, with matching decorative motifs, icon tiles, status pills and visible action rows. See [Home layout QA](docs/qa/home-sidebar-layout.md). The current Home item and all destination icons remain usable in either mode; the upper-right Menu button and From the shore shortcut are removed. The active images are local day/night PNGs with responsive cropping; A lazy-loaded WebGL effect moves pixels within masked water, sky and fog regions with subtle canopy sway while keeping rocks and mountains fixed; the original image remains the fallback. Water uses flowing texture motion with smaller traveling ripples, and cloud/fog drift fades continuously between phases. Rendering supports device pixel ratios up to 2, capped at approximately 4K framebuffer size; the source artwork itself remains 1672 × 941. Motion runs at up to 30 fps, pauses in hidden tabs, respects reduced-motion preferences, and has a small play/pause control. No React Three Fiber scene or GLB assets are loaded. The former boat, pan/zoom and reset controls remain removed. The image is evocative artwork, not source cartography. See [artwork and exact prompt](public/assets/home/ARTWORK.md#static-coastal-background-2026-10-16).
 - **Features (`#map`):** seascape and governance variables, annual kelp with survey-year selection, directional coastal bounds with bearing selection, categorical class/status maps, native R6/R8 selection, full-area colorbars, exact cell values and source/quality dialog, local JSON export, opacity, zoom controls beside Insights, and geographically linked swipe comparison. Drag the center divider to reveal either layer; both full-size maps share pan, zoom, bearing and pitch, and one zoom control operates both. Each variable retains its own scale, original cell values and export. The full-width map has a persistent upper-left product dock and a top-aligned contextual drawer. The drawer fits its controls and grows when a Family or Feature picker opens, up to the available map height. Long choice lists scroll within the capped drawer. On compact screens, the timeline is hidden while the data selector is open and returns when it closes; the legend remains available. Open appearance controls sit above the timeline so palettes and Advanced options stay clickable. Closing the drawer retains the selected layer and dock; Map only collapses the dock. Unavailable products have an explicit status and hover/focus names. Family and Feature come first, resolution becomes metadata when only one is supported, and grouped pickers include an information button on every feature and comparison data-product row. Information opens without changing the selected layer; the separate Data details section is removed. The shared header shows the active product/metric, Compare, Export and Help. The bottom-left legend identifies the metric, units, native resolution and missing-value key; Appearance opens with palette choices and a collapsed Advanced section for classification, smoothing, opacity, outlines and display z-scores. Insights opens at the upper right with its own default height. The legend stays anchored to the bottom-right map edge, independently of Insights; comparison legends retain the same bottom stack whether Insights is open or closed. Drag its left edge, bottom edge, or lower-left corner to resize; focused edge handles support arrow keys, Shift for larger steps, and Home/End for size limits. Reset size restores the default. Panel size is retained for the session. Legend height and viewport bounds constrain resizing so the legend stays visible. Charts, statistics, and comparison sections reflow as the panel widens. Layer selection remains on the left, and zoom sits beside the Insights trigger. Static products have no monthly axis; recorded survey years and bearings are separate source slices. R8 overlays load at the current map zoom; viewport filtering preserves native cells and never averages them.
 - **Relationships (`#relationships`):** source-backed native feature matrices, pair plots, family pair screening, quality/join details and qualified recorded-Orca response comparisons. See [Relationships guide](docs/relationships.md) and [current QA](docs/qa/relationships.md).
 - **Models (`#models`), Forecasts (`#forecasts`):** consistent Coming soon pages.
@@ -123,11 +176,13 @@ Selected Features cells retain native H3 identity, coordinates, original values 
 
 ## Structure and future integration
 
-`src/data/seascape.ts` and `src/data/viewshed.ts` are typed local product adapters; `src/data/demo.ts` supplies the synthetic pages and the retained demo component. Pages maintain UI state; shared controls, charts, and the local map live in `src/components`. Fixture statistics are calculated independently of chart display caps. Monthly viewability values exist only to illustrate chart/health UI; real viewshed scores are static.
+The [2026-11-01 cleanup record](docs/dead-code-review.md#completed-cleanup--2026-11-01) records the approved removals, test migrations, retained dependencies and current validation.
+
+`src/data/seascape.ts` and `src/data/viewshed.ts` are typed local product adapters. `src/data/demo.ts` supplies Health’s synthetic metadata; deterministic H3/value test samples live in `src/test/demoFixture.ts`. Pages maintain UI state; shared controls, charts and the geographic map live in `src/components`. `MapCanvas` mounts the geographic renderer or its loading/configuration/retry state. Viewshed supplies its clipped overlay to that existing map. Real viewshed scores are static.
 
 Additional integrations should use typed read-only product adapters. Keep product identity/grain, units, spatial/temporal support, missingness, rights, provenance, and validation status explicit. Add backend filtering and response limits before loading real artifacts. Read only explicitly supplied producer products; do not mutate sibling products, assume the proposed shared manifest is already adopted, or equate this explorer with scientific validation.
 
-The preparation CLI accepts an explicit release path. This repository contains no FastAPI service or acquisition backend. No data fixtures contain real sightings or vessel records. Do not commit private products or credentials.
+The optional preparation CLIs accept explicit source paths. The running app uses the read-only FastAPI service described above and has no acquisition backend. Synthetic test fixtures contain no real sightings or vessel records. Do not commit private products or credentials.
 
 ## Optional offline map export (not required by the running app)
 
@@ -164,7 +219,8 @@ and does not establish current law or exhaustive jurisdiction. Original dataset 
 `Data/Governance/OriginalData`. Governance has no release directories or public crosswalks. `Data/viewshed` is readiness-only; the Viewshed layer retains its existing,
 explicitly sourced research pilot.
 
-The local cache is included by `npm run build` when present and must not be published without
+`npm run build` excludes `public/local-data`; development and production preview
+read validated encodings through the local API. Cache publication still requires
 separate source-rights scope. See [complete map QA](docs/qa/data-map.md).
 
 ## Optional retained Viewshed pilot export
@@ -248,7 +304,7 @@ The Appearance popup offers **Display z-scores** under **Advanced**. It applies 
 
 Current kelp dynamic data retain a survey-year selector. Directional coastal values are separate columns for every native bearing in the coastal-bounds static file; bearings are never averaged. Historical browser caches retain their earlier year/bearing controls. Partial source inventories, historical observations, unknown dates, generalized fallback support and modeling eligibility remain source-qualified.
 
-`npm run build` includes any prepared local browser cache in `dist/`; this request only prepares a local preview. The cache is not committed and there is no automatic hosting or upload. Source integration checks and browser evidence are in [seascape-map QA](docs/qa/seascape-map.md).
+`npm run build` excludes prepared local browser caches from `dist/`; the local reader serves source-backed encodings during development and preview. The cache is not committed and there is no automatic hosting or upload. Source integration checks and browser evidence are in [seascape-map QA](docs/qa/seascape-map.md).
 
 ## Optional MapTiler basemap
 
@@ -256,7 +312,7 @@ Copy `.env.example` to `.env.local`, set `VITE_MAPTILER_KEY` to your own browser
 
 Use a dedicated origin-restricted key. For this preview, MapTiler documents the allowed origin as `127.0.0.1` (without scheme/port); use a separate production key restricted to the eventual hosted domain. See [MapTiler key setup](https://docs.maptiler.com/guides/credentials/api-key/). `.env.local` is ignored by Git.
 
-MapLibre renders the MapTiler cartography plus the selected local H3 data layer. The local preview has two zoom controls immediately left of Insights and no recenter button or attribution strip; basemap credits are retained in Help. This UI change does not establish attribution-removal permission: [MapTiler attribution requirements](https://docs.maptiler.com/guides/map-design/attribution/remove-attribution/) apply to any publication. Feature, opacity, visibility, selected-cell styling, zoom/pan, and comparison use the same React state. Cells are inspected by selecting them on the map. Native Data maps show a plain loading state while the geographic renderer downloads. Missing keys show a configuration message; initialization, authorization or timeout failures show an error with Retry basemap. The Features page never substitutes the illustrative SVG coastline or synthetic geometry during loading or failure. Explicit demo pages retain their labeled local renderer. A live MapTiler render was verified locally with the user-provided browser key. No remote feature-data API is connected.
+MapLibre renders the MapTiler cartography plus the selected local H3 data layer. The local preview has two zoom controls immediately left of Insights and no recenter button or attribution strip; basemap credits are retained in Help. This UI change does not establish attribution-removal permission: [MapTiler attribution requirements](https://docs.maptiler.com/guides/map-design/attribution/remove-attribution/) apply to any publication. Feature, opacity, visibility, selected-cell styling, zoom/pan, and comparison use the same React state. Cells are inspected by selecting them on the map. Native Data maps show a plain loading state while the geographic renderer downloads. Missing keys show a configuration message; initialization, authorization or timeout failures show an error with Retry basemap. The Features page never substitutes the illustrative SVG coastline or synthetic geometry during loading or failure. A live MapTiler render was verified locally with the user-provided browser key. No remote feature-data API is connected.
 
 ## Map atlas design
 
@@ -264,22 +320,28 @@ The supplied MarineCast reference guides the light cards, serif wordmark, slim t
 
 The bottom analysis sheet has been removed. Click a native cell to open Selected cell in Insights, then open **Source & quality** for original row qualifiers and provenance. Export creates the full current native layer JSON locally. The rail actions are functional. No account, remote persistence or sharing service is connected.
 
-Current design QA: [design-qa.md](design-qa.md). Data integration evidence: [complete Data map](docs/qa/data-map.md), with earlier [seascape-only QA](docs/qa/seascape-map.md). MapTiler supplies cartography only; local producer-backed caches supply values. Other explorer pages remain synthetic demos.
+Current design QA: [design-qa.md](design-qa.md). Data integration evidence: [complete Data map](docs/qa/data-map.md), with earlier [seascape-only QA](docs/qa/seascape-map.md). MapTiler supplies cartography only; local producer-backed caches supply values. Health retains synthetic metadata; Relationships reads validated local products, while Models and Forecasts remain placeholders.
 
 ## Home artwork
 
-The default route opens the static coastal Home page. `/#map`, `/#relationships`, and
-`/#health` open the explorer pages; legacy `/#sightings` links redirect to Features.
-The background is an Image Gen asset served locally as WebP. The wordmark, regional
-caption and navigation remain editable HTML. Desktop and phones use the same image
-with responsive cropping. Scientific layers remain on Features.
+The default route opens Home with a local generated coastal image and animated
+water, clouds and scenic stars. Light mode uses `salish-sea-preview.png`; dark
+mode uses `salish-sea-night-soft.png`. The original `salish-sea-static.webp`
+remains available for reverting. The wordmark and navigation are editable HTML.
+Scientific layers remain on Features.
 
-See [ARTWORK.md](public/assets/home/ARTWORK.md#static-coastal-background-2026-10-16)
-for the exact prompt and generation provenance. The earlier animated Home scenes,
-assets and QA records are retained as historical work; they are not mounted by the
-Home route. Historical records include [home-grid-motion.md](docs/qa/home-grid-motion.md),
-[home-reference.md](docs/qa/home-reference.md), and
-[coastal scene provenance](public/assets/home/coastal-world/README.md).
+See [ARTWORK.md](public/assets/home/ARTWORK.md) for current assets, qualifications
+and historical generation prompts. The approved 2026-10-24 cleanup removed retired
+Blender/Pixi/React Three Fiber scenes, authoring tools and unused assets. Three.js
+and the scenic-star catalog/license remain required by the current background.
+Historical QA records and screenshots remain, including
+[home-grid-motion.md](docs/qa/home-grid-motion.md) and
+[home-reference.md](docs/qa/home-reference.md); they describe earlier versions.
+See the [cleanup record](docs/qa/cleanup.md) for scope and current checks. The
+[deferred cleanup record](docs/cleanup.md) covers obsolete cache generations,
+retired coastal-scene screenshots and migration of the demo-page tests onto
+current Features. Referenced startup caches and the Viewshed fallback remain.
+
 
 
 ## Data map presentation
@@ -402,13 +464,24 @@ python scripts/human_input.py --human ../../Data/Human
 python -m unittest discover -s scripts -p 'test_human_input.py' -v
 ```
 
-Use a Python runtime with `pyarrow` and `h3`. The current `Data/Human` folder contains only `static.parquet`, `dynamic-calendar.parquet` and `static-native.parquet`. The adapter reads embedded dictionaries and the external toolkit integrity receipt, verifies all three file checksums, native keys and existing browser asset checksums, then
+Use a Python runtime with `pyarrow` and `h3`. The current `Data/Human` products are `static.parquet` and `dynamic-calendar.parquet`; the user review note may remain beside them. The adapter accepts final-only v1/v2/v3 receipts, reads embedded dictionaries and verifies each referenced product checksum, native H3 keys and existing browser asset checksums, then
 performs exact column readback before activating the local catalog. Existing assets
 are reused, so retain their snapshot directories. Full flat preparation also accepts
 `--human <study-directory>`. Human source products are read only. The browser cache
-remains local and ignored. Ferry playback remains unconnected. Native source geometry is converted losslessly to the browser JSON overlay; original record attributes and unknowns remain intact. The calendar retains jurisdiction/local-date semantics and is not a map layer.
+remains local and ignored. Ferry playback remains unconnected. Current Human delivery has no native geometry overlays; source-qualified H3 infrastructure summaries and population layers remain. Historical receipts can still supply native overlays. The compact calendar is keyed by local date/country/reference timezone, with regional holiday names combined; it is not a map layer.
 
 ### Governance membership display
+
+New Governance v5 products use the same twenty feature columns plus `h3_index`
+and carry complete scientific support inside final Parquet metadata. The
+independent reader verifies embedded support checksums, aliases and readable names
+before reconstructing typed identity/details. Their source watch depends only on
+final Data files. Existing v1–v4 products remain readable; unchanged v2–v4 products
+still require their bound external audits. No delivered Data product is migrated
+by this reader change. See the [current producer contract](../../Toolkits/toolkit-governance/docs/parquet-products.md#compact-delivery-and-external-audit).
+
+As of 2026-10-25, Governance application-v4 Parquets use concise `_count` / `_membership` / `has_` column names and contain only the twenty selected features plus `h3_index`. The reader verifies catalog-bound external audits and reconstructs original scientific support in memory before using the existing feature/inspection pipeline. Status arrays, unselected support counts and legacy fields stay outside the source tables; all twenty selected feature IDs, names, values, units and paired membership details are preserved. The combined conservation assignment is materialized in the compact source and checked against its audited designated/proposed/interim components. Missing/corrupt audits fail closed and their checksums participate in prepared-source bindings. All eleven membership columns contain readable string lists; native-to-public aliases and label policy are verified before complete typed support reconstruction, preserving stable app feature IDs and existing inspection payloads. Legacy application-v1/v2/v3 products remain readable. See the [producer contract](../../Toolkits/toolkit-governance/docs/parquet-products.md#compact-delivery-and-external-audit).
+
 
 Governance → **Fisheries Management Areas** offers exactly **Management Area Count**
 (`management_areas__recorded_feature_count`) and **Management Area**
@@ -427,7 +500,7 @@ Membership-capable Governance products add a **Recorded features** choice to eac
 
 Marine mammals → Orca supports category unions, shared UTC playback, native H3 report counts and clustered reported-coordinate points. Point inspection retains native pod/group assignments, dates and plain-text descriptions; cell inspection itemizes reported groups under the current filters. Verified annual SRKW census context remains separate from sightings.
 
-Prepare the internal local cache with `python scripts/orca_input.py --source ../../Data/MarineMammals/Orca/Sightings --output public/local-data/orca`. This reads verified products and writes only the ignored app cache; it performs no source acquisition. See [Orca contract and QA](docs/qa/orca.md) for precision, source-use restrictions and checks.
+The running local app generates Orca browser encodings automatically from retained products; no prepared Orca directory is required. For an independent offline export, use `python scripts/orca_input.py --source ../../Data/MarineMammals/Orca/Sightings --output /path/to/independent-cache`. This reads verified products without source acquisition. See [Orca contract and QA](docs/qa/orca.md) for precision, source-use restrictions and checks.
 
 ### Hydrology river gauges
 
@@ -447,7 +520,7 @@ flow and the other indicators remain unchanged.
 
 Hydrology shows colored bubbles at retained approximate river-mouth reference coordinates. River identity colors match its collapsible bottom history chart and clickable river legend. Click the legend to edit palettes and Advanced river colors, bubble opacity and size. Click a bubble, or Inspect inside the legend popup, for upstream gauge values and provenance; click the history chart (or use its arrow keys) to inspect a provider date. Hollow bubbles and chart gaps preserve unavailable values separately from zero. Two Skagit markers share one gauge series and color without allocation or summation. Hydrology does not draw a hex grid or use the playback slider; other time-enabled datasets retain the shared timeline.
 
-Prepare its independent local cache with `python scripts/hydrology_input.py --source ../../Data/Hydrology --study ../../config/study.v1.json --output public/local-data/hydrology`. This reads current products without downloading or changing sources. See [Hydrology semantics, source qualifications and QA](docs/qa/hydrology.md).
+The running local app generates Hydrology and river-influence browser encodings automatically; neither requires a prepared directory. For an independent Hydrology export, use `python scripts/hydrology_input.py --source ../../Data/Hydrology --study ../../config/study.v1.json --output /path/to/independent-cache`. This reads current products without downloading or changing sources. See [Hydrology semantics, source qualifications and QA](docs/qa/hydrology.md).
 
 ## Appearance
 
@@ -691,3 +764,42 @@ evidence remain unchanged (hidden SOURCE_NULLABLE columns preserve the latter).
 False means no mapped positive evidence, including unknown coverage; it does not
 mean confirmed absence. Both True and False categories are exposed. This override
 does not apply to missing values in any other feature.
+
+Current Human static v4 has 18 public columns; earlier v2/v3 had 27. Its external `static-audit.parquet` is required checksum-bound receipt evidence, verified by H3 identity and watched for changes outside Data. Population diagnostic/method/source arrays are now attached as nonselectable browser qualifiers by H3 identity. Population classification uses the delivered values; inspection shows each cell’s coverage, missing-source IDs, geographic support and zero-imputation flag. Full-width historical products remain readable. See [Human QA](docs/qa/human.md).
+
+Human static v4 uses 18 consistent `lower_snake_case` columns. The reader preserves original feature IDs and saved selections, reads per-quantity support references from metadata, and verifies the external audit receipt. Previous static versions remain readable. See [Human QA](docs/qa/human.md#static-column-names-2026-10-24).
+
+The 18-column Human projection omits cell area and all eight population support columns. Density remains precomputed per full-cell km². Detailed support is read from the verified external audit into Insights; Coverage remains absent from the current feature list. See [current Human layout](docs/qa/human.md#quantities-only-static-2026-10-24).
+
+Current Human static v5 has 11 columns: two H3 identifiers, five renamed population estimates, three dense integer infrastructure totals and Boolean `has_port`. The reader preserves population allocation qualifications, verifies original nullable counts in the external receipt without exporting them, and removes shoreline/access-category choices. The former `_collected` suffix is absent from source column names; model eligibility is unchanged. See [current Human QA](docs/qa/human.md#consolidated-static-2026-10-24).
+
+Human static v6 has 14 columns. `has_boat_launch`, `has_shore_access_site`, `has_place` and `has_port` are int64 0/1 presence layers, alongside the three retained counts. The reader exports numeric zero/one values with unit `0/1`, preserving prior count/population feature IDs and historical Boolean-port reading. See [presence QA](docs/qa/human.md#integer-presence-indicators-2026-10-25).
+
+
+### Human coverage and civil calendar (2026-10-26)
+
+Choose **Human → Population**, then open **Insights**. The overview reports the
+share of native-cell estimates with partial source support. Select a map cell for
+its own coverage, geographic-support and zero-imputation flags; expand **Source
+qualifiers** for missing census source IDs. Count, density and 25/50/100 km
+neighborhoods retain delivered values, units, US 2020 / Canada 2021 vintages and
+research/model-ineligible status. Partial is a completeness classification, not
+percent people missing or count accuracy. Overlapping neighborhoods cannot be summed.
+
+Within Human Insights, **Civil calendar** offers country and civil-date controls,
+reference timezone, weekends and named holidays for 2009–2026. US uses the federal,
+WA and OR union; Canada uses federal and BC. This view is independent of the map
+cell and never joins dates to UTC observations or infers measured effort. Source
+rule versions, as-of date, future-rule qualification and timezone limitations are
+available under **Calendar source & limitations**. Older browser seeds are rebuilt
+in the process-owned cache so they cannot hide these new views. See
+[current Human QA](docs/qa/human.md#coverage-and-civil-calendar-2026-10-26).
+
+Causal Hydrology metrics are under **Hydrology → Causal discharge**. Select a river
+for native-date history, as-of discharge date and reference support. Warmup/gaps
+remain unavailable; historical operational availability is unknown and these
+research metrics are model-ineligible. See [Hydrology QA](docs/qa/hydrology.md).
+
+**Oceanography** offers Sea surface temperature (native R6) and Chlorophyll
+(native R5) for July 1–3, 2024. Select a date and click a cell for the delivered
+value; missing estimates remain unavailable. See [Oceanography QA](docs/qa/oceanography.md).

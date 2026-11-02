@@ -4,6 +4,9 @@ ANTHROPOGENIC_RETIRED = {'COMPREHENSIVE_SURVEY_COVERAGE_ESTABLISHED', 'FULL_H3_W
 ANTHROPOGENIC_NAMES = {'AQUACULTURE_MAPPED_POSITIVE_EVIDENCE': 'Aquaculture', 'ARTIFICIAL_REEF_MAPPED_POSITIVE_EVIDENCE': 'Artificial Reef', 'DISPOSAL_SITE_MAPPED_POSITIVE_EVIDENCE': 'Disposal Site', 'DREDGED_CHANNEL_MAPPED_POSITIVE_EVIDENCE': 'Dredged Channel'}
 ANTHROPOGENIC_DEFINITIONS = {'AQUACULTURE_MAPPED_POSITIVE_EVIDENCE': 'True means a qualified mapped aquaculture point intersects this native cell. This is mapped presence, not footprint area, activity or regulatory growing-area classification. False means no mapped positive evidence, including unknown values filled False by the requested public-display policy. False does not establish ecological or physical absence. Original nullable evidence and source coverage/QC are retained internally.', 'ARTIFICIAL_REEF_MAPPED_POSITIVE_EVIDENCE': 'True means mapped artificial-reef inventory evidence intersects this native cell. It does not establish present activity or comprehensive reef coverage. False means no mapped positive evidence, including unknown values filled False by the requested public-display policy. False does not establish ecological or physical absence. Original nullable evidence and source coverage/QC are retained internally.', 'DISPOSAL_SITE_MAPPED_POSITIVE_EVIDENCE': 'True means positive mapped disposal-site polygon area in this native cell, qualified by positive_mapped_polygon_inventory QC. It does not establish current disposal activity. False means no mapped positive evidence, including unknown values filled False by the requested public-display policy. False does not establish ecological or physical absence. Original nullable evidence and source coverage/QC are retained internally.', 'DREDGED_CHANNEL_MAPPED_POSITIVE_EVIDENCE': 'True means positive mapped dredged-channel polygon area in this native cell, qualified by positive_mapped_polygon_inventory QC. It does not establish current dredging activity. False means no mapped positive evidence, including unknown values filled False by the requested public-display policy. False does not establish ecological or physical absence. Original nullable evidence and source coverage/QC are retained internally.'}
 NAMES = {
+    'SEAGRASS_EXTENT_BOOL': 'Seagrass Mapped Presence (All Time)',
+    'BIVALVE_EXTENT_BOOL': 'Bivalve Mapped Presence (All Time)',
+    'KELP_EXTENT_BOOL': 'Kelp Mapped Presence (All Time)',
     'ANNUAL_KELP_EXTENT_M2': 'Annual Kelp Extent',
     'KELP_EXTENT_ALL_TIME_M2': 'Kelp Extent (All Time)',
     'SEAGRASS_EXTENT_ALL_TIME_M2': 'Seagrass Extent (All Time)',
@@ -20,6 +23,9 @@ def biogenic_features(features):
             continue
         native = field.get('column', field['id']).split('__')[-1]
         if field.get('family') == 'Anthropogenic':
+            if native == 'has_mapped_artificial_reef':
+                result.append(dict(field, name='Artificial Reef', kind='categorical', categories=[0, 1], range=[0, 1], unit='boolean'))
+                continue
             if native in ANTHROPOGENIC_NAMES:
                 result.append(dict(field, name=ANTHROPOGENIC_NAMES[native], definition=ANTHROPOGENIC_DEFINITIONS[native], categories=[False, True], range=[0, 1], available=field.get('rows', field.get('available'))))
                 continue

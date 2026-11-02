@@ -76,9 +76,10 @@ function startingFeature(fields: SeascapeFeature[]) {
     ?? fields[0];
 }
 
-export default function FamilyFeaturePicker({ label, familyLabel = "Family", catalog, resolution, dataset, value, onChange, showFeature = true }: {
+export default function FamilyFeaturePicker({ label, familyLabel = "Family", catalog, resolution, dataset, value, onChange, showFeature = true, allowNativeSwitch = false }: {
   label: string;
   showFeature?: boolean;
+  allowNativeSwitch?: boolean;
   familyLabel?: string;
   catalog: SeascapeCatalog;
   resolution: NativeResolution;
@@ -86,7 +87,7 @@ export default function FamilyFeaturePicker({ label, familyLabel = "Family", cat
   value: string;
   onChange: (id: string) => void;
 }) {
-  const fields = catalog.features.filter(field => field.resolution === resolution && (field.dataset ?? "seascape") === dataset);
+  const fields = catalog.features.filter(field => (allowNativeSwitch && dataset === "oceanography" || field.resolution === resolution) && (field.dataset ?? "seascape") === dataset);
   // Derive family from the active native field so product/resolution changes cannot leave it stale.
   const activeFeature = fields.find(field => field.id === value);
   const family = activeFeature?.family ?? fields[0]?.family ?? "";

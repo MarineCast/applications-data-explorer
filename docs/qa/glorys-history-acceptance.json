@@ -1,0 +1,260 @@
+{
+  "catalog_sha256": "afa01e661112b25fa92846a3cb7b21ee354b2a190718cf06e7175732b7ad7837",
+  "products": {
+    "sst": "6e2479737ca7ae4f07939f084c1f69c972490f2392e93bb86e480f4e0784f79f",
+    "chlorophyll": "ab0dbe8994cd1440c43a12d5a99365246db93eaa14332f64c9a5bb9d93227968",
+    "hycom-salinity": "04183c00904423612cd1d8f69932bd0919ced5997c5fe00864125a99d116c496",
+    "hycom-currents": "b40abc5b3638394b71201b550650362c9484038b0a07e7a89cdd7b356a439186",
+    "salishsea-salinity": "86d1dd85cf7e2c7cbf2155b61b4d7d8b5ee9d8d3a735c89fc588bb7880a49210",
+    "salishsea-currents": "0efedf0716e55431ead106428fc0c79836eb80369995599b2923b16ade5cba13",
+    "enso-roni": "f4a423b78ff7b5a8ecb911e0c477e64bd1e9bcefef4fdcbf098e8b176249d7ed",
+    "tide-events": "d54d50cca29a03e2caad5dfe591d19f1043497e8aac73b1a80716f9d05ef9388",
+    "glorys12-salinity": "8fb8fd8cf1e76709645765d2132d6d2c3693cd90a44a4a1d8cc1a37bdd61c70b",
+    "glorys12-currents": "9ca738d0ae45e37328d655478896eb18446d8714aed43f53d6c463022bb063a7"
+  },
+  "catalog_wait_seconds": 0.27761637498042546,
+  "api_checks": [
+    {
+      "product": "glorys12-salinity",
+      "metric": "salinity_psu",
+      "day": "2009-01-01",
+      "seconds": 0.05123554199235514,
+      "rows": 463,
+      "nonnull": 245,
+      "supported": 28.431043401360512,
+      "null": null
+    },
+    {
+      "product": "glorys12-salinity",
+      "metric": "salinity_psu",
+      "day": "2019-01-01",
+      "seconds": 0.0519866670074407,
+      "rows": 463,
+      "nonnull": 245,
+      "supported": 30.013428116217256,
+      "null": null
+    },
+    {
+      "product": "glorys12-salinity",
+      "metric": "salinity_psu",
+      "day": "2021-06-30",
+      "seconds": 0.050933958002133295,
+      "rows": 463,
+      "nonnull": 245,
+      "supported": 21.813104627653956,
+      "null": null
+    },
+    {
+      "product": "glorys12-salinity",
+      "metric": "salinity_psu",
+      "day": "2021-07-01",
+      "seconds": 0.05215624999254942,
+      "rows": 463,
+      "nonnull": 245,
+      "supported": 22.184667480178177,
+      "null": null
+    },
+    {
+      "product": "glorys12-salinity",
+      "metric": "salinity_psu",
+      "day": "2026-09-22",
+      "seconds": 0.051777000015135854,
+      "rows": 463,
+      "nonnull": 245,
+      "supported": 23.79070403985679,
+      "null": null
+    },
+    {
+      "product": "glorys12-currents",
+      "metric": "current_east_m_s",
+      "day": "2009-01-01",
+      "seconds": 0.06512474999180995,
+      "rows": 463,
+      "nonnull": 245,
+      "supported": 0.2414014097303152,
+      "null": null
+    },
+    {
+      "product": "glorys12-currents",
+      "metric": "current_north_m_s",
+      "day": "2009-01-01",
+      "seconds": 0.06376941601047292,
+      "rows": 463,
+      "nonnull": 245,
+      "supported": -0.021057771518826485,
+      "null": null
+    },
+    {
+      "product": "glorys12-currents",
+      "metric": "current_daily_mean_vector_speed_m_s",
+      "day": "2009-01-01",
+      "seconds": 0.0646352079929784,
+      "rows": 463,
+      "nonnull": 245,
+      "supported": 0.24234156275550942,
+      "null": null
+    },
+    {
+      "product": "glorys12-currents",
+      "metric": "current_east_m_s",
+      "day": "2019-01-01",
+      "seconds": 0.06528904099832289,
+      "rows": 463,
+      "nonnull": 245,
+      "supported": -0.21179845556616783,
+      "null": null
+    },
+    {
+      "product": "glorys12-currents",
+      "metric": "current_north_m_s",
+      "day": "2019-01-01",
+      "seconds": 0.06335033298819326,
+      "rows": 463,
+      "nonnull": 245,
+      "supported": 0.04272591322660446,
+      "null": null
+    },
+    {
+      "product": "glorys12-currents",
+      "metric": "current_daily_mean_vector_speed_m_s",
+      "day": "2019-01-01",
+      "seconds": 0.06618654099293053,
+      "rows": 463,
+      "nonnull": 245,
+      "supported": 0.21631597888159204,
+      "null": null
+    },
+    {
+      "product": "glorys12-currents",
+      "metric": "current_east_m_s",
+      "day": "2021-06-30",
+      "seconds": 0.06645262500387616,
+      "rows": 463,
+      "nonnull": 245,
+      "supported": -0.07721182890236378,
+      "null": null
+    },
+    {
+      "product": "glorys12-currents",
+      "metric": "current_north_m_s",
+      "day": "2021-06-30",
+      "seconds": 0.06666879099793732,
+      "rows": 463,
+      "nonnull": 245,
+      "supported": -0.023499252274632454,
+      "null": null
+    },
+    {
+      "product": "glorys12-currents",
+      "metric": "current_daily_mean_vector_speed_m_s",
+      "day": "2021-06-30",
+      "seconds": 0.06536804200732149,
+      "rows": 463,
+      "nonnull": 245,
+      "supported": 0.08175011500916567,
+      "null": null
+    },
+    {
+      "product": "glorys12-currents",
+      "metric": "current_east_m_s",
+      "day": "2021-07-01",
+      "seconds": 0.06433375002234243,
+      "rows": 463,
+      "nonnull": 245,
+      "supported": 0.10040589608252048,
+      "null": null
+    },
+    {
+      "product": "glorys12-currents",
+      "metric": "current_north_m_s",
+      "day": "2021-07-01",
+      "seconds": 0.06408641702728346,
+      "rows": 463,
+      "nonnull": 245,
+      "supported": -0.027161473408341408,
+      "null": null
+    },
+    {
+      "product": "glorys12-currents",
+      "metric": "current_daily_mean_vector_speed_m_s",
+      "day": "2021-07-01",
+      "seconds": 0.0638278340047691,
+      "rows": 463,
+      "nonnull": 245,
+      "supported": 0.1040194690721208,
+      "null": null
+    },
+    {
+      "product": "glorys12-currents",
+      "metric": "current_east_m_s",
+      "day": "2026-09-22",
+      "seconds": 0.06427416700171307,
+      "rows": 463,
+      "nonnull": 245,
+      "supported": 0.06988738663494587,
+      "null": null
+    },
+    {
+      "product": "glorys12-currents",
+      "metric": "current_north_m_s",
+      "day": "2026-09-22",
+      "seconds": 0.06373620798694901,
+      "rows": 463,
+      "nonnull": 245,
+      "supported": -0.03387554548680782,
+      "null": null
+    },
+    {
+      "product": "glorys12-currents",
+      "metric": "current_daily_mean_vector_speed_m_s",
+      "day": "2026-09-22",
+      "seconds": 0.0632928749837447,
+      "rows": 463,
+      "nonnull": 245,
+      "supported": 0.07770363640344778,
+      "null": null
+    }
+  ],
+  "definitions": [
+    "GLORYS12 daily surface reanalysis; no tidal constituents; native wet support only. Valid native wet centres inside reporting water and same R5 cell; cos(latitude) weights; no fill ARCO midnight calendar-day label; official daily mean midnight-to-midnight centred at noon Practical salinity; provider unit 1e-3 and unit_long Practical Salinity Unit  Null means no qualified estimate; never zero. Sources and depths remain distinct; no mosaic or salinity conversion. Historical forecast availability is unknown. Copernicus GLORYS12 at about 0.49 m; tides are excluded. Speed averages native daily-vector magnitudes spatially; it is neither mean hourly speed nor the magnitude of the spatially averaged vector. Coarse support does not establish narrow-passage coverage; unsupported inland cells remain null. Attribution: E.U. Copernicus Marine Service Information; DOI 10.48670/moi-00021. 2009-01-01\u20132021-06-30: documented reanalysis. 2021-07-01\u20132026-09-22: documented interim near-real-time assimilation. A separate forcing change starts 2019-01-01. QUID Issue 1.6 section V page 50: interim from July 2021; no later authoritative final reprocessing established.",
+    "GLORYS12 daily surface reanalysis; no tidal constituents; native wet support only. Valid native wet centres inside reporting water and same R5 cell; cos(latitude) weights; no fill ARCO midnight calendar-day label; official daily mean midnight-to-midnight centred at noon Positive eastward, negative westward.  Null means no qualified estimate; never zero. Sources and depths remain distinct; no mosaic or salinity conversion. Historical forecast availability is unknown. Copernicus GLORYS12 at about 0.49 m; tides are excluded. Speed averages native daily-vector magnitudes spatially; it is neither mean hourly speed nor the magnitude of the spatially averaged vector. Coarse support does not establish narrow-passage coverage; unsupported inland cells remain null. Attribution: E.U. Copernicus Marine Service Information; DOI 10.48670/moi-00021. 2009-01-01\u20132021-06-30: documented reanalysis. 2021-07-01\u20132026-09-22: documented interim near-real-time assimilation. A separate forcing change starts 2019-01-01. QUID Issue 1.6 section V page 50: interim from July 2021; no later authoritative final reprocessing established.",
+    "GLORYS12 daily surface reanalysis; no tidal constituents; native wet support only. Valid native wet centres inside reporting water and same R5 cell; cos(latitude) weights; no fill ARCO midnight calendar-day label; official daily mean midnight-to-midnight centred at noon Positive northward, negative southward.  Null means no qualified estimate; never zero. Sources and depths remain distinct; no mosaic or salinity conversion. Historical forecast availability is unknown. Copernicus GLORYS12 at about 0.49 m; tides are excluded. Speed averages native daily-vector magnitudes spatially; it is neither mean hourly speed nor the magnitude of the spatially averaged vector. Coarse support does not establish narrow-passage coverage; unsupported inland cells remain null. Attribution: E.U. Copernicus Marine Service Information; DOI 10.48670/moi-00021. 2009-01-01\u20132021-06-30: documented reanalysis. 2021-07-01\u20132026-09-22: documented interim near-real-time assimilation. A separate forcing change starts 2019-01-01. QUID Issue 1.6 section V page 50: interim from July 2021; no later authoritative final reprocessing established.",
+    "GLORYS12 daily surface reanalysis; no tidal constituents; native wet support only. Valid native wet centres inside reporting water and same R5 cell; cos(latitude) weights; no fill ARCO midnight calendar-day label; official daily mean midnight-to-midnight centred at noon Spatially weighted native magnitudes of daily-mean geographic vectors, not mean hourly speed  Null means no qualified estimate; never zero. Sources and depths remain distinct; no mosaic or salinity conversion. Historical forecast availability is unknown. Copernicus GLORYS12 at about 0.49 m; tides are excluded. Speed averages native daily-vector magnitudes spatially; it is neither mean hourly speed nor the magnitude of the spatially averaged vector. Coarse support does not establish narrow-passage coverage; unsupported inland cells remain null. Attribution: E.U. Copernicus Marine Service Information; DOI 10.48670/moi-00021. 2009-01-01\u20132021-06-30: documented reanalysis. 2021-07-01\u20132026-09-22: documented interim near-real-time assimilation. A separate forcing change starts 2019-01-01. QUID Issue 1.6 section V page 50: interim from July 2021; no later authoritative final reprocessing established."
+  ],
+  "rendered": {
+    "dates": [
+      "2009-01-01",
+      "2019-01-01",
+      "2026-09-22"
+    ],
+    "date_options": 6474,
+    "all_four_metrics": true,
+    "supported_cell": "8528c27bfffffff",
+    "null_cell": "8528d543fffffff",
+    "null_history": "No qualified values in this window.",
+    "provenance_visible": true,
+    "history_window_max_dates": 31
+  },
+  "checks": {
+    "backend_tests": 33,
+    "frontend_tests": 46,
+    "lint": "pass",
+    "types_build": "pass",
+    "build_seconds": 3.85
+  },
+  "performance": {
+    "api_rss_kib_samples": [
+      1707456,
+      1545616,
+      1554432
+    ],
+    "cold_load": "Several minutes; exact initial timing lost when task evidence directory disappeared. catalog_wait_seconds records subsequent warm read.",
+    "daily_query_seconds_min": 0.050933958002133295,
+    "daily_query_seconds_max": 0.06666879099793732
+  },
+  "limitations": [
+    "GLORYS excludes tides and unsupported inland cells remain null.",
+    "Historical forecast availability unknown.",
+    "Existing unrelated Human source unavailable."
+  ]
+}

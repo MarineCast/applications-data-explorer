@@ -2,6 +2,7 @@ import { webcrypto, createHash } from "node:crypto";
 import { latLngToCell } from "h3-js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  checkedAsset,
   decodeColumn,
   loadSeascapeCatalog,
   loadSeascapeLayer,
@@ -10,6 +11,7 @@ import {
 } from "./seascape";
 import type { SeascapeCatalog, SeascapeFeature, SourceValue } from "./seascape";
 import { cellGeoJSON } from "./map";
+import { biogenicHabitatFeatures } from "./biogenicHabitats";
 let serial = 0;
 function sourceFixture(ids: string[], values: SourceValue[]) {
   const root = `/test-${++serial}`;
@@ -77,6 +79,19 @@ function sourceFixture(ids: string[], values: SourceValue[]) {
   return { catalog, field, bodies, asset };
 }
 afterEach(() => vi.unstubAllGlobals());
+it("loads integer reef evidence as False/True categories without losing zeros or source values", async () => {
+  const ids = [latLngToCell(48.45, -123.5, 6), latLngToCell(49, -123.5, 6)];
+  const fixture = sourceFixture(ids, [0, 1]);
+  const product = fixture.catalog.resolutions["6"];
+  product.columns.has_mapped_artificial_reef = product.columns.BATHYMETRY;
+  const [field] = biogenicHabitatFeatures([{ ...fixture.field, id: "anthropogenic_static__has_mapped_artificial_reef", column: "has_mapped_artificial_reef", family: "Anthropogenic", dataset: "seascape", kind: "numeric", arrowType: "int64" }]);
+  const layer = await loadSeascapeLayer(fixture.catalog, field);
+  expect(layer.categories).toEqual(["0", "1"]);
+  expect([...layer.values.values()]).toEqual([0, 1]);
+  expect([...layer.rawValues!.values()]).toEqual([0, 1]);
+  expect(cellGeoJSON(layer).features).toHaveLength(2);
+  expect([...await loadSeascapeValues(fixture.catalog, field)].map(([, value]) => value)).toEqual([0, 1]);
+});
 describe("native seascape product adapter", () => {
   function flatFixture() {
     const f = sourceFixture([latLngToCell(48.45, -123.5, 6)], [0]);
@@ -202,7 +217,7 @@ describe("native seascape product adapter", () => {
     expect(layer.values.get(ids[0])).toBe(0);
     expect(layer.values.get(ids[1])).toBeNull();
     expect(layer.qualifiers.STATUS).toEqual(["unknown coverage", null]);
-    const geo = cellGeoJSON("temperature", 11, "all", layer);
+    const geo = cellGeoJSON(layer);
     expect(geo.features.map((f) => f.properties?.value)).toEqual([0, null]);
     expect(geo.features[1].properties?.color).toBe("#d4d8d4");
     expect(geo.features[0].geometry.coordinates[0][0]).toEqual(
@@ -375,4 +390,27 @@ it("keeps tribal boolean true, false and unknown distinct as categorical values 
   expect([...layer.rawValues!.values()]).toEqual([true,false,null]);
   expect([...layer.values.values()]).toEqual([1,0,null]);
   expect(layer.categories).toEqual(["false","true"]);
+});
+
+it("bounds Oceanography playback asset retention and refetches evicted days", async () => {
+  vi.stubGlobal("crypto", webcrypto);
+  const body = JSON.stringify({ values: [1, null] });
+  const fetcher = vi.fn(async () => new Response(body));
+  vi.stubGlobal("fetch", fetcher);
+  const binding = (i: number) => ({ url: `/local-data/seascape/ocean-cache-test/assets/${i}.json`, sha256: createHash("sha256").update(body).digest("hex") });
+  for (let i = 0; i < 20; i++) await checkedAsset(binding(i));
+  await checkedAsset(binding(19));
+  expect(fetcher).toHaveBeenCalledTimes(20);
+  await checkedAsset(binding(0));
+  expect(fetcher).toHaveBeenCalledTimes(21);
+});
+
+it('loads tide timestamps losslessly and maps support categorically, never as numeric times',async()=>{
+ const ids=[latLngToCell(48.45,-123.5,6),latLngToCell(48.6,-123.7,6)];const f=sourceFixture(ids,[0,null]);
+ Object.assign(f.field,{id:'tide_events',column:'high_tide_times_utc',productId:'tides',dataset:'oceanography',kind:'categorical',categories:['Station predictions available'],qualifiers:['low_tide_times_utc','high_tide_local_times','low_tide_local_times'],tideEvents:{stations:{s:{id:'s',name:'Station',provider:'noaa',timezone:'America/Los_Angeles'}},mapping:{[ids[0]]:{station:'s',distance_km:1,water_target_r8:'unused'}}}});
+ const product={...f.catalog.resolutions['6'],columns:{high_tide_times_utc:f.asset('high',{values:[['2024-07-01T03:00:00+00:00'],null]}),low_tide_times_utc:f.asset('low',{values:[[],null]}),high_tide_local_times:f.asset('local-high',{values:[['2024-06-30T20:00:00-07:00'],null]}),low_tide_local_times:f.asset('local-low',{values:[[],null]})}};
+ f.catalog.products={tides:{axis:'UTC event day',defaultSlice:'2024-07-01',slices:{'2024-07-01':product}}};
+ const layer=await loadSeascapeLayer(f.catalog,f.field);expect([...layer.values.values()]).toEqual([0,null]);expect([...layer.rawValues!.values()]).toEqual(['Station predictions available',null]);expect(layer.tideEvents![ids[0]].high_tide_local_times).toEqual(['2024-06-30T20:00:00-07:00']);
+ await expect(loadSeascapeLayer(f.catalog,f.field,'2024-07-04')).rejects.toThrow('Unavailable');
+ product.columns.high_tide_local_times=f.asset('bad-local',{values:[['2024-07-01T20:00:00-07:00'],null]});await expect(loadSeascapeLayer(f.catalog,f.field)).rejects.toThrow('pairing');
 });

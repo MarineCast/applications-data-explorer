@@ -191,3 +191,10 @@ it("renders public presence as True/False without an unknown category", () => {
   expect(screen.getByRole("button",{name:"True · 0 cells"})).toBeInTheDocument();
   expect(screen.getByRole("region",{name:"Map legend"})).not.toHaveTextContent("Unknown coverage");
 });
+
+it("shows compact reef 0/1 categories as False/True with exact cell counts", () => {
+  const values = new Map<string,number|null>([["a",0],["b",1],["c",1]]);
+  render(<MapLegend layer={{...layer,id:"anthropogenic_static__has_mapped_artificial_reef",name:"Artificial Reef",categories:["0","1"],values}} scale={createCategoryScale(values,["0","1"],"ocean")} opacity={.8} onPalette={vi.fn()} onScaleMode={vi.fn()} onOpacity={vi.fn()}/>);
+  expect(screen.getByRole("button",{name:"False · 1 cell"})).toBeInTheDocument();
+  expect(screen.getByRole("button",{name:"True · 2 cells"})).toBeInTheDocument();
+});

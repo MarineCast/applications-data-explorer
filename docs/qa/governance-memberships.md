@@ -1,5 +1,20 @@
 # Governance feature memberships
 
+## Self-contained final products — 2026-11-01
+
+The independent reader now supports contract v5: identical selected physical
+columns with lossless scientific support embedded in the final Parquet metadata.
+It checks the embedded binding, aliases, labels and exact reconstruction. Source
+watching needs only the final Data files for v5; required external audits remain
+watched for legacy v2–v4 inputs. Existing delivered products were not migrated.
+
+All 24 Governance Python reader tests passed with producer/sibling imports blocked.
+Storage-only candidates matched all public and reconstructed scientific arrays
+across the retained 2,621 R6 and 88,243 R8 rows, including independent consumer
+readback. Temporary candidates were removed. This does not rerun regional overlays,
+source acquisition or interactive browser QA. See the
+[current producer contract](../../../../Toolkits/toolkit-governance/docs/parquet-products.md#compact-delivery-and-external-audit).
+
 Current family label (2026-10-19): **Fisheries Management Areas**, replacing
 Management Areas in both normal and comparison selectors. Feature names remain
 **Management Area Count** and **Management Area**. Native `management_areas`
@@ -92,3 +107,53 @@ Evidence and rollback:
 - `/tmp/governance-consumer-promotion-cache/activation-report.json` records cache activation; `live-browser-catalog-before.json` retains the previous catalog. Existing asset trees were retained for rollback.
 
 No source downloads, raw source copies, push or merge occurred. The normal Vite app remains running on port 5173. To update only Governance in a future prepared map cache, run `python scripts/governance_input.py --governance ../../Data/Governance`; this verifies reused assets and sources before atomically replacing the catalog.
+
+
+## App-only source tables — 2026-10-25
+
+The user requested exactly the handpicked Explorer feature columns plus H3 in the
+source Parquets. Application-v2 deliveries contain 21 columns per native R6/R8
+static table. The combined conservation assignment is now materialized; all
+selected counts/flags remain. Removed scientific support is retained in required,
+checksum-bound external audits, with exact reconstruction of the original table.
+The reader restores that support before using the established feature/inspection
+pipeline. Audit paths participate in source watching and snapshot bindings;
+missing/changed audits fail closed. Legacy v1 products remain readable.
+
+Current checks: 21 Governance Python tests, 10 automatic-reader tests and 55
+selected feature/picker tests passed; typecheck and lint passed. Both real native
+products retained all twenty feature IDs, names, definitions, units, categories
+and qualifiers, with exact H3 identities, all 53 encoded scalar arrays and all 15
+membership payloads per resolution. Only source-file checksums and generated
+asset locations changed. No new source acquisition, overlay, legal applicability
+review, model validation or interactive browser QA was performed. See the
+[producer contract](../../../../Toolkits/toolkit-governance/docs/parquet-products.md#compact-delivery-and-external-audit)
+and [dated validation](../../../../Reports/governance-app-only-2026-10-25/report.json).
+
+
+## Friendly source names — 2026-10-25
+
+Application-v3 source columns use `_count`, `_membership` and `has_`, with explicit
+fraction units in `conservation_area_coverage_fraction`. The independent reader
+verifies `column_aliases`, then restores the native scientific names internally;
+existing feature IDs, labels, inspection keys and saved selections stay stable.
+The alias change preserves all scalar/nested values, types and nulls. Existing
+external audits are reused and remain checksum-bound. v1/v2 inputs remain readable.
+Current rename validation is recorded in the [dated report](../../../../Reports/governance-column-names-2026-10-25/report.json).
+
+
+## Readable membership values — 2026-10-25
+
+Application-v4 replaces all eleven public membership structs with sorted distinct
+readable name lists. Cells remain one native H3 row. Country and state/province
+labels use explicit source codes/titles, fisheries prefer area titles, and other
+labels use names/titles/codes. Conservation references retain `[Proposed]` and
+`[Interim]`. Null lists and observed empty lists remain distinct. A future unnamed
+feature retains a null list item. Names are display labels; counts still count
+recorded identities and can differ from list lengths.
+
+Every original typed membership is now in required external audit support. The
+reader independently verifies name policy and exact labels, then restores typed
+memberships for the existing map/inspection pipeline. Saved IDs, original records,
+overlap details and scientific nulls remain preserved. Legacy v1/v2/v3 remain
+readable. See the [dated validation](../../../../Reports/governance-membership-names-2026-10-25/report.json).

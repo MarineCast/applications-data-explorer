@@ -1,5 +1,6 @@
 # Use the existing scientific Python environment, or an isolated venv.
-fastapi>=0.115,<0.151
+# Shared layer/Relationships API; keep the tested lifespan/SSE middleware behavior.
+fastapi>=0.150,<0.151
 uvicorn>=0.30,<1
 pydantic>=2.9,<3
 numpy>=2,<3

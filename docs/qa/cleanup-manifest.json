@@ -1,0 +1,1048 @@
+{
+  "status": "Approved removal implemented 2026-10-24",
+  "review_date": "2026-10-24",
+  "owner": "/Users/tylerstevenson/Documents/Code_Repos/MarineCast/Applications/applications-data-explorer",
+  "revision": "b570ace8b05068482ed81868245c634fc1574278",
+  "method": "Static entry-point/import reachability, tracked references, routes/config/backend review, exact approved manifest removal, retained-file hashes, software checks and compact browser smoke checks.",
+  "total_files": 160,
+  "total_logical_bytes": 110530009,
+  "remove_dependencies": [
+    "@react-three/fiber",
+    "pixi.js"
+  ],
+  "retain_dependencies": [
+    "three",
+    "@types/three"
+  ],
+  "files": [
+    {
+      "path": "artwork/blender/README.md",
+      "bytes": 997,
+      "reason": "Retired Blender authoring files",
+      "sha256": "6b70d56446ad78362941deec3af9ddd835bffc38cea5a4785f397cfb6e42d921"
+    },
+    {
+      "path": "artwork/blender/living-coast.blend",
+      "bytes": 352499,
+      "reason": "Retired Blender authoring files",
+      "sha256": "cb602645038a017648bc399828921e7cc3aec30c777430a69161420cf2a1086f"
+    },
+    {
+      "path": "artwork/blender/marinecast-coastal-gull.blend",
+      "bytes": 375841,
+      "reason": "Retired Blender authoring files",
+      "sha256": "53495af5f8baa6f3eda276e0fa67b187f152cf5feaba55ce28c111400189546c"
+    },
+    {
+      "path": "artwork/blender/marinecast-gull.blend",
+      "bytes": 153377,
+      "reason": "Retired Blender authoring files",
+      "sha256": "3c29fdc3fbde17f188ace9bf9a1d55e629afc7febd82a6bbe48e8f5f1d302d25"
+    },
+    {
+      "path": "public/assets/home/OFL.txt",
+      "bytes": 4377,
+      "reason": "Unused implementation or asset; references confined to retired code, tests or historical documentation",
+      "sha256": "186d750eb496a4c17a76385f82be6aea2ac1cf2de074a811d63786cf374ea73f"
+    },
+    {
+      "path": "public/assets/home/barlow-condensed-semibold.ttf",
+      "bytes": 86636,
+      "reason": "Unused implementation or asset; references confined to retired code, tests or historical documentation",
+      "sha256": "0d85af813fc3ed87db0c6265515689b2eef5cbaf7aab17922528dfc95a2cd73f"
+    },
+    {
+      "path": "public/assets/home/coastal-world/GSHHG-COPYING.LESSERv3",
+      "bytes": 7651,
+      "reason": "Assets referenced only by retired renderers, generators and tests",
+      "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+    },
+    {
+      "path": "public/assets/home/coastal-world/GSHHG-LICENSE.TXT",
+      "bytes": 1351,
+      "reason": "Assets referenced only by retired renderers, generators and tests",
+      "sha256": "5514340b2f88d50385056d94ab364a48162fb66e83c468d2e67e09b9617256d2"
+    },
+    {
+      "path": "public/assets/home/coastal-world/README.md",
+      "bytes": 11230,
+      "reason": "Assets referenced only by retired renderers, generators and tests",
+      "sha256": "34a2f8deecbe208b40cb5649b9adf4ae4281fe23c414017a0fc68ba598b42323"
+    },
+    {
+      "path": "public/assets/home/coastal-world/boat.glb",
+      "bytes": 25484,
+      "reason": "Assets referenced only by retired renderers, generators and tests",
+      "sha256": "185f1c53d8100ff437b790b6afa676d9803f0b608b6f4cbf8c796465c69c2d08"
+    },
+    {
+      "path": "public/assets/home/coastal-world/clearance.bin",
+      "bytes": 4680000,
+      "reason": "Assets referenced only by retired renderers, generators and tests",
+      "sha256": "c4fa56ce5a7d8f1c9657cb87ee5f22638b3612078b93ac9e6f109ef0815a8ea7"
+    },
+    {
+      "path": "public/assets/home/coastal-world/coast-field.png",
+      "bytes": 316005,
+      "reason": "Assets referenced only by retired renderers, generators and tests",
+      "sha256": "17588612c37700a42867e43eeb644a6f800619828c351b8e0ba238b9950ba4b8"
+    },
+    {
+      "path": "public/assets/home/coastal-world/coastal-rock.png",
+      "bytes": 4534831,
+      "reason": "Assets referenced only by retired renderers, generators and tests",
+      "sha256": "82c676fb31d3f4f8941b1a6a6f5c8fbcb3e6932b4cf36d5cf1677a60872fffd6"
+    },
+    {
+      "path": "public/assets/home/coastal-world/evergreen-bough.png",
+      "bytes": 2464986,
+      "reason": "Assets referenced only by retired renderers, generators and tests",
+      "sha256": "e83e63eafa56eb4dafcb1311e6f51d95a1cc48bf7b0843ed678ddc5df62a9a28"
+    },
+    {
+      "path": "public/assets/home/coastal-world/fir-0.glb",
+      "bytes": 2478868,
+      "reason": "Assets referenced only by retired renderers, generators and tests",
+      "sha256": "3cbfa85723def8d10bbd2497037ecb80e1f68d4b9a64e08eeeefec69f7d58231"
+    },
+    {
+      "path": "public/assets/home/coastal-world/fir-1.glb",
+      "bytes": 2478820,
+      "reason": "Assets referenced only by retired renderers, generators and tests",
+      "sha256": "04aba347f079d5209238ebf391289c9f65751861c7c1f7970cd25407b7736c8a"
+    },
+    {
+      "path": "public/assets/home/coastal-world/fir-2.glb",
+      "bytes": 2478888,
+      "reason": "Assets referenced only by retired renderers, generators and tests",
+      "sha256": "b5a4577eb1a8e218278a4b2c4c0d13852ea786a7d8b41a6c2d9b553f156c13e3"
+    },
+    {
+      "path": "public/assets/home/coastal-world/forest.bin",
+      "bytes": 16991544,
+      "reason": "Assets referenced only by retired renderers, generators and tests",
+      "sha256": "bce49aeb3089e732d626c1162b1da5060bd02ec99677aa89019765886992fb49"
+    },
+    {
+      "path": "public/assets/home/coastal-world/orca.glb",
+      "bytes": 44052,
+      "reason": "Assets referenced only by retired renderers, generators and tests",
+      "sha256": "93fa196d5a6d60d5b73d851234622ae540ee66aa657c7b879758fddf7fbb2ef3"
+    },
+    {
+      "path": "public/assets/home/coastal-world/region.json",
+      "bytes": 461,
+      "reason": "Assets referenced only by retired renderers, generators and tests",
+      "sha256": "c635fb027b79a10e20502300943c4b4f87b326f478d7ce168db7007d91413f8c"
+    },
+    {
+      "path": "public/assets/home/coastal-world/regional-land-mask.png",
+      "bytes": 69422,
+      "reason": "Assets referenced only by retired renderers, generators and tests",
+      "sha256": "154f6a97bfc00e41aa285fbd63989f6c3767faf404fe9d221a3e9098384a2e68"
+    },
+    {
+      "path": "public/assets/home/coastal-world/stylized-land-mask.png",
+      "bytes": 18523,
+      "reason": "Assets referenced only by retired renderers, generators and tests",
+      "sha256": "08912a96d27fe9c13b77d5bd5bc08b1e217335a285a674b982ec74d648490272"
+    },
+    {
+      "path": "public/assets/home/coastal-world/terrain.glb",
+      "bytes": 66202688,
+      "reason": "Assets referenced only by retired renderers, generators and tests",
+      "sha256": "13c2f67d3e17cdeff5d11b3bf45359a888119baac009074b246f5b0e0d80b2fa"
+    },
+    {
+      "path": "public/assets/home/coastal-world/world.json",
+      "bytes": 60750,
+      "reason": "Assets referenced only by retired renderers, generators and tests",
+      "sha256": "f0b50bf7e330c21c78c8dcdd48280a70932361f5505f8d23acd698631025f370"
+    },
+    {
+      "path": "public/assets/home/field-atlas/README.md",
+      "bytes": 1079,
+      "reason": "Assets referenced only by retired renderers",
+      "sha256": "7d171511898df5ae7a608c388f6d8ed3a56cf55dbc71862e854e95e970540973"
+    },
+    {
+      "path": "public/assets/home/field-atlas/coast-field.png",
+      "bytes": 130039,
+      "reason": "Assets referenced only by retired renderers",
+      "sha256": "ca7900190e5d045cb3b575b976d592692a71b1136cad0d3563f40c1d65d0bec3"
+    },
+    {
+      "path": "public/assets/home/field-atlas/geometry.json",
+      "bytes": 515,
+      "reason": "Assets referenced only by retired renderers",
+      "sha256": "505dcb992aae6c404017bc1942853168d8f648a38ba6b059533d172d7089ccdc"
+    },
+    {
+      "path": "public/assets/home/field-atlas/lookout.webp",
+      "bytes": 44344,
+      "reason": "Assets referenced only by retired renderers",
+      "sha256": "147a4bb23366aae4b8a738f036e14db0c0a3927d89299450867e4b8a228141b4"
+    },
+    {
+      "path": "public/assets/home/field-atlas/orcas-mask.png",
+      "bytes": 28394,
+      "reason": "Assets referenced only by retired renderers",
+      "sha256": "bf32dc000eda87d0c7f68ace5093802c6abc92d2c289714c44a47009d804c742"
+    },
+    {
+      "path": "public/assets/home/field-atlas/terrain.webp",
+      "bytes": 216492,
+      "reason": "Assets referenced only by retired renderers",
+      "sha256": "2ed74218b78a2d8407013be0c0738c08b6f60e6a23a54365cdde08dc53507836"
+    },
+    {
+      "path": "public/assets/home/field-atlas/tree-1.webp",
+      "bytes": 17508,
+      "reason": "Assets referenced only by retired renderers",
+      "sha256": "32582a3c699d4df6225256b2273fb368cef47d28bc35603d3ffc41604e6381cf"
+    },
+    {
+      "path": "public/assets/home/field-atlas/tree-2.webp",
+      "bytes": 39542,
+      "reason": "Assets referenced only by retired renderers",
+      "sha256": "b69b5692d3f823e6d1fa378348e3625f78b0f98052442dcdeaacfa847207c09a"
+    },
+    {
+      "path": "public/assets/home/field-atlas/tree-3.webp",
+      "bytes": 37256,
+      "reason": "Assets referenced only by retired renderers",
+      "sha256": "81174c42dbe74431ac5599e4d6a68362e33f91de67b8f3f662dd3c2e3070bfd2"
+    },
+    {
+      "path": "public/assets/home/field-atlas/tree-4.webp",
+      "bytes": 21084,
+      "reason": "Assets referenced only by retired renderers",
+      "sha256": "bc8c21f86d1767720f020496d0c4ee2c2a2991fd53fca8b35e7ab95bb96d3bac"
+    },
+    {
+      "path": "public/assets/home/field-atlas/tree-5.webp",
+      "bytes": 29444,
+      "reason": "Assets referenced only by retired renderers",
+      "sha256": "d1a5a2f5387d5efbe1b01cf5c1a4a51fd94e816306e77e819b813ac2fec4609e"
+    },
+    {
+      "path": "public/assets/home/field-atlas/tree-6.webp",
+      "bytes": 23492,
+      "reason": "Assets referenced only by retired renderers",
+      "sha256": "948c92beac65d26f1c7aa4355263105922cb691697de34f69d9679dde4974176"
+    },
+    {
+      "path": "public/assets/home/marinecast-coastal-map.jpg",
+      "bytes": 678317,
+      "reason": "Unused implementation or asset; references confined to retired code, tests or historical documentation",
+      "sha256": "ed256512253516ed5971d059f536b1c4edf37c6cc07e9fe8fdc9d8332e3e1972"
+    },
+    {
+      "path": "public/assets/home/marinecast-wave.png",
+      "bytes": 8986,
+      "reason": "Unused implementation or asset; references confined to retired code, tests or historical documentation",
+      "sha256": "39c0baf55480bd1be7b00078231802690b365b06a173d8cf7af3d6b9d660c89d"
+    },
+    {
+      "path": "public/assets/home/ocean/buoy.webp",
+      "bytes": 118938,
+      "reason": "Retired artwork assets",
+      "sha256": "068b55ea800f84496f54503d53642665a5be2ef2b1f747d75015707be5acc2c3"
+    },
+    {
+      "path": "public/assets/home/ocean/clouds.webp",
+      "bytes": 100362,
+      "reason": "Retired artwork assets",
+      "sha256": "d44d4b01987536265c5445d5afb78f3ac69b66c10c422ab96799dd94ba832524"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-00.webp",
+      "bytes": 5686,
+      "reason": "Retired artwork assets",
+      "sha256": "83ed85cc27a5e2b70ff9c51d0f788f98a5cd0053a3a82a698ec2f4e7a0b49f4f"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-01.webp",
+      "bytes": 5782,
+      "reason": "Retired artwork assets",
+      "sha256": "e12bf8861c0f52525c6af0d35a1c164ec77ee1552ad96a8c6d3131f22f8e800c"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-02.webp",
+      "bytes": 5518,
+      "reason": "Retired artwork assets",
+      "sha256": "c8f351ee277cd4150086831e497514fe78f4f6bffa7dff6aeba36e4182f6a713"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-03.webp",
+      "bytes": 5434,
+      "reason": "Retired artwork assets",
+      "sha256": "31bfab9b76a0e6991199c339a9232e443794ccb6d0f9a3f6acf8038257b4451e"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-04.webp",
+      "bytes": 5886,
+      "reason": "Retired artwork assets",
+      "sha256": "168ccdbfb040206f8ebf5311d8c1f7f063cf5d38b79b7295f7ec03e5acee28ff"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-05.webp",
+      "bytes": 6048,
+      "reason": "Retired artwork assets",
+      "sha256": "aaf8f27618698f4b9338b2e64812e5c4a688561022f0da8a8a4b1a315684c210"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-06.webp",
+      "bytes": 6690,
+      "reason": "Retired artwork assets",
+      "sha256": "ca30c90b466e94e426d76f8d118ca23c5a72ac6c1e16654ee5c66952a820c373"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-07.webp",
+      "bytes": 6720,
+      "reason": "Retired artwork assets",
+      "sha256": "eec25f1d348032770138b9e697555f52bca198cfa92dcd9e05c616e628aa396d"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-08.webp",
+      "bytes": 6730,
+      "reason": "Retired artwork assets",
+      "sha256": "420a162c06655bf331ee95b4540f83cc0fcc4501fe9141acfaf3fdc5046ac2fb"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-09.webp",
+      "bytes": 6824,
+      "reason": "Retired artwork assets",
+      "sha256": "58f85182c9d3b4dc4404ee8a1ece98eb81f9577446a0790f01e6e20dc0496278"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-10.webp",
+      "bytes": 6836,
+      "reason": "Retired artwork assets",
+      "sha256": "0802626ea51c64088a036e33f3ef6e0af95e01e3a0df0536ca36ca56a4e2034d"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-11.webp",
+      "bytes": 6460,
+      "reason": "Retired artwork assets",
+      "sha256": "5290ffec531e364fffbc51aaf6fffec9262e8cf2348be9f4441918d21dc582d6"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-12.webp",
+      "bytes": 6110,
+      "reason": "Retired artwork assets",
+      "sha256": "198f96c29ef936a16645768bb3d1dcace444e2733acb2e8e90657e2dc752d3bd"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-13.webp",
+      "bytes": 5820,
+      "reason": "Retired artwork assets",
+      "sha256": "28826e04322ba30207934bcec887fbef55ad07050124724a8d68774af6cb13f3"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-14.webp",
+      "bytes": 5560,
+      "reason": "Retired artwork assets",
+      "sha256": "39c0662e47de90f559b0818defeb470f743357ce114bab4780f2b70db711549f"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-15.webp",
+      "bytes": 5562,
+      "reason": "Retired artwork assets",
+      "sha256": "3c7962b1ad58010d3da892c65911ec6c77c20f088ebda88672df628e283f9796"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-16.webp",
+      "bytes": 5928,
+      "reason": "Retired artwork assets",
+      "sha256": "dfe69d65ecdbf25d48d02a85bd57f73d7704031aa96cdb05d82cb01002ea0f99"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-17.webp",
+      "bytes": 5692,
+      "reason": "Retired artwork assets",
+      "sha256": "2d619e3aeb77b4968af918541a3140fef8c406111e891d17b959692847aeb3be"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-18.webp",
+      "bytes": 5336,
+      "reason": "Retired artwork assets",
+      "sha256": "1feb487a2355b92caab4aa971b9bd0fa0f9bb22d076742357ea263e337fba240"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-19.webp",
+      "bytes": 5188,
+      "reason": "Retired artwork assets",
+      "sha256": "714d1181f928eee13e8f101eb44672c5c0169e72bbcec7c7819442326620daac"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-20.webp",
+      "bytes": 5230,
+      "reason": "Retired artwork assets",
+      "sha256": "0e960fadb76446d830f3620ead854be3c3343ae73acd1dc94584fe906822e42f"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-21.webp",
+      "bytes": 5488,
+      "reason": "Retired artwork assets",
+      "sha256": "d55399667f20e2965043f63675ad2ac843fb8c6edb81ab0d9c6c2fd28ffdc58b"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-22.webp",
+      "bytes": 5720,
+      "reason": "Retired artwork assets",
+      "sha256": "28a3294a92cd7352727b1b830f7566080d6a18bfd0d0bde236a38439d54de0a5"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-23.webp",
+      "bytes": 5938,
+      "reason": "Retired artwork assets",
+      "sha256": "07bee891b7006d2620cf0544429b4959d9f2130cda0f88b7a400e45f7ebd723e"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-24.webp",
+      "bytes": 5962,
+      "reason": "Retired artwork assets",
+      "sha256": "545ce5c63cf0584508c952f3512c4304bcda395c7bde1a79549144132826c76b"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-25.webp",
+      "bytes": 5952,
+      "reason": "Retired artwork assets",
+      "sha256": "290d7a105cc6579911ecdd1dd1682f4afcc4c35924f758b8cc478dc1a5bc3053"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-26.webp",
+      "bytes": 6052,
+      "reason": "Retired artwork assets",
+      "sha256": "e3184c81b8b747092d9a4178d489159a1657eed5829c6bae81642f2b254d6d32"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-27.webp",
+      "bytes": 5774,
+      "reason": "Retired artwork assets",
+      "sha256": "ee65dffdd2d8567dc4387f693c989493b6480fc0bdb3b4197e5014533e9f709d"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-28.webp",
+      "bytes": 5464,
+      "reason": "Retired artwork assets",
+      "sha256": "ca0bcc166f98385385c0296a3558ed1160bbf6832a3cd5dfe2bb7d08811c58b0"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-29.webp",
+      "bytes": 5356,
+      "reason": "Retired artwork assets",
+      "sha256": "39cbd50c727330bc7afab1d68fb723442e8d499f5cc2ad7a04813fc9fa48b6b6"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-30.webp",
+      "bytes": 5212,
+      "reason": "Retired artwork assets",
+      "sha256": "10e1ffe5efdb1cebf819100c4f19dd2ecc39ef82e76d47a53e47d3ff933fef80"
+    },
+    {
+      "path": "public/assets/home/ocean/coastal-gull/gull-31.webp",
+      "bytes": 5446,
+      "reason": "Retired artwork assets",
+      "sha256": "a4f6d4ae7177fc798c846da45946b2f501e783afcb158286d5dc39ec253faad7"
+    },
+    {
+      "path": "public/assets/home/ocean/gull-flight/gull-00.webp",
+      "bytes": 4612,
+      "reason": "Retired artwork assets",
+      "sha256": "ef1866a3342a6b7cd02534c9eda369ea47d202eaffce089db6978898c91130c1"
+    },
+    {
+      "path": "public/assets/home/ocean/gull-flight/gull-01.webp",
+      "bytes": 4734,
+      "reason": "Retired artwork assets",
+      "sha256": "8fe7f75f88d91dd98513b74c0a5d85f2926e1a633361fa6185f243c2ea085c30"
+    },
+    {
+      "path": "public/assets/home/ocean/gull-flight/gull-02.webp",
+      "bytes": 4814,
+      "reason": "Retired artwork assets",
+      "sha256": "3b3e908e47ee12040a4e780ccdfc9c1de3ac08f2f3086fc50db2100d4fcc73a9"
+    },
+    {
+      "path": "public/assets/home/ocean/gull-flight/gull-03.webp",
+      "bytes": 4572,
+      "reason": "Retired artwork assets",
+      "sha256": "a720313ec4eab5816974a52df94f35c3153cda7c394a3792b460bc1fbff4c4ca"
+    },
+    {
+      "path": "public/assets/home/ocean/gull-flight/gull-04.webp",
+      "bytes": 4292,
+      "reason": "Retired artwork assets",
+      "sha256": "d441511f3df3679c3fd1992b0999d91e273535bca168bf54677caa3735bf21d7"
+    },
+    {
+      "path": "public/assets/home/ocean/gull-flight/gull-05.webp",
+      "bytes": 4734,
+      "reason": "Retired artwork assets",
+      "sha256": "695069e0372fb5cd94057f2a42c81d35853913e0273175cd6d2afb16245b11bb"
+    },
+    {
+      "path": "public/assets/home/ocean/gull-flight/gull-06.webp",
+      "bytes": 5036,
+      "reason": "Retired artwork assets",
+      "sha256": "e3b09e6eafa016c04ad720efd2281e5c3e3e72f01adfeafc671fb8823072c881"
+    },
+    {
+      "path": "public/assets/home/ocean/gull-flight/gull-07.webp",
+      "bytes": 4676,
+      "reason": "Retired artwork assets",
+      "sha256": "fa1a8b9b2fec26102a61ec76cb45d3ca24b66ee7cf388819cd8383545db1cd8b"
+    },
+    {
+      "path": "public/assets/home/ocean/gull-flight/gull-08.webp",
+      "bytes": 4194,
+      "reason": "Retired artwork assets",
+      "sha256": "246a8d19f74a85c7be011fc3fa555dcabfaaa87f143fa86460df4ec154bff018"
+    },
+    {
+      "path": "public/assets/home/ocean/gull-flight/gull-09.webp",
+      "bytes": 4820,
+      "reason": "Retired artwork assets",
+      "sha256": "c6c6bab9a60331c50b6e56e085699b8d991d78bf83172f323dfe364da48ebe21"
+    },
+    {
+      "path": "public/assets/home/ocean/gull-flight/gull-10.webp",
+      "bytes": 4548,
+      "reason": "Retired artwork assets",
+      "sha256": "ef1529636bb68322484fe2c2fd38b67cde668140f58192cd216d3bab08053d04"
+    },
+    {
+      "path": "public/assets/home/ocean/gull-flight/gull-11.webp",
+      "bytes": 4252,
+      "reason": "Retired artwork assets",
+      "sha256": "5ef591ef336a1e4713b13a601867802ceee757bc893e5617bb7068a868a5a250"
+    },
+    {
+      "path": "public/assets/home/ocean/gull-flight/gull-12.webp",
+      "bytes": 4148,
+      "reason": "Retired artwork assets",
+      "sha256": "6d46cad8928192e1e215ccc4780e89841b2dc9b55c12349458a55ff91ca016cc"
+    },
+    {
+      "path": "public/assets/home/ocean/gull-flight/gull-13.webp",
+      "bytes": 4206,
+      "reason": "Retired artwork assets",
+      "sha256": "d91ace64b8375fee6da4b874ad099a75e30835ca8ce05602e010dcc36779208f"
+    },
+    {
+      "path": "public/assets/home/ocean/gull-flight/gull-14.webp",
+      "bytes": 4204,
+      "reason": "Retired artwork assets",
+      "sha256": "cdc236bcf1967ab6d6d92d4afb073743f4ed205c6a35af7d95c3d8be49d43e78"
+    },
+    {
+      "path": "public/assets/home/ocean/gull-flight/gull-15.webp",
+      "bytes": 4386,
+      "reason": "Retired artwork assets",
+      "sha256": "971720e1d574d21458d0e3b0a7a5df1135ce118c7220558eb7892630fc08c3bc"
+    },
+    {
+      "path": "public/assets/home/ocean/gull.webp",
+      "bytes": 32232,
+      "reason": "Retired artwork assets",
+      "sha256": "d9c9d61492484143ddeeb8f5b89ee2b75a2003c0dc58eac868e017e0455e7c02"
+    },
+    {
+      "path": "public/assets/home/ocean/herring-turn.webp",
+      "bytes": 36566,
+      "reason": "Retired artwork assets",
+      "sha256": "23a00f2c5906002d4b8d34677a8774550d9e0598684bcc9479814d1953f644c1"
+    },
+    {
+      "path": "public/assets/home/ocean/herring.webp",
+      "bytes": 30120,
+      "reason": "Retired artwork assets",
+      "sha256": "f0ff3e52742054455197fe7e8438eb1f5bc22badb3990bd58450bf9ef709e792"
+    },
+    {
+      "path": "public/assets/home/ocean/kelp.webp",
+      "bytes": 251074,
+      "reason": "Retired artwork assets",
+      "sha256": "64781d7fb5b9ef2c0e96f168526483fe2e1ae231dce334ca4b9772d1362d2520"
+    },
+    {
+      "path": "public/assets/home/ocean/living-coast/rooted-kelp.glb",
+      "bytes": 334260,
+      "reason": "Retired artwork assets",
+      "sha256": "975bf377dc8c9ff27d08a65695eea594e1406fc8125a36439409085fe6069a2d"
+    },
+    {
+      "path": "public/assets/home/ocean/ocean-background.webp",
+      "bytes": 316884,
+      "reason": "Retired artwork assets",
+      "sha256": "60920c5e9bcb275cf73c6e314938c5b5f6918470fb3a28dd9b28520a008257f1"
+    },
+    {
+      "path": "public/assets/home/ocean/ocean-clear-sky.webp",
+      "bytes": 292254,
+      "reason": "Retired artwork assets",
+      "sha256": "b2213020fc1842cc5a16a4a1afe252c506c392974987dd488441e19ac8f08d52"
+    },
+    {
+      "path": "public/assets/home/ocean/orca-turn.webp",
+      "bytes": 35530,
+      "reason": "Retired artwork assets",
+      "sha256": "b03bbca12ccafd23cd23811ad537049d266917e081aa081259646e8d60f21f45"
+    },
+    {
+      "path": "public/assets/home/ocean/orca.webp",
+      "bytes": 25140,
+      "reason": "Retired artwork assets",
+      "sha256": "dc1aa3a56d09d21cd2d27cd42ff8ffcacc456f7637107d75a7f163ab20c53ba9"
+    },
+    {
+      "path": "public/assets/home/ocean/rockfish-turn.webp",
+      "bytes": 77556,
+      "reason": "Retired artwork assets",
+      "sha256": "557096640a5e8dd0f90d9b0091b4340429de80f74ed996cfabfa1bcfc911f7a2"
+    },
+    {
+      "path": "public/assets/home/ocean/rockfish.webp",
+      "bytes": 65880,
+      "reason": "Retired artwork assets",
+      "sha256": "fb4be16163eb33b770568c45cd615c95bb5c2c21990991a746eb0fca937e6f7d"
+    },
+    {
+      "path": "public/assets/home/ocean/submarine-turn.webp",
+      "bytes": 37378,
+      "reason": "Retired artwork assets",
+      "sha256": "cd180a5c6f78b7a37262d018da82b6c9e4fc84033167953670dbff0e06a7904a"
+    },
+    {
+      "path": "public/assets/home/ocean/submarine.webp",
+      "bytes": 42026,
+      "reason": "Retired artwork assets",
+      "sha256": "06a44b1f4419d8055838e705294bde9ff36a2bc71f5db47c0393332e4473a23d"
+    },
+    {
+      "path": "public/assets/home/salish-sea-night.png",
+      "bytes": 2400080,
+      "reason": "Unused implementation or asset; references confined to retired code, tests or historical documentation",
+      "sha256": "80a241bd8e903b0064758df5079733a206f174c819d6f2ac7cea094fdb9def8b"
+    },
+    {
+      "path": "public/assets/home/san-juan/README.md",
+      "bytes": 3731,
+      "reason": "Assets referenced only by retired renderers and generators",
+      "sha256": "b682023365f2f8700a39e349b1bef43311fe01a025d909011b3064e3f73b424b"
+    },
+    {
+      "path": "public/assets/home/san-juan/background.webp",
+      "bytes": 556326,
+      "reason": "Assets referenced only by retired renderers and generators",
+      "sha256": "5b3d52214833f37078a1df75baa186418131af7f9e564de8d78eb5d356aa71fb"
+    },
+    {
+      "path": "public/assets/home/san-juan/boat.webp",
+      "bytes": 28878,
+      "reason": "Assets referenced only by retired renderers and generators",
+      "sha256": "eb5084abdddb2ef2d34faa0e46bbd3005af2bdbdf2670785447d430d9ab04b05"
+    },
+    {
+      "path": "public/assets/home/san-juan/buoy.webp",
+      "bytes": 20332,
+      "reason": "Assets referenced only by retired renderers and generators",
+      "sha256": "5c8603c879e4b9bc6211623e8efe885495e6e0627d9c46ded69795320507b100"
+    },
+    {
+      "path": "public/assets/home/san-juan/geography.json",
+      "bytes": 709,
+      "reason": "Assets referenced only by retired renderers and generators",
+      "sha256": "8bcd0850e5a247959ff73364abeb50bc9916f78f1a8a56dfb68c816879dd45d7"
+    },
+    {
+      "path": "public/assets/home/san-juan/land-mask.png",
+      "bytes": 121223,
+      "reason": "Assets referenced only by retired renderers and generators",
+      "sha256": "923670a22c4341cdb1e4ef0c1d5c0e5509e0236798753755707c28077e4a9c60"
+    },
+    {
+      "path": "public/assets/home/san-juan/orca.webp",
+      "bytes": 12738,
+      "reason": "Assets referenced only by retired renderers and generators",
+      "sha256": "8ceb6674a6ccc92721a7b3aab5295fc86b22080fb74b3e65db5afc654e540ff1"
+    },
+    {
+      "path": "scripts/blender/build_coastal_gull.py",
+      "bytes": 18662,
+      "reason": "Generators for retired artwork",
+      "sha256": "021ca1c2cd6c26e887611c0fb0544685b565cd93f13a469e69b0b41f02777b22"
+    },
+    {
+      "path": "scripts/blender/build_coastal_home.py",
+      "bytes": 11620,
+      "reason": "Generators for retired artwork",
+      "sha256": "2a28ea82b7a6593aa7b08c9eb7a501e2352b7a264fff2a19ee8e81a8867eee8f"
+    },
+    {
+      "path": "scripts/blender/build_living_coast.py",
+      "bytes": 5607,
+      "reason": "Generators for retired artwork",
+      "sha256": "7c683d09b4a57847993901796ade5158c7c9a932150e50e121be0708f490f9b3"
+    },
+    {
+      "path": "scripts/blender/coastal_relief.py",
+      "bytes": 2668,
+      "reason": "Generators for retired artwork",
+      "sha256": "79683dbe66fd4a3fecd5bf58c830b5c5ed9bec4b70f593e5f98b7d36cb6a1476"
+    },
+    {
+      "path": "scripts/blender/prepare_archipelago_mask.py",
+      "bytes": 2397,
+      "reason": "Generators for retired artwork",
+      "sha256": "41f8a0fe4109d42173109d72c0eb9b614990814512c9f99bbec25a375b9f7549"
+    },
+    {
+      "path": "scripts/blender/prepare_regional_coast.py",
+      "bytes": 3846,
+      "reason": "Generators for retired artwork",
+      "sha256": "4c56a85fd2e3d4ecda4b009d74842caaf992fdff0bf72dddf723f742c733ab5d"
+    },
+    {
+      "path": "scripts/blender/render_gull_flight.py",
+      "bytes": 7593,
+      "reason": "Generators for retired artwork",
+      "sha256": "5d28ab7d612ae86829cbd51735594dce36fb17982caf7671589df755225bdfd4"
+    },
+    {
+      "path": "scripts/meteorologyPlugin.ts",
+      "bytes": 3489,
+      "reason": "Unused implementation or asset; references confined to retired code, tests or historical documentation",
+      "sha256": "53a0fa4020d7cfb3c6f97303d05e8814178e022811e9cc888c34ebf9640aea3a"
+    },
+    {
+      "path": "src/components/AtlasSidebar.tsx",
+      "bytes": 2058,
+      "reason": "Unused implementation or asset; references confined to retired code, tests or historical documentation",
+      "sha256": "f2932f8c8f2770ea7917f964d30a25505d0888bc4806faa75b4dc6e21ddbee4f"
+    },
+    {
+      "path": "src/components/Charts.tsx",
+      "bytes": 2847,
+      "reason": "Unused implementation or asset; references confined to retired code, tests or historical documentation",
+      "sha256": "0ea4049d19c5ef7b71338d84c87fb31ca5f160413d7fcc98b53c1c6677812163"
+    },
+    {
+      "path": "src/components/HomeGridGlow.test.tsx",
+      "bytes": 6391,
+      "reason": "Unused implementation or asset; references confined to retired code, tests or historical documentation",
+      "sha256": "1b5302c2f136c1b1002773f5647ab17f40f1822a5da97701e65aacf1f22480ba"
+    },
+    {
+      "path": "src/components/HomeGridGlow.tsx",
+      "bytes": 7089,
+      "reason": "Unused implementation or asset; references confined to retired code, tests or historical documentation",
+      "sha256": "4dfd59964600357cb932ca74a67e1ea68492d6e2ea5b0f80e3e94c888eac687e"
+    },
+    {
+      "path": "src/components/LiveNorthernSky.css",
+      "bytes": 1927,
+      "reason": "Unused implementation or asset; references confined to retired code, tests or historical documentation",
+      "sha256": "1f0a8bae23ad9339a6980f06a26f8d32ddb693420429f6449d200398bb95d1fb"
+    },
+    {
+      "path": "src/components/LiveNorthernSky.test.tsx",
+      "bytes": 728,
+      "reason": "Unused implementation or asset; references confined to retired code, tests or historical documentation",
+      "sha256": "9ad6b217ba5ce3748f7c7b90d6a3db8e565b4e25d6423687467d361a0409465d"
+    },
+    {
+      "path": "src/components/LiveNorthernSky.tsx",
+      "bytes": 3748,
+      "reason": "Unused implementation or asset; references confined to retired code, tests or historical documentation",
+      "sha256": "b66bfd0c893adf9b40811b2e668b8a1bc56e4d0e3f7a351847479ac91891d33c"
+    },
+    {
+      "path": "src/components/field-atlas/AtlasCanvas.tsx",
+      "bytes": 7298,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "9ab0840310e653c266a2384af20210e127a272c7866d498728a67428f8c58382"
+    },
+    {
+      "path": "src/components/field-atlas/CoastalScene.test.tsx",
+      "bytes": 1164,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "1a39b1d333ff72319f9b34bd6334bf65d7067924a2b02430e2a36993cf5944f6"
+    },
+    {
+      "path": "src/components/field-atlas/CoastalScene.tsx",
+      "bytes": 4754,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "5b506c04d79e66b6042a0f732b98e78fada3ea87a1bf2467db1f20c5419a3698"
+    },
+    {
+      "path": "src/components/field-atlas/CoastalWorld.tsx",
+      "bytes": 21180,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "8bd14a4272b41cfe2d4b25af914df26cafaed56c01a1c5d11dd4821cf7add44d"
+    },
+    {
+      "path": "src/components/field-atlas/FieldAtlasScene.tsx",
+      "bytes": 3919,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "892c4b5c373927c96240ba6fed5e157858e11caa6a3c03a81a1cffa66243f8b9"
+    },
+    {
+      "path": "src/components/field-atlas/atlasMotion.ts",
+      "bytes": 866,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "fcb444b65f4adc3f0d6f40ed6a1e78805fb4fa25ce9b1c6844e787c224469848"
+    },
+    {
+      "path": "src/components/field-atlas/atlasShaders.ts",
+      "bytes": 2381,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "17fd40d6852683ee54e1e0550e04a8503bd56093d08685dc6941d7b51d92bdc0"
+    },
+    {
+      "path": "src/components/field-atlas/coastalAtmosphere.ts",
+      "bytes": 1341,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "bfc783d13fd5ce220a1fbc50f712d3628930e1365bb701175e40eee28ae97e02"
+    },
+    {
+      "path": "src/components/field-atlas/coastalCamera.ts",
+      "bytes": 998,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "293ee97d506d3a2f7b40ba4d2298874d4f42b5c2789546078a044a1ccdcaa603"
+    },
+    {
+      "path": "src/components/field-atlas/coastalForest.test.ts",
+      "bytes": 2599,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "674b79b84a651e042eb1891b2438f17b1b1bb08cd7b5dcc83de082c68e6bc886"
+    },
+    {
+      "path": "src/components/field-atlas/coastalForest.ts",
+      "bytes": 805,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "65188f83596c2814ac92d233c4456f121e54c50798ac0a9e43353e89133d047e"
+    },
+    {
+      "path": "src/components/field-atlas/coastalMainland.ts",
+      "bytes": 2249,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "77e19176ecca95d07642a95a527087b4fcc9b7aaef0077ddb83cb5cef9f75fba"
+    },
+    {
+      "path": "src/components/field-atlas/coastalMaterials.ts",
+      "bytes": 5505,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "44e4e443fa325f143acb8456876c40347127c79282454a019901f04428665bb8"
+    },
+    {
+      "path": "src/components/field-atlas/coastalMotion.test.ts",
+      "bytes": 3499,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "6cf4a72486eaca6c4cf3228fb0096b0a3ccae36898ef16a5f6499ee9df15de19"
+    },
+    {
+      "path": "src/components/field-atlas/coastalMotion.ts",
+      "bytes": 1724,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "e16e0d7816ec37c82b237631d7b72d97d4decf6b6f06d579242956b215953cdb"
+    },
+    {
+      "path": "src/components/field-atlas/coastalPlaces.ts",
+      "bytes": 1365,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "2019ce147bccfbb4c00332d07d03129964b1ca14e1c46a636f4cc6aba5c2bcd5"
+    },
+    {
+      "path": "src/components/field-atlas/coastalSettlements.test.ts",
+      "bytes": 2726,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "ccd080c75fe6d182728b6c2fa543c62b3250771c21a05ef412fc9a13987b245c"
+    },
+    {
+      "path": "src/components/field-atlas/coastalSettlements.ts",
+      "bytes": 13824,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "f34e9bbae1dfbc4f1f8be4cb6b1c6058c7287b7cf77ed3c09b96337c53095b21"
+    },
+    {
+      "path": "src/components/field-atlas/coastalTownLayout.ts",
+      "bytes": 6756,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "ff48b1008942a9bf734ed031f34678260002cb787bf70163bc45dc0d4d8f80e6"
+    },
+    {
+      "path": "src/components/field-atlas/grove.json",
+      "bytes": 6233,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "f35546a13fb2514703d010cbe15ed57c6849d4dcfe1978c1f4f0e0c4b86d1de5"
+    },
+    {
+      "path": "src/components/homeGridMotion.ts",
+      "bytes": 1200,
+      "reason": "Unused implementation or asset; references confined to retired code, tests or historical documentation",
+      "sha256": "654cf7305005d0d4b605f73eb66132b227e7e6d7dd78ad4f09e6b25426871bcb"
+    },
+    {
+      "path": "src/components/ocean/OceanScene.test.tsx",
+      "bytes": 1808,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "69709b7d4314741a6fdfbafdb479a715924814a09e77cf130e0610f8e9e1f6ff"
+    },
+    {
+      "path": "src/components/ocean/OceanScene.tsx",
+      "bytes": 2780,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "31ce3c2bcba59c01bde8eab00acc7295a4b2b753c120e6c8416d63df173797f2"
+    },
+    {
+      "path": "src/components/ocean/birdMotion.test.ts",
+      "bytes": 1397,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "b3b21ae7e647a71ff52f3f5786e782d66fb5b34f80fb5aeb33d267d3c216eaad"
+    },
+    {
+      "path": "src/components/ocean/birdMotion.ts",
+      "bytes": 2328,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "5ed31aa8f1517eb7eeedf2b649aefaaac1e194b3465d59f66f2b51c94e475deb"
+    },
+    {
+      "path": "src/components/ocean/createLivingEnvironment.ts",
+      "bytes": 8196,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "418f1b3d40abc2faf6dbb39ce175df4d9ced677324a96f6a3bf75b0b855497bd"
+    },
+    {
+      "path": "src/components/ocean/createOceanScene.ts",
+      "bytes": 10978,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "e1940fb863c758dfa9fc3e1b5b197ecb970ec5cb644a62f88f0c2cd0fb212ceb"
+    },
+    {
+      "path": "src/components/ocean/livingShaders.ts",
+      "bytes": 2488,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "5d31b1cf3aee62fe98289ca8ff0b7be7ae35cad7a814ecc78bfca579c72e2534"
+    },
+    {
+      "path": "src/components/ocean/oceanMotion.test.ts",
+      "bytes": 1456,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "0ce47fef2712030a329dbdc4515b0ab65fe994580800c3bfa17e625bbc2e6285"
+    },
+    {
+      "path": "src/components/ocean/oceanMotion.ts",
+      "bytes": 1253,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "7744126e2645d3370e6922bc0f68a60402ad9bd097f8dea94d2302aab3d6363a"
+    },
+    {
+      "path": "src/components/ocean/oceanShaders.ts",
+      "bytes": 3137,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "7dfebb2de3992d2d3a92b17e8c1ab34ad8786bc4e8e13053a2fecdb5f206051f"
+    },
+    {
+      "path": "src/components/ocean/sanJuanMotion.test.ts",
+      "bytes": 1290,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "7cd17ac0079d12ade9b2b9928382120eea972c0764603029d74357380d9ba7d5"
+    },
+    {
+      "path": "src/components/ocean/sanJuanMotion.ts",
+      "bytes": 1254,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "5335d1987fb477affe4db0ca196e797b2221b5ffe6b0c5942ca053aa58498fbd"
+    },
+    {
+      "path": "src/components/ocean/sanJuanShaders.ts",
+      "bytes": 1462,
+      "reason": "Unreachable historical Home renderer and its tests",
+      "sha256": "81fd83d623cdbeb77a49424d3380be47d20b1d52ff33ec4fce046317b899e56b"
+    },
+    {
+      "path": "src/pages/ForecastsPage.tsx",
+      "bytes": 791,
+      "reason": "Unused implementation or asset; references confined to retired code, tests or historical documentation",
+      "sha256": "d23078dc8040645ded651c67cd93e67f2f691bd2c4fa153f09a6190fa4d40087"
+    },
+    {
+      "path": "src/pages/ModelsPage.tsx",
+      "bytes": 713,
+      "reason": "Unused implementation or asset; references confined to retired code, tests or historical documentation",
+      "sha256": "b00038459c66db1f4db3b40d34d5757d1e3d1d00a0f81f0aa0798b7de6c46ac4"
+    }
+  ],
+  "retain": [
+    "Active frontend, backend, source adapters, tests and fixtures",
+    "Current day/night backgrounds, scenic star catalog and its license, northernSky shared transforms",
+    "public/assets/home/ARTWORK.md (update historical references)",
+    "public/assets/home/salish-sea-static.webp (explicitly documented rollback original)",
+    "public/local-data (separate source-binding/startup audit needed)",
+    "docs/qa evidence and design-qa.md",
+    "node_modules and dist (reproducible working/build directories)",
+    "notebooks/meteorology-readiness.ipynb (already deleted before audit)"
+  ],
+  "separate_decision": [
+    "src/pages/DemoMapPage.tsx and src/App.test.tsx: demo page is not mounted but backs existing tests; replace coverage before removal",
+    "Historical screenshot evidence docs/qa/coastal-world: 37 files, 6929641 logical bytes"
+  ],
+  "implementation_followup": [
+    "Update package.json and lockfile",
+    "Remove only CSS proven exclusive to removed components",
+    "Correct README and artwork history references, preserve attribution for retained assets",
+    "Update relevant Knowledge note after implementing approved changes",
+    "Run typecheck, lint, frontend tests, applicable Python tests and production build; inspect Home/Features/Relationships/Health and redirects"
+  ],
+  "baseline_checks": {
+    "audit_before_removal": "96 frontend files, 523 tests passed; typecheck passed"
+  },
+  "preexisting_change": " D notebooks/meteorology-readiness.ipynb",
+  "retained_checksums": {
+    "public/assets/home/salish-sea-preview.png": "b5fee00d4d42da0d35408f318f238ed4862c03b730727a5e0e0eb6d3aeb7d04b",
+    "public/assets/home/salish-sea-night-soft.png": "306e48c87eab0879d72b7a0e5aab0d876c625b43b13de3fc3f34cfe1a3e63c3d",
+    "public/assets/home/salish-sea-static.webp": "2b541186a3f19a3c4b28dd1cd39e665e1d8dda7119c6e11a6ebd45ac396b11ed",
+    "src/data/scenicStarCatalog.json": "1bd1fe08f1a5b86f66670564efb55fbe09056b0c32028858af80964b85ab5110",
+    "src/data/scenicStarCatalog.LICENSE.md": "128c4b308f50e239ba1cbbaad2816497e6832fcd12b9cec24c8c1130edeee0b8",
+    "src/pages/DemoMapPage.tsx": "753c9150b3be1f1a92b3c22ea2aad5a95f62c9a27af92fb4da33c0d8e3e8b99d",
+    "src/App.test.tsx": "3f23b73cb2b14bff9a206c963d7ed3a4f9acaf987daebfdb53a22ccdfe3c62b2"
+  },
+  "environment": {
+    "node": "v25.6.1",
+    "npm": "11.9.0"
+  },
+  "staging": {
+    "owner": "Data Explorer approved cleanup 2026-10-24",
+    "paths": [
+      "dist/",
+      "/tmp/data-explorer-cleanup-venv/",
+      "/Users/tylerstevenson/.codex/visualizations/2026/10/24/01a16e20-9339-7992-b4fc-fafc0909780a/cleanup-home.png"
+    ],
+    "purpose": "Reuse existing production build destination for validation",
+    "expected_peak_bytes": 25000000,
+    "retained_sources": "Current source checkout and unchanged public/local-data",
+    "cleanup_status": "Task-started Vite/API servers stopped. Rebuilt dist, small evidence and isolated temporary validation environment retained; no disposal beyond approved set"
+  },
+  "validation": {
+    "typecheck": "passed",
+    "lint": "passed",
+    "frontend": "86 files, 492 tests passed; 31 tests for retired implementations removed with approved source",
+    "python": "115 tests and 30 subtests passed using isolated Python 3.14 environment, FastAPI 0.150.0",
+    "build": "passed; 8271788 logical bytes; no dist/local-data or removed public assets",
+    "browser": "Compact Home day/night, Features shell and source warning, Relationships shell, Health, Models/Forecasts, sightings/viewshed redirects checked",
+    "live_data_limitation": "Unchanged Seascape reader rejects current delivery: Unexpected files in flat Seascape output; full source-backed Features/Relationships interaction not validated",
+    "warnings": [
+      "Vite chunk size warning",
+      "Vitest Node localstorage-file warning",
+      "FastAPI TestClient httpx deprecation warning"
+    ],
+    "documentation": "New/changed links and affected Knowledge properties pass; existing deleted-notebook link left untouched"
+  },
+  "retained_output_checksums": {
+    "dist/index.html": "40e57e8ada531ea9284e05736587ab3af8001460850424e67902e99ecac69b8b",
+    "package-lock.json": "61eb9999ee1f5263c22171f336d26b2a91385d8c78bcca174eb3396e880806f2"
+  }
+}

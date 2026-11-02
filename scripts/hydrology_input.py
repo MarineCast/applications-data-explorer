@@ -46,6 +46,11 @@ def dates_between(start,end):
  return [(first+timedelta(days=i)).isoformat() for i in range((last-first).days+1)]
 
 def prepare(source:Path,study:Path,output:Path):
+ from hydrology_causal import product_snapshot
+ with product_snapshot(source) as pinned:
+  return prepare_snapshot(pinned,study,output)
+
+def prepare_snapshot(source:Path,study:Path,output:Path):
  original=source
  source=source.resolve()
  catalog=json.loads((source/'catalog.json').read_text());catalog_hash=digest(source/'catalog.json')
@@ -126,8 +131,22 @@ def prepare(source:Path,study:Path,output:Path):
   if any(relative) and not all(relative):raise ValueError('Mixed '+label+' methods across rivers')
   if all(relative):definitions[metric]=description+' Interior missing flows are linearly interpolated for this calculation only; no edge extrapolation. Values stay unavailable until the necessary event history is known. Thresholds include interpolated days. Retrospective: uses future observations and is not eligible for operational backtests.'
  metrics=[{'id':m,'name':v[0],'family':v[1],'unit':v[2],'definition':definitions.get(m,v[3]),'range':[min(stats[m]),max(stats[m])],'available':nonnull[m]} for m,v in METRICS.items() if stats[m]]
- snapshot=hashlib.sha256(('hydrology-app-v1:'+catalog_hash+':'+study_hash+':'+digest(__file__)).encode()).hexdigest()
- payload={'kind':'hydrology-mouths','version':1,'snapshot':snapshot,'dates':calendar,'grid':grid,'rivers':rivers,'metrics':metrics}
+ causal=None;causal_unavailable=None
+ if catalog.get('products',{}).get('causal') is not None or (source/'causal.parquet').exists():
+  from hydrology_causal import read_causal
+  try:
+   causal_series,causal_metrics,causal,causal_rows=read_causal(source,catalog.get('products',{}).get('causal'),rivers,calendar,packed)
+   for river in rivers:river['series'].update(causal_series[river['id']])
+   metrics.extend(causal_metrics);nonnull.update({m['id']:m['available'] for m in causal_metrics});source_rows+=causal_rows
+  except (ValueError,OSError,KeyError,TypeError) as error:
+   causal_unavailable='Causal discharge unavailable: '+str(error)+'. Existing native metrics remain available.'
+ station_temperature=None;station_temperature_unavailable=None
+ if catalog.get('products',{}).get('station_temperature') is not None or (source/'station_temperature.parquet').exists():
+  from hydrology_station_temperature import read_station_temperature
+  try:station_temperature=read_station_temperature(source,catalog.get('products',{}).get('station_temperature'))
+  except (ValueError,OSError,KeyError,TypeError) as error:station_temperature_unavailable='Station temperatures unavailable: '+str(error)+'. Existing river metrics remain available.'
+ snapshot=hashlib.sha256(('hydrology-app-v1:'+catalog_hash+':'+study_hash+':'+digest(__file__)+':'+digest(Path(__file__).with_name('hydrology_causal.py'))+':'+digest(Path(__file__).with_name('hydrology_station_temperature.py'))).encode()).hexdigest()
+ payload={'kind':'hydrology-mouths','version':1,'snapshot':snapshot,'dates':calendar,'grid':grid,'rivers':rivers,'metrics':metrics,'causal':causal,'causalUnavailable':causal_unavailable,'stationTemperature':station_temperature,'stationTemperatureUnavailable':station_temperature_unavailable}
  output.mkdir(parents=True,exist_ok=True)
  asset=output/(snapshot+'.json');temporary=asset.with_suffix('.pending')
  temporary.write_text(json.dumps(payload,separators=(',',':'),ensure_ascii=True,allow_nan=False));os.replace(temporary,asset)

@@ -16,7 +16,6 @@ export interface ViewshedMapProps {
   coordinates: MapCoordinates | null;
   onCoordinates: (coordinates: MapCoordinates | null) => void;
   onBackground: () => void;
-  controlsContainer?: HTMLElement | null;
   opacity?: number;
   gridVisible?: boolean;
   smoothing?: SurfaceSettings;
@@ -38,10 +37,6 @@ export function viewshedSurfaceLayer({ data, scores, mode, metric }: Pick<Viewsh
     cells: cells.map(cell => ({ id: cell.id, lon: cell.center[0], lat: cell.center[1], boundary: [], zone: "north" })),
     values, surfaceGeometries: new Map(cells.map(cell => [cell.id, cell.geometry])), missingColor: "#a9b3bb" };
 }
-
-export const viewshedBasemapStyle =
-  import.meta.env.VITE_BASEMAP_STYLE_URL?.trim() ||
-  "https://tiles.openfreemap.org/styles/bright";
 
 export function viewshedOverlays({ data, scores, source, selection, metric, mode, colorScale, allTargets }: Pick<ViewshedMapProps, "data" | "scores" | "source" | "selection" | "metric" | "mode" | "colorScale" | "allTargets">) {
   const values = new Map(scores.map(score => [score.target_h3, score]));

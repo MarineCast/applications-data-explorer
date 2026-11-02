@@ -1,7 +1,8 @@
+import {stationTemperatureFixture} from "../test/stationTemperatureFixture";
 import * as influenceData from "../data/riverInfluence";
 import {riverInfluenceFixture} from "../test/riverInfluenceFixture";
 import * as hydrologyData from "../data/hydrology";
-import {hydrologyFixture} from "../test/hydrologyFixture";
+import {hydrologyFixture,causalHydrologyFixture} from "../test/hydrologyFixture";
 import * as orcaData from "../data/orca";
 import {orcaFixture} from "../test/orcaFixture";
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
@@ -15,17 +16,14 @@ import type {
   SeascapeLayer,
 } from "../data/seascape";
 import SeascapeMapPage from "./SeascapeMapPage";
+import * as seascapeData from "../data/seascape";
 import * as viewshedData from "../data/viewshed";
 import { pair, sourceA, viewshedFixture } from "../test/viewshedFixture";
 import * as weatherData from "../data/meteorology";
 import { weatherFixture } from "../test/weatherFixture";
-import type { MapCanvasProps } from "../data/map";
-// Page interaction fixtures use an explicit local renderer. Production requests
-// geographic cartography; its loading/failure contract is tested separately.
-vi.mock("../components/MapCanvas", async (importOriginal) => {
-  const { default: MapCanvas } = await importOriginal<typeof import("../components/MapCanvas")>();
-  return { default: (props: MapCanvasProps) => <MapCanvas {...props} basemap="local" /> };
-});
+// Page state uses explicit native-layer callbacks. The production renderer suite
+// owns geographic picking, camera persistence and WebGL lifecycle coverage.
+vi.mock("../components/MapCanvas", async () => ({ default: (await import("../test/MapInteractionDriver")).default }));
 vi.mock("../data/riverInfluence",async(importOriginal)=>({...await importOriginal<typeof import("../data/riverInfluence")>(),loadRiverInfluence:vi.fn()}));
 vi.mock("../data/hydrology",async(importOriginal)=>({...await importOriginal<typeof import("../data/hydrology")>(),loadHydrologyData:vi.fn()}));
 vi.mock("../data/orca", async (importOriginal) => ({...(await importOriginal<typeof import("../data/orca")>()),loadOrcaData: vi.fn().mockResolvedValue(undefined)}));
@@ -115,14 +113,109 @@ afterEach(() => {
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
 });
+function mockSurveyLayers() {
+  const binding = { rows: 2, cells: {url: "fixture", sha256: "fixture"}, columns: {}, sourceSha256: "fixture", sourcePath: "survey.parquet" };
+  const surveyCatalog: SeascapeCatalog = { ...catalog,
+    features: [feature("BATHYMETRY", 6), feature("BATHYMETRY_LOCAL_ANOMALY", 6)].map(f => ({...f, productId: "survey-depth"})),
+    products: { "survey-depth": {axis: "Survey year", defaultSlice: "2024", slices: {
+      "2021": {...binding, label: "2021"}, "2024": {...binding, label: "2024"},
+    }} },
+  };
+  surveyCatalog.features.push(feature("STATIC_DEPTH", 6));
+  vi.mocked(loadSeascapeCatalog).mockResolvedValue(surveyCatalog);
+  vi.mocked(loadSeascapeLayer).mockImplementation(async (_, field, slice) => {
+    const layer = nativeLayer(field);
+    if (field.productId) {
+      const year = slice ?? "2024";
+      layer.slice = {axis: "Survey year", value: year, label: year};
+      layer.values = new Map(layer.values).set(layer.cells[0].id, Number(year) - 2000 + (field.id === "BATHYMETRY" ? 0 : 100));
+    }
+    return layer;
+  });
+  vi.spyOn(seascapeData, "loadSeascapeValues").mockResolvedValue(new Map());
+}
+
 describe("source-backed map interactions", () => {
-  it("mounts the map and controls before the catalog, then keeps the same map while the layer loads", async () => {
+  // Migrated from the retired DemoMapPage: exercise the current production page.
+  it("inspects native zero and unavailable cells with their source qualifiers and returns to the overview", async () => {
+    vi.mocked(loadSeascapeCatalog).mockResolvedValue(catalog);
+    vi.mocked(loadSeascapeLayer).mockImplementation(async (_, field) => nativeLayer(field));
+    const user = userEvent.setup();
+    render(<SeascapeMapPage />);
+    await user.click(await screen.findByRole("button", {name: `Inspect cell ${latLngToCell(48.45, -123.5, 6)}`}));
+    await openSelectedInsights(user);
+    const selected = screen.getByLabelText("Insights selected cell");
+    expect(selected).toHaveTextContent("0 m");
+    expect(selected).toHaveTextContent("partial source coverage");
+    await user.click(screen.getByRole("button", {name: `Inspect cell ${latLngToCell(48.8, -123.5, 6)}`}));
+    expect(selected).toHaveTextContent("Unavailable");
+    expect(selected).toHaveTextContent("unknown");
+    await user.click(screen.getByRole("tab", {name: "Overview"}));
+    expect(screen.getByRole("tabpanel", {name: "Overview"})).toHaveTextContent("Available 1Unavailable 1");
+  });
+
+  it("changes recorded survey slices, opens comparison and removes time selection for a static feature", async () => {
+    mockSurveyLayers();
+    const user = userEvent.setup();
+    render(<SeascapeMapPage />);
+    await openLayers(user);
+    await user.selectOptions(screen.getByLabelText("Survey year"), "2021");
+    await waitFor(() => expect(screen.getByRole("region", {name: "Map legend"})).toHaveTextContent("21 m"));
+    expect(screen.getByLabelText("Survey year")).toHaveValue("2021");
+    expect(vi.mocked(loadSeascapeLayer).mock.calls.at(-1)?.[2]).toBe("2021");
+    await user.click(screen.getByRole("button", {name: "Compare"}));
+    expect(screen.getByLabelText("Right survey year")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", {name: "Show maps"}));
+    expect(await screen.findByRole("region", {name: "Right map legend"})).toBeInTheDocument();
+    await user.click(screen.getByRole("button", {name: "Exit comparison"}));
+    await openLayers(user);
+    await chooseFeature(user, "STATIC_DEPTH");
+    await waitFor(() => expect(screen.getByRole("region", {name: "Map legend"})).toHaveTextContent("STATIC_DEPTH"));
+    expect(screen.queryByLabelText("Survey year")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Right survey year")).not.toBeInTheDocument();
+  });
+
+  it("keeps selected comparison source details tied to their side, variable, survey year and exact value", async () => {
+    mockSurveyLayers();
+    const user = userEvent.setup();
+    render(<SeascapeMapPage />);
+    await screen.findByRole("region", {name: "Map legend"});
+    await user.click(screen.getByRole("button", {name: "Compare"}));
+    await user.selectOptions(screen.getByLabelText("Right survey year"), "2021");
+    await user.click(screen.getByRole("button", {name: "Show maps"}));
+    await screen.findByRole("region", {name: "Right map legend"});
+    const id = latLngToCell(48.45, -123.5, 6);
+    const check = async (side: number, variable: string, year: string, value: string) => {
+      await user.click(screen.getAllByRole("button", {name: `Inspect cell ${id}`})[side]);
+      if (!screen.queryByLabelText("Dataset insights")) await user.click(screen.getByRole("button", {name: "Insights"}));
+      await user.click(screen.getByRole("button", {name: "Source & quality"}));
+      const details = screen.getByRole("dialog", {name: "Source & quality"});
+      expect(details).toHaveTextContent(variable);
+      expect(details).toHaveTextContent(`Survey year: ${year}`);
+      expect(details).toHaveTextContent(`Exact stored value ${value}`);
+      await user.click(screen.getByRole("button", {name: "Close source & quality"}));
+    };
+    await check(1, "BATHYMETRY_LOCAL_ANOMALY", "2021", "121");
+    await user.click(screen.getByRole("button", {name: "Edit left comparison layer"}));
+    await user.selectOptions(screen.getByLabelText("Survey year"), "2021");
+    await user.click(screen.getByRole("button", {name: "Show maps"}));
+    await check(1, "BATHYMETRY_LOCAL_ANOMALY", "2021", "121");
+    await check(0, "BATHYMETRY", "2021", "21");
+    await user.click(screen.getByRole("button", {name: "Edit right comparison layer"}));
+    await user.selectOptions(screen.getByLabelText("Right survey year"), "2024");
+    await user.click(screen.getByRole("button", {name: "Show maps"}));
+    await check(1, "BATHYMETRY_LOCAL_ANOMALY", "2024", "124");
+    await user.click(screen.getByRole("button", {name: "Exit comparison"}));
+    expect(screen.queryByRole("region", {name: "Right map legend"})).not.toBeInTheDocument();
+    await check(0, "BATHYMETRY", "2021", "21");
+  });
+
+  it("mounts map controls before the catalog and keeps the same surface while native values load", async () => {
     let resolveCatalog!: (value: SeascapeCatalog) => void;
     let resolveLayer!: (value: SeascapeLayer) => void;
     vi.mocked(loadSeascapeCatalog).mockReturnValue(new Promise(resolve => { resolveCatalog = resolve; }));
     vi.mocked(loadSeascapeLayer).mockReturnValue(new Promise(resolve => { resolveLayer = resolve; }));
     const view = render(<SeascapeMapPage />);
-    const user = userEvent.setup();
     const map = view.container.querySelector(".maps .map-canvas");
     expect(map).not.toBeNull();
     expect(screen.getByRole("navigation", { name: "Data domains" })).toBeInTheDocument();
@@ -133,11 +226,8 @@ describe("source-backed map interactions", () => {
     expect(screen.getByText("Loading layer…")).toBeInTheDocument();
     expect(screen.queryByText("Loading local Data catalog…")).not.toBeInTheDocument();
     expect(map!.querySelectorAll(".hex-cell")).toHaveLength(0);
-    await user.click(screen.getByRole("button", { name: "Zoom in" }));
-    const transform = map!.querySelector("g[transform]")!.getAttribute("transform");
     const expectSameMap = () => {
       expect(view.container.querySelector(".maps .map-canvas")).toBe(map);
-      expect(map!.querySelector("g[transform]")).toHaveAttribute("transform", transform!);
     };
     await act(async () => resolveCatalog(catalog));
     expectSameMap();
@@ -227,7 +317,7 @@ describe("source-backed map interactions", () => {
       expect(screen.getByLabelText('Dataset insights')).toBeInTheDocument();
     }
   });
-  it("keeps the Features map and camera mounted when Viewshed is selected and dismissed", async () => {
+  it("keeps the Features map surface mounted when Viewshed is selected and dismissed", async () => {
     vi.mocked(loadSeascapeCatalog).mockResolvedValue(catalog);
     vi.mocked(loadSeascapeLayer).mockImplementation(async (_, field) => nativeLayer(field));
     vi.spyOn(viewshedData, "loadViewshed").mockResolvedValue(viewshedFixture());
@@ -237,9 +327,6 @@ describe("source-backed map interactions", () => {
     const rendered = render(<SeascapeMapPage />);
     await screen.findByRole("region", { name: "Map legend" });
     const canvas = rendered.container.querySelector(".maps .map-canvas")!;
-    const svg = canvas.querySelector("svg")!;
-    await user.click(screen.getByRole("button", { name: "Zoom in" }));
-    const camera = svg.querySelector("g")!.getAttribute("transform");
     await user.click(screen.getByRole("button", { name: "Viewshed layers" }));
     await screen.findByLabelText("Score display");
     expect(screen.getByRole("button", { name:"Compare" })).toHaveAttribute("aria-disabled", "true");
@@ -249,7 +336,6 @@ describe("source-backed map interactions", () => {
     await user.click(screen.getByRole("button", {name:"Dismiss action message"}));
     await screen.findByRole("button", { name: "Select land source Dungeness" });
     expect(rendered.container.querySelector(".maps .map-canvas")).toBe(canvas);
-    expect(svg.querySelector("g")!.getAttribute("transform")).toBe(camera);
     expect(rendered.container.querySelectorAll(".maps .map-canvas")).toHaveLength(1);
     expect(rendered.container.querySelector(".viewshed-basemap")).toBeNull();
     await user.click(screen.getByRole("button", { name: `Inspect water target ${sourceA}` }));
@@ -257,7 +343,6 @@ describe("source-backed map interactions", () => {
     await user.click(screen.getByRole("button", { name: "Seascape layers" }));
     await screen.findByRole("region", { name: "Map legend" });
     expect(rendered.container.querySelector(".maps .map-canvas")).toBe(canvas);
-    expect(svg.querySelector("g")!.getAttribute("transform")).toBe(camera);
     expect(screen.queryByRole("button", { name: "Select land source Dungeness" })).not.toBeInTheDocument();
   });
   it("opens Human at native R7 and connects its population feature picker", async () => {
@@ -280,7 +365,7 @@ describe("source-backed map interactions", () => {
     expect(await screen.findByRole("region", { name: "Map legend" })).toHaveTextContent("persons/km2");
   });
 
-  it("keeps the map and zoom through pending layer changes, resolution changes, errors and retries", async () => {
+  it("keeps the map mounted through pending layer changes, resolution changes, errors and retries", async () => {
     vi.mocked(loadSeascapeCatalog).mockResolvedValue(catalog);
     let requested!: SeascapeFeature;
     let resolve!: (layer: SeascapeLayer) => void;
@@ -294,13 +379,8 @@ describe("source-backed map interactions", () => {
     const view = render(<SeascapeMapPage />);
     await screen.findByRole("region", { name: "Map legend" });
     const map = view.container.querySelector(".maps .map-canvas");
-    const svg = map!.querySelector("svg");
-    await user.click(screen.getByRole("button", { name: "Zoom in" }));
-    const transform = svg!.querySelector("g[transform]")!.getAttribute("transform");
     const expectSameMap = () => {
       expect(view.container.querySelector(".maps .map-canvas")).toBe(map);
-      expect(map!.querySelector("svg")).toBe(svg);
-      expect(svg!.querySelector("g[transform]")).toHaveAttribute("transform", transform!);
     };
     await openLayers(user);
     await chooseFeature(user, "BATHYMETRY_LOCAL_ANOMALY");
@@ -1209,4 +1289,55 @@ it.each(["recorded_feature_count", "feature_memberships_v1"])("migrates a remove
   vi.mocked(loadSeascapeCatalog).mockResolvedValue({...catalog,features:[...catalog.features,combined]});
   act(()=>window.dispatchEvent(new Event("focus")));
   await waitFor(()=>expect(screen.getByLabelText("Feature")).toHaveValue(combined.id));
+});
+
+it("connects all causal choices to mouth inspection and synchronized river history",async()=>{
+ const data=causalHydrologyFixture();vi.mocked(loadSeascapeCatalog).mockResolvedValue(catalog);vi.mocked(loadSeascapeLayer).mockImplementation(async(_,f)=>nativeLayer(f));vi.mocked(hydrologyData.loadHydrologyData).mockResolvedValue(data);
+ const user=userEvent.setup();render(<SeascapeMapPage/>);await screen.findByRole("region",{name:"Map legend"});await user.click(screen.getByRole("button",{name:"Hydrology layers"}));
+ fireEvent.keyDown(screen.getByRole("button",{name:"Inspect Fraser river"}),{key:"Enter"});await openSelectedInsights(user);
+ for(const metric of data.metrics.filter(m=>m.causal)){
+  await user.selectOptions(screen.getByRole("combobox",{name:"Hydrology insight metric"}),metric.id);
+  expect(screen.getByRole("region",{name:"River history"})).toHaveTextContent(metric.name);
+  expect(screen.getByRole("region",{name:"Hydrology river insights"})).toHaveTextContent("as-of discharge date: 2026-09-29");
+ }
+ fireEvent.change(screen.getByLabelText("Hydrology insight date"),{target:{value:data.dates[0]}});
+ expect(screen.getByRole("region",{name:"River history"})).toHaveTextContent("as-of 2026-09-23");
+ await user.selectOptions(screen.getByRole("combobox",{name:"Hydrology insight metric"}),"causal_discharge_seasonal_mean");
+ expect(screen.getByRole("region",{name:"Hydrology river insights"})).toHaveTextContent("Warmup / insufficient seasonal reference");
+ await user.selectOptions(screen.getByRole("combobox",{name:"Hydrology river"}),"cowichan");
+ expect(screen.getByRole("region",{name:"Hydrology river insights"})).toHaveTextContent("Cowichan · upstream gauge");
+});
+
+it("switches Oceanography metrics on their native grids and preserves the selected daily slice", async () => {
+  const user=userEvent.setup();
+  vi.mocked(loadSeascapeLayer).mockImplementation(async (_, f, day) => { const layer=nativeLayer(f); return {...layer,slice:{axis:"Date",value:day??"2009-01-01",label:day??"2009-01-01"},values:day==="2026-10-25"?new Map([...layer.values.keys()].map(key=>[key,null])):layer.values}; });
+  const fields:SeascapeFeature[]=[{...feature("sst_c",6),dataset:"oceanography",name:"Sea Surface Temperature",family:"Ocean Conditions",productId:"oceanography-sst",qualifiers:[],unit:"°C"},{...feature("chlorophyll_mg_m3",6),resolution:5,dataset:"oceanography",name:"Chlorophyll",family:"Ocean Conditions",productId:"oceanography-chlorophyll",qualifiers:[],unit:"mg/m³"}];
+  fields.push({...fields[0],id:"hycom__current_east_m_s",column:"current_east_m_s",productId:"oceanography-hycom-currents",name:"Eastward current · HYCOM (0 m)",resolution:5,unit:"m/s",signed:true});
+  const product={axis:"Date",defaultSlice:"2009-01-01",slices:Object.fromEntries(["2009-01-01","2024-07-02","2026-10-25"].map(day=>[day,{rows:2,cells:{url:"",sha256:""},columns:{},sourceSha256:"test",sourcePath:"test"}]))};
+  vi.mocked(loadSeascapeCatalog).mockResolvedValue({...catalog,features:[...catalog.features,...fields],products:{"oceanography-sst":product,"oceanography-chlorophyll":product,"oceanography-hycom-currents":{...product,defaultSlice:"2024-07-02",slices:{"2024-07-02":product.slices["2024-07-02"]}}},datasets:{oceanography:{name:"Oceanography",release:"daily",status:"published",limitations:"No filling"}}});
+  render(<SeascapeMapPage/>);
+  await user.click(await screen.findByRole("button",{name:"Oceanography layers"}));
+  await user.click(await screen.findByRole("button",{name:"Feature"}));
+  await user.click(await screen.findByRole("button",{name:"Select Chlorophyll"}));
+  await waitFor(()=>expect(loadSeascapeLayer).toHaveBeenCalledWith(expect.anything(),expect.objectContaining({id:"chlorophyll_mg_m3",resolution:5}),undefined));
+  fireEvent.change(screen.getByRole("slider",{name:"Oceanography date"}),{target:{value:"1"}});
+  await waitFor(()=>expect(loadSeascapeLayer).toHaveBeenCalledWith(expect.anything(),expect.objectContaining({id:"chlorophyll_mg_m3",resolution:5}),"2024-07-02"));
+  fireEvent.change(screen.getByRole("slider",{name:"Oceanography date"}),{target:{value:"2"}});
+  await waitFor(()=>expect(loadSeascapeLayer).toHaveBeenCalledWith(expect.anything(),expect.objectContaining({id:"chlorophyll_mg_m3",resolution:5}),"2026-10-25"));
+  expect(await screen.findByText("No qualified values on this date · unavailable, not zero · no date substitution")).toBeInTheDocument();
+  await user.click(screen.getByRole("button",{name:"Feature"}));
+  await user.click(await screen.findByRole("button",{name:"Select Eastward current · HYCOM (0 m)"}));
+  await waitFor(()=>expect(loadSeascapeLayer).toHaveBeenCalledWith(expect.anything(),expect.objectContaining({id:"hycom__current_east_m_s",resolution:5}),"2024-07-02"));
+  expect(screen.getByText("Date switched to 2024-07-02; this product covers 2024-07-02–2024-07-02.")).toBeInTheDocument();
+});
+
+it("opens the independent measured temperature station from the actual-location marker",async()=>{
+ const user=userEvent.setup();vi.mocked(loadSeascapeCatalog).mockResolvedValue(catalog);vi.mocked(loadSeascapeLayer).mockImplementation(async(_,f)=>nativeLayer(f));
+ vi.mocked(hydrologyData.loadHydrologyData).mockResolvedValue({...hydrologyFixture(),stationTemperature:stationTemperatureFixture});
+ render(<SeascapeMapPage/>);await user.click(await screen.findByRole("button",{name:"Hydrology layers"}));
+ await user.click(await screen.findByRole("button",{name:"Inspect Fraser River at Qualark temperature station"}));
+ expect(await screen.findByRole("dialog",{name:"Station water temperature"})).toHaveTextContent("DFO-QUALARK");
+ expect(screen.getByText("Unavailable on this date")).toBeInTheDocument();
+ await user.click(screen.getByRole("button",{name:/Latest reported observation/}));expect(screen.getByText("16.1 °C · reported daily mean")).toBeInTheDocument();
+ await user.click(screen.getByRole("button",{name:"Close station water temperature"}));expect(screen.queryByRole("dialog",{name:"Station water temperature"})).not.toBeInTheDocument();
 });

@@ -63,6 +63,31 @@ class LiveDataTests(unittest.TestCase):
         self.assertNotIn('NEW_MEASUREMENT', final['products']['seascape-population-static-r6']['columns'])
         self.assertLessEqual(len(list(self.reader.directory.glob('seascape-*'))), 2)
 
+    def test_review_notes_do_not_block_catalog_or_change_source_values(self):
+        before = self.reader.base()
+        for name in ['SEASCAPE_REVIEW_FINDINGS.txt', 'review.md']:
+            (self.source/name).write_text('Human review notes, not a scientific product.')
+        after = self.reader.base()
+        self.assertEqual(self.values(after), [0., None])
+        self.assertEqual(before['manifestSha256'], after['manifestSha256'])
+        self.write([None, 17.25])
+        refreshed = self.reader.base()
+        self.assertEqual(self.values(refreshed), [None, 17.25])
+        self.assertNotEqual(before['manifestSha256'], refreshed['manifestSha256'])
+        self.assertEqual((self.source/'SEASCAPE_REVIEW_FINDINGS.txt').read_text(),
+                         'Human review notes, not a scientific product.')
+
+    def test_unlisted_data_files_are_rejected_with_their_names(self):
+        for name in ['unlisted.parquet', 'unlisted.json', 'unlisted.csv']:
+            with self.subTest(name=name):
+                path = self.source/name
+                path.write_text('Not catalog-bound')
+                try:
+                    with self.assertRaisesRegex(ValueError, name.replace('.', r'\.')):
+                        self.reader.base()
+                finally:
+                    path.unlink()
+
     def test_invalid_replacement_does_not_serve_old_data_and_recovers(self):
         catalog = self.reader.base()
         old_url = catalog['products']['seascape-population-static-r6']['columns']['POPULATION']['url']

@@ -1,10 +1,13 @@
 import { describe, it, expect } from "vitest";
 import { cellGeoJSON, mapTilerStyleURL } from "./map";
-import { filterCells } from "./demo";
+import { latLngToCell } from "h3-js";
+import type { MapLayer } from "./map";
 describe("basemap adapter", () => {
   it("keeps H3 coordinate order and closes every GeoJSON polygon", () => {
-    const collection = cellGeoJSON("temperature", 6, "north");
-    expect(collection.features.length).toBe(filterCells("north").length);
+    const cells = [48.45, 48.8].map(lat => ({id: latLngToCell(lat, -123.5, 6),lat,lon:-123.5,boundary:[],zone:"north" as const}));
+    const layer: MapLayer = {id:"depth",name:"Depth",unit:"m",range:[0,10],resolution:6,cells,values:new Map([[cells[0].id,0],[cells[1].id,null]]),sourceLabel:"native fixture"};
+    const collection = cellGeoJSON(layer);
+    expect(collection.features.map(f => f.properties?.value)).toEqual([0,null]);
     for (const feature of collection.features) {
       const ring = feature.geometry.coordinates[0];
       expect(ring[0]).toEqual(ring.at(-1));

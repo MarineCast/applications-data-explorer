@@ -1,0 +1,1526 @@
+{
+  "reviewDate": "2026-11-01",
+  "status": "proposal_only_no_source_removals",
+  "owner": "applications-data-explorer",
+  "baseCommit": "b570ace8b05068482ed81868245c634fc1574278",
+  "declarations": [
+    {
+      "path": "src/components/Controls.tsx",
+      "names": [
+        "FeatureSelect"
+      ],
+      "startLine": 3,
+      "endLine": 27,
+      "bytes": 470
+    },
+    {
+      "path": "src/components/Controls.tsx",
+      "names": [
+        "RegionSelect"
+      ],
+      "startLine": 28,
+      "endLine": 48,
+      "bytes": 464
+    },
+    {
+      "path": "src/components/Controls.tsx",
+      "names": [
+        "SeasonSelect"
+      ],
+      "startLine": 49,
+      "endLine": 68,
+      "bytes": 510
+    },
+    {
+      "path": "src/data/demo.ts",
+      "names": [
+        "seasonMonths"
+      ],
+      "startLine": 69,
+      "endLine": 75,
+      "bytes": 192
+    },
+    {
+      "path": "src/data/demo.ts",
+      "names": [
+        "formatValue"
+      ],
+      "startLine": 116,
+      "endLine": 119,
+      "bytes": 168
+    },
+    {
+      "path": "src/data/demo.ts",
+      "names": [
+        "filterCells"
+      ],
+      "startLine": 120,
+      "endLine": 122,
+      "bytes": 116
+    },
+    {
+      "path": "src/data/demo.ts",
+      "names": [
+        "summarize"
+      ],
+      "startLine": 123,
+      "endLine": 135,
+      "bytes": 425
+    },
+    {
+      "path": "src/data/demo.ts",
+      "names": [
+        "pairedValues"
+      ],
+      "startLine": 136,
+      "endLine": 149,
+      "bytes": 360
+    },
+    {
+      "path": "src/data/demo.ts",
+      "names": [
+        "correlation"
+      ],
+      "startLine": 150,
+      "endLine": 160,
+      "bytes": 509
+    },
+    {
+      "path": "src/data/demo.ts",
+      "names": [
+        "histogram"
+      ],
+      "startLine": 161,
+      "endLine": 180,
+      "bytes": 391
+    },
+    {
+      "path": "src/data/demo.ts",
+      "names": [
+        "sightings"
+      ],
+      "startLine": 189,
+      "endLine": 195,
+      "bytes": 309
+    },
+    {
+      "path": "src/data/northernSky.ts",
+      "names": [
+        "skyStars"
+      ],
+      "startLine": 5,
+      "endLine": 16,
+      "bytes": 624
+    },
+    {
+      "path": "src/data/northernSky.ts",
+      "names": [
+        "skyGroups"
+      ],
+      "startLine": 17,
+      "endLine": 21,
+      "bytes": 203
+    },
+    {
+      "path": "src/data/northernSky.ts",
+      "names": [
+        "northernSky"
+      ],
+      "startLine": 49,
+      "endLine": 57,
+      "bytes": 417
+    },
+    {
+      "path": "src/data/northernSky.ts",
+      "names": [
+        "sunAltitude"
+      ],
+      "startLine": 58,
+      "endLine": 64,
+      "bytes": 401
+    },
+    {
+      "path": "src/data/governancePatterns.ts",
+      "names": [
+        "stripeBackground"
+      ],
+      "startLine": 82,
+      "endLine": 84,
+      "bytes": 199
+    }
+  ],
+  "cssRules": [
+    {
+      "path": "src/styles.css",
+      "line": 91,
+      "selector": ".menu-button",
+      "bytes": 138
+    },
+    {
+      "path": "src/styles.css",
+      "line": 122,
+      "selector": ".header-divider",
+      "bytes": 72
+    },
+    {
+      "path": "src/styles.css",
+      "line": 127,
+      "selector": ".current-page",
+      "bytes": 54
+    },
+    {
+      "path": "src/styles.css",
+      "line": 131,
+      "selector": ".demo-status",
+      "bytes": 152
+    },
+    {
+      "path": "src/styles.css",
+      "line": 140,
+      "selector": ".demo-status i",
+      "bytes": 92
+    },
+    {
+      "path": "src/styles.css",
+      "line": 146,
+      "selector": ".demo-status span",
+      "bytes": 39
+    },
+    {
+      "path": "src/styles.css",
+      "line": 161,
+      "selector": ".nav-backdrop",
+      "bytes": 125
+    },
+    {
+      "path": "src/styles.css",
+      "line": 461,
+      "selector": ".summary-stats",
+      "bytes": 102
+    },
+    {
+      "path": "src/styles.css",
+      "line": 486,
+      "selector": ".summary-stats .stat > strong",
+      "bytes": 52
+    },
+    {
+      "path": "src/styles.css",
+      "line": 546,
+      "selector": ".cell-values > div",
+      "bytes": 111
+    },
+    {
+      "path": "src/styles.css",
+      "line": 552,
+      "selector": ".cell-values span",
+      "bytes": 39
+    },
+    {
+      "path": "src/styles.css",
+      "line": 555,
+      "selector": ".cell-values strong",
+      "bytes": 43
+    },
+    {
+      "path": "src/styles.css",
+      "line": 587,
+      "selector": ".month-ticks",
+      "bytes": 67
+    },
+    {
+      "path": "src/styles.css",
+      "line": 591,
+      "selector": ".month-ticks button",
+      "bytes": 75
+    },
+    {
+      "path": "src/styles.css",
+      "line": 596,
+      "selector": ".month-ticks button.chosen",
+      "bytes": 93
+    },
+    {
+      "path": "src/styles.css",
+      "line": 601,
+      "selector": ".static-label",
+      "bytes": 140
+    },
+    {
+      "path": "src/styles.css",
+      "line": 721,
+      "selector": ".matrix-head",
+      "bytes": 135
+    },
+    {
+      "path": "src/styles.css",
+      "line": 729,
+      "selector": ".matrix > .matrix-head",
+      "bytes": 95
+    },
+    {
+      "path": "src/styles.css",
+      "line": 742,
+      "selector": ".future-note",
+      "bytes": 124
+    },
+    {
+      "path": "src/styles.css",
+      "line": 750,
+      "selector": ".method-note",
+      "bytes": 53
+    },
+    {
+      "path": "src/styles.css",
+      "line": 754,
+      "selector": ".small-map",
+      "bytes": 93
+    },
+    {
+      "path": "src/styles.css",
+      "line": 760,
+      "selector": ".small-map .map-tools",
+      "bytes": 56
+    },
+    {
+      "path": "src/styles.css",
+      "line": 764,
+      "selector": ".small-map .map-attribution",
+      "bytes": 49
+    },
+    {
+      "path": "src/styles.css",
+      "line": 767,
+      "selector": ".scatter-stack",
+      "bytes": 40
+    },
+    {
+      "path": "src/styles.css",
+      "line": 770,
+      "selector": ".scatter-stack > .scatter + .scatter",
+      "bytes": 100
+    },
+    {
+      "path": "src/styles.css",
+      "line": 776,
+      "selector": ".scatter-stack > .scatter + .scatter text,\n.scatter-stack > .scatter + .scatter line",
+      "bytes": 110
+    },
+    {
+      "path": "src/styles.css",
+      "line": 780,
+      "selector": ".chart-legend span",
+      "bytes": 74
+    },
+    {
+      "path": "src/styles.css",
+      "line": 785,
+      "selector": ".chart-legend i.orange-dot",
+      "bytes": 53
+    },
+    {
+      "path": "src/styles.css",
+      "line": 788,
+      "selector": ".context-panel > div",
+      "bytes": 190
+    },
+    {
+      "path": "src/styles.css",
+      "line": 797,
+      "selector": ".context-panel h2",
+      "bytes": 44
+    },
+    {
+      "path": "src/styles.css",
+      "line": 800,
+      "selector": ".table-panel",
+      "bytes": 73
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1009,
+      "selector": ".summary-stats .stat > strong",
+      "bytes": 56
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1043,
+      "selector": ".header-divider,\n  .current-page,\n  .demo-status span",
+      "bytes": 78
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1048,
+      "selector": ".demo-status",
+      "bytes": 52
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1052,
+      "selector": ".menu-button",
+      "bytes": 53
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1056,
+      "selector": ".nav-backdrop",
+      "bytes": 34
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1106,
+      "selector": ".summary-stats",
+      "bytes": 57
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1110,
+      "selector": ".summary-stats .stat > strong",
+      "bytes": 56
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1126,
+      "selector": ".month-ticks button",
+      "bytes": 67
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1148,
+      "selector": ".cell-values > div",
+      "bytes": 64
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1232,
+      "selector": ".small-map",
+      "bytes": 35
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1235,
+      "selector": ".small-map > .map-canvas > svg",
+      "bytes": 74
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1247,
+      "selector": ".table-panel",
+      "bytes": 37
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1250,
+      "selector": ".future-note",
+      "bytes": 39
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1441,
+      "selector": ".map-mode .menu-button",
+      "bytes": 197
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1452,
+      "selector": ".map-mode .current-page,\n.map-mode .header-divider",
+      "bytes": 71
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1456,
+      "selector": ".map-mode .demo-status",
+      "bytes": 195
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1467,
+      "selector": ".map-mode .demo-status span",
+      "bytes": 49
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1474,
+      "selector": ".map-mode .nav-backdrop",
+      "bytes": 47
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1519,
+      "selector": ".metric-options",
+      "bytes": 108
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1525,
+      "selector": ".metric-options button",
+      "bytes": 189
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1536,
+      "selector": ".metric-options button[aria-pressed=\"true\"]",
+      "bytes": 88
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1540,
+      "selector": ".metric-options button:hover",
+      "bytes": 55
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1543,
+      "selector": ".legend-title",
+      "bytes": 56
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1547,
+      "selector": ".legend-swatches",
+      "bytes": 115
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1554,
+      "selector": ".legend-swatches span",
+      "bytes": 36
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1565,
+      "selector": ".reference-map .grid-toggle",
+      "bytes": 132
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1572,
+      "selector": ".grid-toggle input",
+      "bytes": 99
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1578,
+      "selector": ".more-layers",
+      "bytes": 39
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1581,
+      "selector": ".more-layers summary",
+      "bytes": 185
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1590,
+      "selector": ".more-layers .field",
+      "bytes": 43
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1603,
+      "selector": ".open-layers",
+      "bytes": 140
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1612,
+      "selector": ".explorer-sheet",
+      "bytes": 107
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1619,
+      "selector": ".sheet-handle",
+      "bytes": 152
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1628,
+      "selector": ".sheet-content",
+      "bytes": 130
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1635,
+      "selector": ".cell-overview",
+      "bytes": 34
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1638,
+      "selector": ".cell-title",
+      "bytes": 68
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1643,
+      "selector": ".cell-title > svg",
+      "bytes": 57
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1647,
+      "selector": ".cell-title > div",
+      "bytes": 37
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1650,
+      "selector": ".cell-title h2",
+      "bytes": 84
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1655,
+      "selector": ".cell-title p",
+      "bytes": 73
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1660,
+      "selector": ".cell-title button",
+      "bytes": 59
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1664,
+      "selector": ".selection-context",
+      "bytes": 79
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1669,
+      "selector": ".cell-metrics",
+      "bytes": 106
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1675,
+      "selector": ".cell-metrics > div",
+      "bytes": 110
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1681,
+      "selector": ".cell-metrics > div:last-child",
+      "bytes": 47
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1684,
+      "selector": ".cell-metrics svg",
+      "bytes": 39
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1687,
+      "selector": ".cell-metrics span",
+      "bytes": 58
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1691,
+      "selector": ".cell-metrics strong",
+      "bytes": 118
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1698,
+      "selector": ".cell-metrics .stat",
+      "bytes": 86
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1703,
+      "selector": ".cell-metrics .stat strong",
+      "bytes": 49
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1706,
+      "selector": ".sheet-actions",
+      "bytes": 89
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1712,
+      "selector": ".sheet-actions .button",
+      "bytes": 65
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1716,
+      "selector": ".quality-note",
+      "bytes": 54
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1720,
+      "selector": ".detail-content",
+      "bytes": 91
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1725,
+      "selector": ".detail-tabs",
+      "bytes": 94
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1731,
+      "selector": ".detail-tabs button",
+      "bytes": 136
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1739,
+      "selector": ".detail-tabs button[aria-selected=\"true\"]",
+      "bytes": 119
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1744,
+      "selector": ".series-heading",
+      "bytes": 134
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1751,
+      "selector": ".series-heading span",
+      "bytes": 60
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1755,
+      "selector": ".spark-chart svg",
+      "bytes": 90
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1761,
+      "selector": ".chart-months",
+      "bytes": 87
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1766,
+      "selector": ".chart-months button",
+      "bytes": 78
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1771,
+      "selector": ".chart-months button[aria-pressed=\"true\"]",
+      "bytes": 83
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1780,
+      "selector": ".nearby-list",
+      "bytes": 36
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1783,
+      "selector": ".nearby-list button",
+      "bytes": 144
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1791,
+      "selector": ".nearby-list strong",
+      "bytes": 81
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1805,
+      "selector": ".sheet-timeline",
+      "bytes": 131
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1812,
+      "selector": ".play-button",
+      "bytes": 174
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1841,
+      "selector": ".reference-map .month-ticks button",
+      "bytes": 88
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1846,
+      "selector": ".reference-map .month-ticks .chosen",
+      "bytes": 57
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1849,
+      "selector": ".monthly-chip",
+      "bytes": 110
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1855,
+      "selector": ".sheet-static",
+      "bytes": 109
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1881,
+      "selector": ".comparison-captions",
+      "bytes": 164
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1890,
+      "selector": ".comparison-captions span",
+      "bytes": 139
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1898,
+      "selector": ".cell-metrics",
+      "bytes": 82
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1902,
+      "selector": ".cell-metrics > div",
+      "bytes": 40
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1905,
+      "selector": ".detail-tabs button",
+      "bytes": 45
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1908,
+      "selector": ".sheet-content",
+      "bytes": 84
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1913,
+      "selector": ".detail-content",
+      "bytes": 45
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1932,
+      "selector": ".map-mode .menu-button",
+      "bytes": 94
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1938,
+      "selector": ".map-mode .demo-status",
+      "bytes": 115
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1945,
+      "selector": ".map-mode .demo-status span",
+      "bytes": 54
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1953,
+      "selector": ".map-mode .nav-backdrop",
+      "bytes": 51
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1956,
+      "selector": ".open-layers",
+      "bytes": 96
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1971,
+      "selector": ".explorer-sheet",
+      "bytes": 95
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1977,
+      "selector": ".sheet-content",
+      "bytes": 91
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1982,
+      "selector": ".cell-title h2",
+      "bytes": 41
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1985,
+      "selector": ".cell-title p",
+      "bytes": 40
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1988,
+      "selector": ".cell-title > svg",
+      "bytes": 58
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1992,
+      "selector": ".selection-context",
+      "bytes": 65
+    },
+    {
+      "path": "src/styles.css",
+      "line": 1996,
+      "selector": ".cell-metrics",
+      "bytes": 53
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2000,
+      "selector": ".cell-metrics svg",
+      "bytes": 40
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2003,
+      "selector": ".cell-metrics strong",
+      "bytes": 47
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2006,
+      "selector": ".cell-metrics span",
+      "bytes": 44
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2009,
+      "selector": ".cell-metrics .stat strong",
+      "bytes": 53
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2012,
+      "selector": ".sheet-actions",
+      "bytes": 34
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2015,
+      "selector": ".quality-note",
+      "bytes": 39
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2018,
+      "selector": ".detail-content",
+      "bytes": 99
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2023,
+      "selector": ".detail-tabs button",
+      "bytes": 68
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2027,
+      "selector": ".series-heading",
+      "bytes": 45
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2030,
+      "selector": ".spark-chart svg",
+      "bytes": 40
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2033,
+      "selector": ".sheet-timeline",
+      "bytes": 58
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2037,
+      "selector": ".sheet-timeline > button:not(.play-button)",
+      "bytes": 66
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2040,
+      "selector": ".play-button",
+      "bytes": 53
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2044,
+      "selector": ".monthly-chip",
+      "bytes": 38
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2071,
+      "selector": ".comparison-captions",
+      "bytes": 75
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2076,
+      "selector": ".comparison-captions span",
+      "bytes": 69
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2098,
+      "selector": ".metric-options button",
+      "bytes": 47
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2101,
+      "selector": ".reference-map .grid-toggle,\n  .more-layers summary",
+      "bytes": 78
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2105,
+      "selector": ".sheet-content",
+      "bytes": 43
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2108,
+      "selector": ".cell-title h2",
+      "bytes": 41
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2111,
+      "selector": ".cell-title p,\n  .selection-context,\n  .quality-note",
+      "bytes": 79
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2116,
+      "selector": ".cell-metrics span",
+      "bytes": 45
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2119,
+      "selector": ".cell-metrics strong",
+      "bytes": 47
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2122,
+      "selector": ".sheet-actions .button,\n  .detail-tabs button",
+      "bytes": 72
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2126,
+      "selector": ".spark-chart svg",
+      "bytes": 40
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2129,
+      "selector": ".series-heading",
+      "bytes": 42
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2136,
+      "selector": ".chart-months button",
+      "bytes": 47
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2199,
+      "selector": ".reference-map.comparing .comparison-captions",
+      "bytes": 85
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2203,
+      "selector": ".reference-map.comparing .comparison-captions span",
+      "bytes": 112
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2208,
+      "selector": ".reference-map.comparing .comparison-captions span + span",
+      "bytes": 105
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2227,
+      "selector": ".seascape-map .cell-metrics",
+      "bytes": 65
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2228,
+      "selector": ".seascape-map .cell-title h2",
+      "bytes": 74
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2234,
+      "selector": ".seascape-map .comparison-captions",
+      "bytes": 50
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2237,
+      "selector": ".seascape-map .open-layers",
+      "bytes": 42
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2240,
+      "selector": ".seascape-map .explorer-sheet",
+      "bytes": 68
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2241,
+      "selector": ".seascape-map .sheet-content",
+      "bytes": 47
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2242,
+      "selector": ".seascape-map .sheet-static",
+      "bytes": 66
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2245,
+      "selector": ".seascape-map .comparison-captions",
+      "bytes": 50
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2252,
+      "selector": ".map-legend-mode",
+      "bytes": 72
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2257,
+      "selector": ".map-legend-foot",
+      "bytes": 53
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2258,
+      "selector": ".map-legend-foot i",
+      "bytes": 109
+    },
+    {
+      "path": "src/styles.css",
+      "line": 2267,
+      "selector": ".seascape-map .open-layers",
+      "bytes": 41
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 59,
+      "selector": ".map-mode .menu-button",
+      "bytes": 206
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 71,
+      "selector": ".map-mode .header-divider,\n.map-mode .current-page",
+      "bytes": 71
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 198,
+      "selector": ".atlas-map .map-legend-mode",
+      "bytes": 89
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 211,
+      "selector": ".atlas-map .map-legend-foot",
+      "bytes": 70
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 215,
+      "selector": ".atlas-map .map-legend-foot i",
+      "bytes": 110
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 231,
+      "selector": ".atlas-map .comparison-captions",
+      "bytes": 102
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 237,
+      "selector": ".atlas-map .open-layers",
+      "bytes": 144
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 490,
+      "selector": ".map-mode .menu-button",
+      "bytes": 51
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 507,
+      "selector": ".atlas-map .map-legend-mode",
+      "bytes": 53
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 514,
+      "selector": ".atlas-map .open-layers",
+      "bytes": 106
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 582,
+      "selector": ".atlas-map.comparing .comparison-captions",
+      "bytes": 66
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1000,
+      "selector": ".atlas-map.colorbar-map .comparison-captions",
+      "bytes": 61
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1033,
+      "selector": ".atlas-map.colorbar-map .open-layers",
+      "bytes": 74
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1258,
+      "selector": ".atlas-map.colorbar-map.drawer-map .open-layers",
+      "bytes": 206
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1335,
+      "selector": ".atlas-map.colorbar-map.drawer-map .open-layers",
+      "bytes": 90
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1444,
+      "selector": ".atlas-map.drawer-map.swipe-comparing .comparison-captions",
+      "bytes": 165
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1451,
+      "selector": ".atlas-map.drawer-map.swipe-comparing .comparison-captions span",
+      "bytes": 188
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1516,
+      "selector": ".atlas-map.colorbar-map.drawer-map .map-legend-tools .map-layers-control .open-layers",
+      "bytes": 269
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1528,
+      "selector": ".atlas-map .map-layers-control .open-layers[aria-expanded=\"true\"]",
+      "bytes": 90
+    },
+    {
+      "path": "src/atlas.css",
+      "line": 1657,
+      "selector": ".seascape-map .comparison-captions",
+      "bytes": 52
+    }
+  ],
+  "conditionalFileRemovals": [
+    {
+      "path": "src/components/ViewshedMap.tsx",
+      "bytes": 1018
+    },
+    {
+      "path": "src/components/ViewshedBasemap.tsx",
+      "bytes": 7915
+    },
+    {
+      "path": "src/components/ViewshedLocalMap.tsx",
+      "bytes": 7652
+    },
+    {
+      "path": "src/components/ViewshedZoomControls.tsx",
+      "bytes": 668
+    },
+    {
+      "path": "src/components/ViewshedBasemap.test.tsx",
+      "bytes": 11913
+    }
+  ],
+  "reviewedFiles": [
+    {
+      "path": "src/atlas.css",
+      "bytes": 48227,
+      "sha256": "5fa8342bab862624602c993d1c5feec7685d4250865e8c40bb9a4ecd001f8c83"
+    },
+    {
+      "path": "src/components/Controls.tsx",
+      "bytes": 2024,
+      "sha256": "c41a907dc1e06de601b7eb199a4ee5ee1c1c79a31ef1bdeb61dfc4b496011bb4"
+    },
+    {
+      "path": "src/components/ViewshedBasemap.test.tsx",
+      "bytes": 11913,
+      "sha256": "e87d4015a88b1233dbdb90488d308c4c0ba9bc8d197ffff42113a5ac03ec2d77"
+    },
+    {
+      "path": "src/components/ViewshedBasemap.tsx",
+      "bytes": 7915,
+      "sha256": "c57f60c074051bb1832582a26fc1741336da944cd613626d80c98524eb50b812"
+    },
+    {
+      "path": "src/components/ViewshedLayer.test.tsx",
+      "bytes": 35974,
+      "sha256": "a54a3373d0518cfe04ba82d65ca1591f238c10d3c085560c2a2b1e71bdcd7321"
+    },
+    {
+      "path": "src/components/ViewshedLayer.tsx",
+      "bytes": 30067,
+      "sha256": "16a034d39a656943ab24bf28bf68a9599718749c6c77d8bfd488b976ff8b1df4"
+    },
+    {
+      "path": "src/components/ViewshedLocalMap.tsx",
+      "bytes": 7652,
+      "sha256": "52726b9ba9864c43672d17a1589e4161ab6aa2ac413f64f2a852e8c0cb467990"
+    },
+    {
+      "path": "src/components/ViewshedMap.tsx",
+      "bytes": 1018,
+      "sha256": "ff3c8d2a64dcfe98ddf58a5cecb9fa5efc34055a2f81f31bf806df14d029ebcc"
+    },
+    {
+      "path": "src/components/ViewshedZoomControls.tsx",
+      "bytes": 668,
+      "sha256": "13d54e01c40524cac9c6f5a89e6434057a874919357a245d72324dc4a7f287ae"
+    },
+    {
+      "path": "src/data/demo.test.ts",
+      "bytes": 1766,
+      "sha256": "9055122247753a21863e56250c5e21e8eaec697e36aab13bb4364a9eb3696f46"
+    },
+    {
+      "path": "src/data/demo.ts",
+      "bytes": 5906,
+      "sha256": "4772d72811fb8597544ea90ffb1dba92c83c5cad1583624f96816176457cc889"
+    },
+    {
+      "path": "src/data/governancePatterns.ts",
+      "bytes": 4851,
+      "sha256": "b0fb9d8dbf97098f70ae9ab92ad6b9235ed02b502ac8219653f1ad0a52e3d675"
+    },
+    {
+      "path": "src/data/map.test.ts",
+      "bytes": 1051,
+      "sha256": "4aa30cd77e063abf7138eb06f470847b155afc9976f1bf4977e467a868c71a07"
+    },
+    {
+      "path": "src/data/northernSky.test.ts",
+      "bytes": 2113,
+      "sha256": "c6c87781f735f5739a2e5900c9f47e8b1c12b90869dddd7a44eafbdd9a26bac0"
+    },
+    {
+      "path": "src/data/northernSky.ts",
+      "bytes": 3664,
+      "sha256": "f3aad483058766cacc8aff07ebcb408665ec7556e3ab753b399508de64b19a1f"
+    },
+    {
+      "path": "src/styles.css",
+      "bytes": 44014,
+      "sha256": "3375801214a7c37c1ba078533db6685b7555823ffe90cec16a61284ae2e64a0b"
+    },
+    {
+      "path": "scripts/test_biogenic_input.py",
+      "bytes": 7909,
+      "sha256": "a841dd840b12bf042631569c4e8c7e3fc61c1de01f4c20ffcad86e8fc4aa9585"
+    },
+    {
+      "path": "scripts/biogenic_input.py",
+      "bytes": 5746,
+      "sha256": "4e6f4be4688425d8fb2302ff9ef41e304d35be4cfd483b5e5eb74a75898f73fc"
+    }
+  ],
+  "totals": {
+    "declarations": 16,
+    "declarationBytes": 5758,
+    "cssRules": 184,
+    "cssRuleBytes": 15035,
+    "conditionalFiles": 5,
+    "conditionalFileBytes": 29166
+  },
+  "constraints": [
+    "Migrate still-relevant tests before removing renderer files.",
+    "Retain active Health/demo support, current map wrapper and scientific adapters.",
+    "No Data products, retained browser caches, attribution, artwork originals, history or environments are deletion targets.",
+    "CSS candidates need visual regression review before removal.",
+    "Recheck file hashes and checkout changes before implementation."
+  ],
+  "environment": {
+    "node": "25.6.1",
+    "typescript": "5.9.3",
+    "vite": "7.2.2",
+    "vitest": "4.0.14",
+    "python": "3.14.6",
+    "pythonEnvironment": "app-configured orcacast314",
+    "fastapi": "0.150.0",
+    "pyarrow": "24.0.0",
+    "h3": "4.4.1"
+  },
+  "validation": {
+    "typecheck": "passed",
+    "lint": "passed",
+    "frontend": {
+      "files": 92,
+      "tests": 534,
+      "status": "passed"
+    },
+    "python": {
+      "tests": 172,
+      "status": "passed",
+      "command": "configured-python -m unittest discover -s scripts -p 'test_*.py'"
+    },
+    "build": {
+      "status": "passed",
+      "destination": "dist/",
+      "localDataCopied": false,
+      "warning": "chunks larger than 500 kB"
+    },
+    "sourceHashes": "passed after review authoring",
+    "changedDocumentationLinks": "passed",
+    "knowledgeProperties": "passed",
+    "gitDiffCheck": "passed",
+    "browser": "not run",
+    "liveSourceReadback": "not run",
+    "removalPatch": "not implemented",
+    "pytest": {
+      "status": "baseline failure",
+      "passed": 184,
+      "subtestsPassed": 60,
+      "failed": 1,
+      "failure": "scripts/test_biogenic_input.py:8 expects 4 fields from current 7-entry NAMES mapping",
+      "command": "configured-python -m pytest scripts -q",
+      "implementationChanged": false
+    }
+  },
+  "staging": {
+    "owner": "Codex data-explorer dead code investigation 2026-11-01",
+    "expectedPeakBytes": 1000000,
+    "freeSpaceBeforeBuild": "84 GiB available",
+    "cleanupStatus": "Small /private/tmp audit tools and logs retained; no deletion performed. No bulk source copies. Existing dist reused for baseline build.",
+    "paths": [
+      {
+        "path": "/private/tmp/explorer-dead-code-audit.cjs",
+        "purpose": "temporary audit tool/output; supporting findings retained in review manifest",
+        "expectedBytes": 3120,
+        "sha256": "0b5ccbd862504cee3b877d9e2c918e37ef7228b974af8d2f1fcd3da18ddce07a",
+        "cleanup": "retained; disposable after review handoff"
+      },
+      {
+        "path": "/private/tmp/explorer-ts-audit.json",
+        "purpose": "temporary audit tool/output; supporting findings retained in review manifest",
+        "expectedBytes": 19916,
+        "sha256": "f22f074b68afeca18bd1ce62df3f92ae489c539b74d402967db440c43e8620cb",
+        "cleanup": "retained; disposable after review handoff"
+      },
+      {
+        "path": "/private/tmp/explorer-python-audit.json",
+        "purpose": "temporary audit tool/output; supporting findings retained in review manifest",
+        "expectedBytes": 5907,
+        "sha256": "ca191fb4046e2e801fa6bb3bfa5ea8d18fdd3dd249500547b8d1a5e70941befb",
+        "cleanup": "retained; disposable after review handoff"
+      },
+      {
+        "path": "/private/tmp/explorer-audit-vitest.log",
+        "purpose": "temporary audit tool/output; supporting findings retained in review manifest",
+        "expectedBytes": 2629,
+        "sha256": "1e1c5eb890f9983eb450095f5bae5370b76591d119b942d02adf1fcd45f94154",
+        "cleanup": "retained; disposable after review handoff"
+      },
+      {
+        "path": "/private/tmp/explorer-audit-python.log",
+        "purpose": "temporary audit tool/output; supporting findings retained in review manifest",
+        "expectedBytes": 8244,
+        "sha256": "5f6f33f60d3934bea67fbb5af252fac3114be97d0528b93e9f3e4daaa8a09cfb",
+        "cleanup": "retained; disposable after review handoff"
+      },
+      {
+        "path": "/private/tmp/explorer-audit-build.log",
+        "purpose": "temporary audit tool/output; supporting findings retained in review manifest",
+        "expectedBytes": 1302,
+        "sha256": "eee80bf7d0baaaae951706b04f16abbce6711036cf97881d471e9fd7967e9909",
+        "cleanup": "retained; disposable after review handoff"
+      },
+      {
+        "path": "/private/tmp/explorer-css-audit.cjs",
+        "purpose": "temporary audit tool/output; supporting findings retained in review manifest",
+        "expectedBytes": 1567,
+        "sha256": "1f6db8a7b7d8458fc7f7262aaa2a44bc9e7a99190cc59a487b5e4eadb6745cf5",
+        "cleanup": "retained; disposable after review handoff"
+      },
+      {
+        "path": "/private/tmp/explorer-css-audit.json",
+        "purpose": "temporary audit tool/output; supporting findings retained in review manifest",
+        "expectedBytes": 21336,
+        "sha256": "8fd1e23f6702f0ac4646909a76e9d5f39772ecb613c0745c8400bb220363777a",
+        "cleanup": "retained; disposable after review handoff"
+      },
+      {
+        "path": "/private/tmp/explorer-proposal.cjs",
+        "purpose": "temporary audit tool/output; supporting findings retained in review manifest",
+        "expectedBytes": 3194,
+        "sha256": "706a5da42982f854bbbf52347e3f97f82eaa0cf4847c45fdf7ceb99c6e6b568f",
+        "cleanup": "retained; disposable after review handoff"
+      },
+      {
+        "path": "/private/tmp/explorer-audit-pytest.log",
+        "purpose": "baseline pytest output including function-style tests",
+        "expectedBytes": 1876,
+        "sha256": "ac8b5c884ec4ec3ef1ffeb2660777320d3e449f5ea518e0f12743ad6c3ebea25",
+        "cleanup": "retained; disposable after review handoff"
+      }
+    ],
+    "retainedOutputs": [
+      "docs/dead-code-review.md",
+      "docs/qa/dead-code-review-2026-11-01.json"
+    ],
+    "sourceLocations": [
+      "src/",
+      "scripts/",
+      "public/assets/home/",
+      "public/local-data/ (stat inventory only)",
+      "../../Data/ (not scanned or changed)"
+    ]
+  },
+  "retainedOutputChecksums": {
+    "docs/dead-code-review.md": "8289915e598c051552fcce3f3f6a54920e8f07da8f68b0b5b6abfc72b22f9ee0"
+  }
+}
